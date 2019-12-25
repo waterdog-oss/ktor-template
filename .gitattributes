@@ -1,0 +1,9 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text eol=lf
+
+# Binary data
+*.png binary
+*.jpg binary
+
+# Just force any windows batch file to have the CRLF line ends
+*.bat text eol=crlf
