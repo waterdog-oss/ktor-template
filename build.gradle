@@ -31,6 +31,17 @@ test {
     useJUnitPlatform()
 }
 
+sourceSets {
+    main {
+        kotlin.srcDir "src/main/kotlin"
+        resources.srcDir "src/main/resources"
+    }
+    test {
+        kotlin.srcDir "src/test/kotlin"
+        resources.srcDir "src/test/resources"
+    }
+}
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
@@ -43,6 +54,13 @@ dependencies {
     implementation "org.koin:koin-core:${koin_version}"
     implementation "org.koin:koin-core-ext:${koin_version}"
     implementation "org.koin:koin-ktor:${koin_version}"
+
+    // Database stuff
+    implementation "com.h2database:h2:1.4.197"
+    implementation "org.postgresql:postgresql:42.2.9"
+    implementation "com.zaxxer:HikariCP:3.4.2"
+    implementation "org.jetbrains.exposed:exposed:0.17.7"
+    implementation "org.flywaydb:flyway-core:6.1.4"
 
     testImplementation "io.ktor:ktor-server-test-host:${ktor_version}"
     testImplementation "org.koin:koin-test:${koin_version}"

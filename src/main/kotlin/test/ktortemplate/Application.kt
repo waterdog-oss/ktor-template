@@ -17,61 +17,60 @@ import io.ktor.jackson.JacksonConverter
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import org.koin.ktor.ext.Koin
-import test.ktortemplate.conf.DefaultEnvironmentConfigurator
+import test.ktortemplate.conf.DevEnvironmentConfigurator
+import test.ktortemplate.conf.ProdEnvironmentConfigurator
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
 
 @KtorExperimentalAPI
-val Application.env
-    get() = environment.config.property("ktor.environment").getString()
-
-@KtorExperimentalAPI
 fun Application.module() {
 
-    val modules = DefaultEnvironmentConfigurator(environment).buildEnvironmentConfig()
+    val modules = when {
+        isDev -> DevEnvironmentConfigurator(environment).buildEnvironmentConfig()
+        isProd -> ProdEnvironmentConfigurator(environment).buildEnvironmentConfig()
+        else -> DevEnvironmentConfigurator(environment).buildEnvironmentConfig()
+    }
 
-    install(DefaultHeaders)
-    install(Compression) {
-        gzip {
-            priority = 100.0
+                install(DefaultHeaders)
+                install(Compression) {
+            gzip {
+                priority = 100.0
+            }
+            identity {
+                priority = 10.0
+            }
+            deflate {
+                priority = 1.0
+            }
         }
-        identity {
-            priority = 10.0
+
+                install(CallLogging) {
+            level = org.slf4j.event.Level.INFO
         }
-        deflate {
-            priority = 1.0
+                install(ContentNegotiation) {
+            register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
         }
-    }
 
-    install(CallLogging) {
-        level = org.slf4j.event.Level.INFO
-    }
-    install(ContentNegotiation) {
-        register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
-    }
+                install(CORS) {
+            method(HttpMethod.Options)
+            method(HttpMethod.Get)
+            method(HttpMethod.Post)
+            method(HttpMethod.Put)
+            method(HttpMethod.Delete)
+            anyHost()
+        }
 
-    install(CORS) {
-        method(HttpMethod.Options)
-        method(HttpMethod.Get)
-        method(HttpMethod.Post)
-        method(HttpMethod.Put)
-        method(HttpMethod.Delete)
-        anyHost()
-    }
+                install(Koin) {
+            modules(modules)
+        }
 
-    install(Koin) {
-        modules(modules)
-    }
+                install(Routing) {
+            defaultRoutes()
+        }
 
-    install(Routing) {
-        defaultRoutes()
+                log.info("Ktor server started...")
     }
-
-    log.info("Ktor server started...")
-}
 
 val Application.envKind get() = environment.config.property("ktor.environment").getString()
 val Application.isDev get() = envKind == "dev"
-val Application.isStagingLocal get() = envKind == "stagingLocal"
-val Application.isStaging get() = envKind == "staging"
 val Application.isProd get() = envKind == "prod"

@@ -1,5 +1,7 @@
 package test.ktortemplate.core
 
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.features.CallLogging
@@ -14,13 +16,48 @@ import io.ktor.jackson.JacksonConverter
 import io.ktor.routing.Routing
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.withTestApplication
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.koin.dsl.module
 import org.koin.ktor.ext.Koin
-import test.ktortemplate.conf.DefaultEnvironmentConfigurator
+import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.httphandler.defaultRoutes
+import test.ktortemplate.core.persistance.CarRepository
+import test.ktortemplate.core.persistance.sql.CarMappingsTable
+import test.ktortemplate.core.persistance.sql.CarRepositoryImpl
+import test.ktortemplate.core.service.CarService
+import test.ktortemplate.core.service.CarServiceImpl
 import test.ktortemplate.core.utils.JsonSettings
+import javax.sql.DataSource
+
+private fun bootstrapDatabase (dbc: DatabaseConnection) {
+    dbc.query {
+        SchemaUtils.create(CarMappingsTable)
+    }
+}
+
+fun initServicesAndRepos() = module {
+    single<CarRepository> { CarRepositoryImpl() }
+    single<CarService> { CarServiceImpl() }
+}
+
+fun initDbCore() = module {
+    val dataSource: DataSource = HikariDataSource(HikariConfig().apply {
+        driverClassName = "org.h2.Driver"
+        jdbcUrl = "jdbc:h2:mem:test"
+        maximumPoolSize = 5
+        isAutoCommit = true
+        transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+        leakDetectionThreshold = 10000
+        poolName = "sat"
+        validate()
+    })
+
+    val dbc = DatabaseConnection(dataSource)
+    bootstrapDatabase(dbc)
+    single { dbc }
+}
 
 fun Application.testModule() {
-    val modules = DefaultEnvironmentConfigurator(environment).buildEnvironmentConfig()
 
     install(DefaultHeaders)
     install(Compression) {
@@ -38,9 +75,6 @@ fun Application.testModule() {
     install(CallLogging)
     install(ContentNegotiation) {
         register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
-    }
-    install(Koin) {
-        modules(modules)
     }
     install(Routing) {
         defaultRoutes()
