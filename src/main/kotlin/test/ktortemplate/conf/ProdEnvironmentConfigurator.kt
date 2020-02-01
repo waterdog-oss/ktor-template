@@ -3,6 +3,7 @@ package test.ktortemplate.conf
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.ApplicationEnvironment
+import javax.sql.DataSource
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import test.ktortemplate.conf.database.DatabaseConnection
@@ -10,12 +11,11 @@ import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.persistance.sql.CarRepositoryImpl
 import test.ktortemplate.core.service.CarService
 import test.ktortemplate.core.service.CarServiceImpl
-import javax.sql.DataSource
 
 class ProdEnvironmentConfigurator(private val environment: ApplicationEnvironment) :
     EnvironmentConfigurator {
 
-            override fun buildEnvironmentConfig(): List<Module> {
+    override fun buildEnvironmentConfig(): List<Module> {
         environment.log.info("Init Production environment config")
 
         return listOf(

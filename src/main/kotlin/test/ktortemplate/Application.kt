@@ -31,45 +31,45 @@ fun Application.module() {
         else -> DevEnvironmentConfigurator(environment).buildEnvironmentConfig()
     }
 
-                install(DefaultHeaders)
-                install(Compression) {
-            gzip {
-                priority = 100.0
-            }
-            identity {
-                priority = 10.0
-            }
-            deflate {
-                priority = 1.0
-            }
+    install(DefaultHeaders)
+    install(Compression) {
+        gzip {
+            priority = 100.0
         }
-
-                install(CallLogging) {
-            level = org.slf4j.event.Level.INFO
+        identity {
+            priority = 10.0
         }
-                install(ContentNegotiation) {
-            register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
+        deflate {
+            priority = 1.0
         }
-
-                install(CORS) {
-            method(HttpMethod.Options)
-            method(HttpMethod.Get)
-            method(HttpMethod.Post)
-            method(HttpMethod.Put)
-            method(HttpMethod.Delete)
-            anyHost()
-        }
-
-                install(Koin) {
-            modules(modules)
-        }
-
-                install(Routing) {
-            defaultRoutes()
-        }
-
-                log.info("Ktor server started...")
     }
+
+    install(CallLogging) {
+        level = org.slf4j.event.Level.INFO
+    }
+    install(ContentNegotiation) {
+        register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
+    }
+
+    install(CORS) {
+        method(HttpMethod.Options)
+        method(HttpMethod.Get)
+        method(HttpMethod.Post)
+        method(HttpMethod.Put)
+        method(HttpMethod.Delete)
+        anyHost()
+    }
+
+    install(Koin) {
+        modules(modules)
+    }
+
+    install(Routing) {
+        defaultRoutes()
+    }
+
+    log.info("Ktor server started...")
+}
 
 val Application.envKind get() = environment.config.property("ktor.environment").getString()
 val Application.isDev get() = envKind == "dev"

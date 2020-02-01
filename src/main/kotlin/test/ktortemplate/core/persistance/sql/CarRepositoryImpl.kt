@@ -56,7 +56,7 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
         }
     }
 
-    private fun resultToModel (rstRow: ResultRow): Car {
+    private fun resultToModel(rstRow: ResultRow): Car {
         return Car(
             rstRow[CarMappingsTable.id],
             rstRow[CarMappingsTable.brand],
