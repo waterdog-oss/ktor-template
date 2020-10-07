@@ -5,7 +5,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should equal`
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -13,8 +12,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.test.inject
 import org.koin.test.KoinTest
+import org.koin.test.inject
 import test.ktortemplate.core.initDbCore
 import test.ktortemplate.core.initServicesAndRepos
 import test.ktortemplate.core.model.Car
@@ -35,7 +34,7 @@ class TestRoutes : KoinTest {
             initDbCore(),
             initServicesAndRepos()
         )
-        startKoin { modules(appModules)  }
+        startKoin { modules(appModules) }
     }
 
     @AfterEach
