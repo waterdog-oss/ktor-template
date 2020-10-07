@@ -1,4 +1,4 @@
-FROM gradle:6.0.1-jdk8
+FROM gradle:6.6.1-jdk11
 
 # Default environment profile when running with docker
 ENV KTOR_ENV dev
