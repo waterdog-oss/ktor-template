@@ -13,8 +13,8 @@ import io.ktor.features.gzip
 import io.ktor.features.identity
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
-import io.ktor.jackson.JacksonConverter
 import io.ktor.routing.Routing
+import io.ktor.serialization.*
 import io.ktor.util.KtorExperimentalAPI
 import org.koin.ktor.ext.Koin
 import test.ktortemplate.conf.DevEnvironmentConfigurator
@@ -48,7 +48,10 @@ fun Application.module() {
         level = org.slf4j.event.Level.INFO
     }
     install(ContentNegotiation) {
-        register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
+        json(
+            contentType = ContentType.Application.Json,
+            json = JsonSettings.mapper
+        )
     }
 
     install(CORS) {
