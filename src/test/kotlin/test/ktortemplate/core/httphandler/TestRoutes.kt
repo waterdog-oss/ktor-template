@@ -1,10 +1,14 @@
 package test.ktortemplate.core.httphandler
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.setBody
 import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.`should be greater than`
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -69,6 +73,56 @@ class TestRoutes : KoinTest {
             car.brand `should be equal to` newCar.brand
             car.model `should be equal to` newCar.model
         }
+    }
+
+    @Test
+    fun `Creating a new car returns correctly`() = testApp<Unit> {
+        val cmd = CarSaveCommand("brand", "model")
+
+        with(
+            handleRequest(HttpMethod.Post, "/car") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(JsonSettings.mapper.writeValueAsString(cmd))
+            }
+        ) {
+            response.status() `should be equal to` HttpStatusCode.OK
+            val car: Car = JsonSettings.mapper.readValue(response.content!!)
+            car.id `should be greater than` 0
+            car.brand `should be equal to` cmd.brand
+            car.model `should be equal to` cmd.model
+        }
+    }
+
+    @Test
+    fun `Listing cars should returns a list of cars with correct pagination and sort`() = testApp<Unit> {
+        val savedCars = listOf(
+            insertCar(brand = "brand1", model = "model1"),
+            insertCar(brand = "brand2", model = "model2"),
+            insertCar(brand = "brand3", model = "model3"),
+            insertCar(brand = "brand4", model = "model4"),
+            insertCar(brand = "brand5", model = "model5")
+        )
+
+        with(handleRequest(HttpMethod.Get, "/car")) {
+            response.status() `should be equal to` HttpStatusCode.OK
+            val cars: List<Car> = JsonSettings.mapper.readValue(response.content!!)
+            cars.size `should be equal to` savedCars.size
+            cars `should be equal to` savedCars
+        }
+
+//        with(handleRequest(HttpMethod.Get, "/car?page=0&size=3")) {
+//            response.status() `should be equal to` HttpStatusCode.OK
+//            val cars: List<Car> = JsonSettings.mapper.readValue(response.content!!)
+//            cars.size `should be equal to` 3
+//            cars `should be equal to` savedCars.subList(0, 3)
+//        }
+//
+//        with(handleRequest(HttpMethod.Get, "/car?page=1&size=3")) {
+//            response.status() `should be equal to` HttpStatusCode.OK
+//            val cars: List<Car> = JsonSettings.mapper.readValue(response.content!!)
+//            cars.size `should be equal to` 2
+//            cars `should be equal to` savedCars.subList(3, 5)
+//        }
     }
 
     private fun insertCar(

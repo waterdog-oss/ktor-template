@@ -22,7 +22,7 @@ fun Route.defaultRoutes() {
 
     get("/car") {
         // TODO: Add suppiort for pagination and sort
-        //val count = service.count()
+        // val count = service.count()
         val list = service.list()
         call.respond(list)
     }
