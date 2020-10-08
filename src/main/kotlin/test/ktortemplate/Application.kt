@@ -21,6 +21,7 @@ import test.ktortemplate.conf.DevEnvironmentConfigurator
 import test.ktortemplate.conf.ProdEnvironmentConfigurator
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.PaginationHeader
 
 @KtorExperimentalAPI
 fun Application.module() {
@@ -57,6 +58,17 @@ fun Application.module() {
         method(HttpMethod.Post)
         method(HttpMethod.Put)
         method(HttpMethod.Delete)
+        exposeHeader(PaginationHeader.HEADER_PAGE)
+        exposeHeader(PaginationHeader.HEADER_SIZE)
+        exposeHeader(PaginationHeader.HEADER_TOTAL_ELEMENTS)
+        exposeHeader(PaginationHeader.HEADER_TOTAL_PAGES)
+        exposeHeader(PaginationHeader.HEADER_FIRST)
+        exposeHeader(PaginationHeader.HEADER_LAST)
+        exposeHeader(PaginationHeader.HEADER_LINKS_SELF)
+        exposeHeader(PaginationHeader.HEADER_LINKS_FIRST)
+        exposeHeader(PaginationHeader.HEADER_LINKS_PREV)
+        exposeHeader(PaginationHeader.HEADER_LINKS_NEXT)
+        exposeHeader(PaginationHeader.HEADER_LINKS_LAST)
         anyHost()
     }
 

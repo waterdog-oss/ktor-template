@@ -5,6 +5,7 @@ import org.koin.core.inject
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
+import test.ktortemplate.core.utils.SortField
 
 class CarServiceImpl : KoinComponent, CarService {
 
@@ -16,5 +17,6 @@ class CarServiceImpl : KoinComponent, CarService {
 
     override fun insertNewCar(newCar: CarSaveCommand): Car = this.carRepository.save(newCar)
 
-    override fun list(): List<Car> = this.carRepository.list()
+    override fun list(limit: Int, offset: Int, sortFields: List<SortField>): List<Car> =
+        this.carRepository.list(limit, offset, sortFields)
 }

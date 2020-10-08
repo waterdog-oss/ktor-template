@@ -1,6 +1,7 @@
 package test.ktortemplate.core.persistance.sql
 
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -11,6 +12,8 @@ import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
+import test.ktortemplate.core.utils.SortField
+import test.ktortemplate.core.utils.SortFieldOrder
 
 class CarRepositoryImpl : CarRepository, KoinComponent {
 
@@ -50,9 +53,19 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
         }
     }
 
-    override fun list(): List<Car> {
+    override fun list(limit: Int, offset: Int, sortFields: List<SortField>): List<Car> {
+        val orderColumns = sortFields.map { sortField ->
+            Pair(
+                CarMappingsTable.columns.single { it.name == sortField.field },
+                if (sortField.order == SortFieldOrder.asc) SortOrder.ASC else SortOrder.DESC
+            )
+        }.toTypedArray()
+
         return dbc.query {
-            CarMappingsTable.selectAll().map { resultToModel(it) }
+            CarMappingsTable
+                .selectAll()
+                .limit(limit, offset).orderBy(*orderColumns)
+                .map { resultToModel(it) }
         }
     }
 
