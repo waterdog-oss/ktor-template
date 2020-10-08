@@ -30,8 +30,8 @@ data class PageRequest(
     val lastPage: Int = totalPages - 1
     val first: Boolean = page == firstPage
     val last: Boolean = page == lastPage
-    val previousPage: Int = if (first) 0 else if ((page - 1) in firstPage..lastPage) page - 1 else firstPage
-    val nextPage: Int = if (last) page else if ((page + 1) in firstPage..lastPage) page + 1 else lastPage
+    val previousPage: Int = if ((page - 1) in firstPage..lastPage) page - 1 else firstPage
+    val nextPage: Int = if ((page + 1) in firstPage..lastPage) page + 1 else lastPage
 }
 
 object PaginationHeader {
