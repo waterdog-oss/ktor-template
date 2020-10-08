@@ -10,7 +10,11 @@ class CarServiceImpl : KoinComponent, CarService {
 
     private val carRepository: CarRepository by inject()
 
+    override fun count(): Int = this.carRepository.count()
+
     override fun getCarById(carId: Long): Car? = this.carRepository.getById(carId)
 
     override fun insertNewCar(newCar: CarSaveCommand): Car = this.carRepository.save(newCar)
+
+    override fun list(): List<Car> = this.carRepository.list()
 }
