@@ -4,7 +4,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
-import org.amshove.kluent.`should equal`
+import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.test.inject
 import org.koin.test.KoinTest
+import org.koin.test.inject
 import test.ktortemplate.core.initDbCore
 import test.ktortemplate.core.initServicesAndRepos
 import test.ktortemplate.core.model.Car
@@ -34,7 +34,7 @@ class TestRoutes : KoinTest {
             initDbCore(),
             initServicesAndRepos()
         )
-        startKoin { modules(appModules)  }
+        startKoin { modules(appModules) }
     }
 
     @AfterEach
@@ -43,7 +43,7 @@ class TestRoutes : KoinTest {
         cars.forEach {
             carRepository.delete(it.id)
         }
-        carRepository.count() `should equal` 0
+        carRepository.count() `should be equal to` 0
     }
 
     @AfterAll
@@ -54,7 +54,7 @@ class TestRoutes : KoinTest {
     @Test
     fun `Fetching a car that does not exists returns a 404 Not Found`() = testApp<Unit> {
         with(handleRequest(HttpMethod.Get, "/car/12345")) {
-            response.status() `should equal` HttpStatusCode.NotFound
+            response.status() `should be equal to` HttpStatusCode.NotFound
         }
     }
 
@@ -63,11 +63,11 @@ class TestRoutes : KoinTest {
         val newCar = insertCar()
 
         with(handleRequest(HttpMethod.Get, "/car/${newCar.id}")) {
-            response.status() `should equal` HttpStatusCode.OK
+            response.status() `should be equal to` HttpStatusCode.OK
             val car: Car = JsonSettings.mapper.readValue(response.content!!)
-            car.id `should equal` newCar.id
-            car.brand `should equal` newCar.brand
-            car.model `should equal` newCar.model
+            car.id `should be equal to` newCar.id
+            car.brand `should be equal to` newCar.brand
+            car.model `should be equal to` newCar.model
         }
     }
 

@@ -18,7 +18,6 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.withTestApplication
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.koin.dsl.module
-import org.koin.ktor.ext.Koin
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.persistance.CarRepository
@@ -29,7 +28,7 @@ import test.ktortemplate.core.service.CarServiceImpl
 import test.ktortemplate.core.utils.JsonSettings
 import javax.sql.DataSource
 
-private fun bootstrapDatabase (dbc: DatabaseConnection) {
+private fun bootstrapDatabase(dbc: DatabaseConnection) {
     dbc.query {
         SchemaUtils.create(CarMappingsTable)
     }
@@ -41,16 +40,18 @@ fun initServicesAndRepos() = module {
 }
 
 fun initDbCore() = module {
-    val dataSource: DataSource = HikariDataSource(HikariConfig().apply {
-        driverClassName = "org.h2.Driver"
-        jdbcUrl = "jdbc:h2:mem:test"
-        maximumPoolSize = 5
-        isAutoCommit = true
-        transactionIsolation = "TRANSACTION_REPEATABLE_READ"
-        leakDetectionThreshold = 10000
-        poolName = "sat"
-        validate()
-    })
+    val dataSource: DataSource = HikariDataSource(
+        HikariConfig().apply {
+            driverClassName = "org.h2.Driver"
+            jdbcUrl = "jdbc:h2:mem:test"
+            maximumPoolSize = 5
+            isAutoCommit = true
+            transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+            leakDetectionThreshold = 10000
+            poolName = "sat"
+            validate()
+        }
+    )
 
     val dbc = DatabaseConnection(dataSource)
     bootstrapDatabase(dbc)
@@ -82,7 +83,10 @@ fun Application.testModule() {
 }
 
 fun <R> testApp(test: TestApplicationEngine.() -> R): R {
-    return withTestApplication({
-        testModule()
-    }, test)
+    return withTestApplication(
+        {
+            testModule()
+        },
+        test
+    )
 }

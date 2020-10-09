@@ -11,10 +11,12 @@ object JsonSettings {
         mapper.apply {
             configure(SerializationFeature.INDENT_OUTPUT, true)
             configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
-                indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-                indentObjectsWith(DefaultIndenter("  ", "\n"))
-            })
+            setDefaultPrettyPrinter(
+                DefaultPrettyPrinter().apply {
+                    indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+                    indentObjectsWith(DefaultIndenter("  ", "\n"))
+                }
+            )
         }
         mapper
     }
