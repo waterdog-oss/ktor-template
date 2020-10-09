@@ -1,19 +1,18 @@
 package test.ktortemplate.core.persistance.sql
 
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
+import test.ktortemplate.core.model.PageRequest
 import test.ktortemplate.core.persistance.CarRepository
-import test.ktortemplate.core.utils.SortField
-import test.ktortemplate.core.utils.SortFieldOrder
+import test.ktortemplate.core.utils.ExposedQueryUtils.createFromFilters
+import test.ktortemplate.core.utils.ExposedQueryUtils.createSorts
 
 class CarRepositoryImpl : CarRepository, KoinComponent {
 
@@ -41,9 +40,9 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
         }
     }
 
-    override fun count(): Int {
+    override fun count(pageRequest: PageRequest): Int {
         return dbc.query {
-            CarMappingsTable.selectAll().count()
+            CarMappingsTable.createFromFilters(pageRequest.filter).count()
         }
     }
 
@@ -53,18 +52,12 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
         }
     }
 
-    override fun list(limit: Int, offset: Int, sortFields: List<SortField>): List<Car> {
-        val orderColumns = sortFields.map { sortField ->
-            Pair(
-                CarMappingsTable.columns.single { it.name == sortField.field },
-                if (sortField.order == SortFieldOrder.asc) SortOrder.ASC else SortOrder.DESC
-            )
-        }.toTypedArray()
-
+    override fun list(pageRequest: PageRequest): List<Car> {
         return dbc.query {
             CarMappingsTable
-                .selectAll()
-                .limit(limit, offset).orderBy(*orderColumns)
+                .createFromFilters(pageRequest.filter)
+                .limit(pageRequest.limit, pageRequest.offset)
+                .orderBy(*CarMappingsTable.createSorts(pageRequest.sort).toTypedArray())
                 .map { resultToModel(it) }
         }
     }

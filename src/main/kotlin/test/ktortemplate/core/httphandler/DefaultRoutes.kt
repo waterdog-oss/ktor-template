@@ -10,6 +10,7 @@ import io.ktor.routing.post
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.core.service.CarService
+import test.ktortemplate.core.utils.generatePaginationHeaders
 import test.ktortemplate.core.utils.parsePageRequest
 
 internal class DefaultRoutesInjector : KoinComponent {
@@ -20,14 +21,15 @@ fun Route.defaultRoutes() {
     val injector = DefaultRoutesInjector()
     val carService = injector.carService
 
-    get("/car") {
-        val pageRequest = call.parsePageRequest(totalElements = carService.count(), addResponseHeaders = true)
-        val list =
-            carService.list(limit = pageRequest.limit, offset = pageRequest.offset, sortFields = pageRequest.sort)
+    get("/cars") {
+        val pageRequest = call.parsePageRequest()
+        val count = carService.count(pageRequest)
+        val list = carService.list(pageRequest)
+        call.generatePaginationHeaders(pageRequest = pageRequest, totalElements = count)
         call.respond(list)
     }
 
-    get("/car/{id}") {
+    get("/cars/{id}") {
         val carId = call.parameters["id"]?.toLong() ?: -1
 
         when (val car = carService.getCarById(carId)) {
@@ -36,7 +38,7 @@ fun Route.defaultRoutes() {
         }
     }
 
-    post("/car") {
+    post("/cars") {
         val newCar = carService.insertNewCar(call.receive())
         call.respond(newCar)
     }
