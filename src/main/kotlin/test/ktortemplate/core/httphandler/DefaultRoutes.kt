@@ -1,12 +1,14 @@
 package test.ktortemplate.core.httphandler
 
-import io.ktor.application.call
+import io.ktor.application.*
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.routing.Route
+import io.ktor.routing.*
 import io.ktor.routing.get
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import test.ktortemplate.core.exception.AppException
+import test.ktortemplate.core.exception.ErrorCode
 import test.ktortemplate.core.service.CarService
 
 internal class DefaultRoutesInjector : KoinComponent {
@@ -26,4 +28,12 @@ fun Route.defaultRoutes() {
             else -> call.respond(car)
         }
     }
+
+
+    post("/car") {
+        throw AppException(
+            code = ErrorCode.NotImplemented,
+            title = "Create car not implemented yet")
+    }
+
 }
