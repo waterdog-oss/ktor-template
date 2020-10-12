@@ -26,7 +26,7 @@ data class PageInfo(
     val nextPage: Int = if ((page + 1) in firstPage..lastPage) page + 1 else lastPage
 }
 
-object PaginationHeader {
+object PaginationHeaders {
     private const val prefix = "vnd.ktortemplate.pagination"
     const val PAGE_NUMBER = "page[number]"
     const val PAGE_SIZE = "page[size]"
@@ -43,6 +43,23 @@ object PaginationHeader {
     const val HEADER_LINKS_PREV = "$prefix.links.prev"
     const val HEADER_LINKS_NEXT = "$prefix.links.next"
     const val HEADER_LINKS_LAST = "$prefix.links.last"
+
+    /**
+     * List used to register headers in application CORS
+     */
+    val corsExposedHeaders = listOf(
+        HEADER_PAGE,
+        HEADER_SIZE,
+        HEADER_TOTAL_ELEMENTS,
+        HEADER_TOTAL_PAGES,
+        HEADER_FIRST,
+        HEADER_LAST,
+        HEADER_LINKS_SELF,
+        HEADER_LINKS_FIRST,
+        HEADER_LINKS_PREV,
+        HEADER_LINKS_NEXT,
+        HEADER_LINKS_LAST
+    )
 
     fun buildPaginationHeaders(pageInfo: PageInfo, path: String = ""): List<HeaderParameter> {
         return mutableListOf(
@@ -102,15 +119,15 @@ object PaginationHeader {
  * Parses page request from call parameters
  */
 fun ApplicationCall.parsePageRequest(): PageRequest {
-    val page = parameters[PaginationHeader.PAGE_NUMBER]?.toInt() ?: 0
-    val size = parameters[PaginationHeader.PAGE_SIZE]?.toInt() ?: 10
-    val sort = parameters.entries().filter { it.key.startsWith("${PaginationHeader.PAGE_SORT}[") }.map { entry ->
+    val page = parameters[PaginationHeaders.PAGE_NUMBER]?.toInt() ?: 0
+    val size = parameters[PaginationHeaders.PAGE_SIZE]?.toInt() ?: 10
+    val sort = parameters.entries().filter { it.key.startsWith("${PaginationHeaders.PAGE_SORT}[") }.map { entry ->
         // Format: sort[id]=desc&sort[brand]
         val field = entry.key.substring(entry.key.indexOf("[") + 1, entry.key.indexOf("]"))
         val order = SortFieldOrder.valueOf(entry.value.first()) // only the first entry is used
         SortField(field = field, order = order)
     }
-    val filter = parameters.entries().filter { it.key.startsWith("${PaginationHeader.PAGE_FILTER}[") }.map { entry ->
+    val filter = parameters.entries().filter { it.key.startsWith("${PaginationHeaders.PAGE_FILTER}[") }.map { entry ->
         // Format: filter[brand]=brand1,brand2&filter[model]=model1
         val field = entry.key.substring(entry.key.indexOf("[") + 1, entry.key.indexOf("]"))
         val values = entry.value.first().split(",") // only the first entry is used
@@ -140,6 +157,6 @@ fun ApplicationCall.generatePaginationHeaders(
         totalElements = totalElements
     )
 
-    val headers = PaginationHeader.buildPaginationHeaders(pageInfo, request.path())
+    val headers = PaginationHeaders.buildPaginationHeaders(pageInfo, request.path())
     headers.forEach { response.header(it.name, it.value) }
 }

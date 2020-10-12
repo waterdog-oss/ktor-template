@@ -26,7 +26,7 @@ import test.ktortemplate.core.model.PageRequest
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.JsonSettings
-import test.ktortemplate.core.utils.PaginationHeader
+import test.ktortemplate.core.utils.PaginationHeaders
 import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -115,68 +115,68 @@ class TestRoutes : KoinTest {
         }
 
         // Get first page
-        with(handleRequest(HttpMethod.Get, "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=3")) {
+        with(handleRequest(HttpMethod.Get, "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=3")) {
             response.status() `should be equal to` HttpStatusCode.OK
             val cars: List<Car> = JsonSettings.mapper.readValue(response.content!!)
             cars.size `should be equal to` 3
             cars `should be equal to` savedCars.subList(0, 3)
 
             // Verify pagination headers
-            response.headers[PaginationHeader.HEADER_PAGE] `should be equal to` "0"
-            response.headers[PaginationHeader.HEADER_SIZE] `should be equal to` "3"
-            response.headers[PaginationHeader.HEADER_TOTAL_ELEMENTS] `should be equal to` savedCars.size.toString()
-            response.headers[PaginationHeader.HEADER_TOTAL_PAGES] `should be equal to` "2"
-            response.headers[PaginationHeader.HEADER_FIRST] `should be equal to` "true"
-            response.headers[PaginationHeader.HEADER_LAST] `should be equal to` "false"
-            response.headers[PaginationHeader.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_FIRST] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_PREV] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_NEXT] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=1&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_LAST] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=1&${PaginationHeader.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_PAGE] `should be equal to` "0"
+            response.headers[PaginationHeaders.HEADER_SIZE] `should be equal to` "3"
+            response.headers[PaginationHeaders.HEADER_TOTAL_ELEMENTS] `should be equal to` savedCars.size.toString()
+            response.headers[PaginationHeaders.HEADER_TOTAL_PAGES] `should be equal to` "2"
+            response.headers[PaginationHeaders.HEADER_FIRST] `should be equal to` "true"
+            response.headers[PaginationHeaders.HEADER_LAST] `should be equal to` "false"
+            response.headers[PaginationHeaders.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_FIRST] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_PREV] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_NEXT] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=1&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_LAST] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=1&${PaginationHeaders.PAGE_SIZE}=3"
         }
 
         // Get second page
-        with(handleRequest(HttpMethod.Get, "/cars?${PaginationHeader.PAGE_NUMBER}=1&${PaginationHeader.PAGE_SIZE}=3")) {
+        with(handleRequest(HttpMethod.Get, "/cars?${PaginationHeaders.PAGE_NUMBER}=1&${PaginationHeaders.PAGE_SIZE}=3")) {
             response.status() `should be equal to` HttpStatusCode.OK
             val cars: List<Car> = JsonSettings.mapper.readValue(response.content!!)
             cars.size `should be equal to` 2
             cars `should be equal to` savedCars.subList(3, 5)
 
             // Verify pagination headers
-            response.headers[PaginationHeader.HEADER_PAGE] `should be equal to` "1"
-            response.headers[PaginationHeader.HEADER_SIZE] `should be equal to` "3"
-            response.headers[PaginationHeader.HEADER_TOTAL_ELEMENTS] `should be equal to` savedCars.size.toString()
-            response.headers[PaginationHeader.HEADER_TOTAL_PAGES] `should be equal to` "2"
-            response.headers[PaginationHeader.HEADER_FIRST] `should be equal to` "false"
-            response.headers[PaginationHeader.HEADER_LAST] `should be equal to` "true"
-            response.headers[PaginationHeader.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=1&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_FIRST] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_PREV] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_NEXT] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=1&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_LAST] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=1&${PaginationHeader.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_PAGE] `should be equal to` "1"
+            response.headers[PaginationHeaders.HEADER_SIZE] `should be equal to` "3"
+            response.headers[PaginationHeaders.HEADER_TOTAL_ELEMENTS] `should be equal to` savedCars.size.toString()
+            response.headers[PaginationHeaders.HEADER_TOTAL_PAGES] `should be equal to` "2"
+            response.headers[PaginationHeaders.HEADER_FIRST] `should be equal to` "false"
+            response.headers[PaginationHeaders.HEADER_LAST] `should be equal to` "true"
+            response.headers[PaginationHeaders.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=1&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_FIRST] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_PREV] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_NEXT] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=1&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_LAST] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=1&${PaginationHeaders.PAGE_SIZE}=3"
         }
 
         // Get not existing page
-        with(handleRequest(HttpMethod.Get, "/cars?${PaginationHeader.PAGE_NUMBER}=2&${PaginationHeader.PAGE_SIZE}=3")) {
+        with(handleRequest(HttpMethod.Get, "/cars?${PaginationHeaders.PAGE_NUMBER}=2&${PaginationHeaders.PAGE_SIZE}=3")) {
             response.status() `should be equal to` HttpStatusCode.OK
             val cars: List<Car> = JsonSettings.mapper.readValue(response.content!!)
             cars.size `should be equal to` 0
 
             // Verify pagination headers
-            response.headers[PaginationHeader.HEADER_FIRST] `should be equal to` "false"
-            response.headers[PaginationHeader.HEADER_LAST] `should be equal to` "false"
-            response.headers[PaginationHeader.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=2&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_FIRST] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_PREV] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=1&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_NEXT] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=1&${PaginationHeader.PAGE_SIZE}=3"
-            response.headers[PaginationHeader.HEADER_LINKS_LAST] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=1&${PaginationHeader.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_FIRST] `should be equal to` "false"
+            response.headers[PaginationHeaders.HEADER_LAST] `should be equal to` "false"
+            response.headers[PaginationHeaders.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=2&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_FIRST] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_PREV] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=1&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_NEXT] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=1&${PaginationHeaders.PAGE_SIZE}=3"
+            response.headers[PaginationHeaders.HEADER_LINKS_LAST] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=1&${PaginationHeaders.PAGE_SIZE}=3"
         }
 
         // Get ascending order
         with(
             handleRequest(
                 HttpMethod.Get,
-                "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_SORT}[id]=asc"
+                "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_SORT}[id]=asc"
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
@@ -184,14 +184,14 @@ class TestRoutes : KoinTest {
             cars `should be equal to` savedCars.sortedBy { it.id }
 
             // Verify pagination headers
-            response.headers[PaginationHeader.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_SORT}[id]=asc"
+            response.headers[PaginationHeaders.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_SORT}[id]=asc"
         }
 
         // Get descending order
         with(
             handleRequest(
                 HttpMethod.Get,
-                "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_SORT}[id]=desc"
+                "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_SORT}[id]=desc"
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
@@ -199,14 +199,14 @@ class TestRoutes : KoinTest {
             cars `should be equal to` savedCars.sortedByDescending { it.id }
 
             // Verify pagination headers
-            response.headers[PaginationHeader.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_SORT}[id]=desc"
+            response.headers[PaginationHeaders.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_SORT}[id]=desc"
         }
 
         // Get multiple sorts
         with(
             handleRequest(
                 HttpMethod.Get,
-                "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_SORT}[brand]=asc&${PaginationHeader.PAGE_SORT}[model]=desc"
+                "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_SORT}[brand]=asc&${PaginationHeaders.PAGE_SORT}[model]=desc"
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
@@ -214,14 +214,14 @@ class TestRoutes : KoinTest {
             cars `should be equal to` savedCars.sortedWith(compareBy<Car> { it.brand }.thenByDescending { it.model })
 
             // Verify pagination headers
-            response.headers[PaginationHeader.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_SORT}[brand]=asc&${PaginationHeader.PAGE_SORT}[model]=desc"
+            response.headers[PaginationHeaders.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_SORT}[brand]=asc&${PaginationHeaders.PAGE_SORT}[model]=desc"
         }
 
         // Get multiple filters
         with(
             handleRequest(
                 HttpMethod.Get,
-                "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_FILTER}[brand]=brand10&${PaginationHeader.PAGE_FILTER}[model]=model91"
+                "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_FILTER}[brand]=brand10&${PaginationHeaders.PAGE_FILTER}[model]=model91"
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
@@ -229,14 +229,14 @@ class TestRoutes : KoinTest {
             cars `should be equal to` savedCars.filter { it.brand == "brand10" && it.model == "model91" }
 
             // Verify pagination headers
-            response.headers[PaginationHeader.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_FILTER}[brand]=brand10&${PaginationHeader.PAGE_FILTER}[model]=model91"
+            response.headers[PaginationHeaders.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_FILTER}[brand]=brand10&${PaginationHeaders.PAGE_FILTER}[model]=model91"
         }
 
         // No results found based on filters
         with(
             handleRequest(
                 HttpMethod.Get,
-                "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_FILTER}[brand]=brand000"
+                "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_FILTER}[brand]=brand000"
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
@@ -248,7 +248,7 @@ class TestRoutes : KoinTest {
         with(
             handleRequest(
                 HttpMethod.Get,
-                "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_FILTER}[id]=1,2"
+                "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_FILTER}[id]=1,2"
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
@@ -256,7 +256,7 @@ class TestRoutes : KoinTest {
             cars `should be equal to` savedCars.filter { it.id == 1L || it.id == 2L }
 
             // Verify pagination headers
-            response.headers[PaginationHeader.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeader.PAGE_NUMBER}=0&${PaginationHeader.PAGE_SIZE}=10&${PaginationHeader.PAGE_FILTER}[id]=1,2"
+            response.headers[PaginationHeaders.HEADER_LINKS_SELF] `should be equal to` "/cars?${PaginationHeaders.PAGE_NUMBER}=0&${PaginationHeaders.PAGE_SIZE}=10&${PaginationHeaders.PAGE_FILTER}[id]=1,2"
         }
     }
 
