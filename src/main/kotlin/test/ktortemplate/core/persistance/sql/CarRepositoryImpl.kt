@@ -11,8 +11,8 @@ import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.model.PageRequest
 import test.ktortemplate.core.persistance.CarRepository
-import test.ktortemplate.core.utils.ExposedQueryUtils.createFromFilters
-import test.ktortemplate.core.utils.ExposedQueryUtils.createSorts
+import test.ktortemplate.core.utils.createFromFilters
+import test.ktortemplate.core.utils.createSorts
 
 class CarRepositoryImpl : CarRepository, KoinComponent {
 
