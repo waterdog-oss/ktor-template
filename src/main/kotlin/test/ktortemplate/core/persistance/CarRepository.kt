@@ -7,7 +7,7 @@ import test.ktortemplate.core.model.PageRequest
 interface CarRepository {
     fun save(car: CarSaveCommand): Car
     fun getById(id: Long): Car?
-    fun count(pageRequest: PageRequest = PageRequest.default()): Int
+    fun count(pageRequest: PageRequest = PageRequest()): Int
     fun delete(id: Long)
-    fun list(pageRequest: PageRequest = PageRequest.default()): List<Car>
+    fun list(pageRequest: PageRequest = PageRequest()): List<Car>
 }

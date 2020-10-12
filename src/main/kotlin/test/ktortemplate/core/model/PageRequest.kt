@@ -19,20 +19,11 @@ data class FilterField(
 )
 
 data class PageRequest(
-    val page: Int,
-    val size: Int,
-    val sort: List<SortField>,
-    val filter: List<FilterField>
+    val page: Int = 0,
+    val size: Int = 10,
+    val sort: List<SortField> = listOf(),
+    val filter: List<FilterField> = listOf()
 ) {
     val limit: Int = size // alias for size
     val offset: Int = page * size
-
-    companion object {
-        fun default() = PageRequest(
-            page = 0,
-            size = 10,
-            sort = listOf(),
-            filter = listOf()
-        )
-    }
 }
