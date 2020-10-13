@@ -5,7 +5,10 @@ import io.ktor.features.StatusPages.*
 import io.ktor.http.*
 import io.ktor.response.*
 
-data class ErrorData (
+/**
+ * Intended to be the result of an erroneous http call.
+ */
+private data class ErrorData (
     val httpStatusCode: Int,
     val messageCode: String? = null,
     val id: Any? = null,
