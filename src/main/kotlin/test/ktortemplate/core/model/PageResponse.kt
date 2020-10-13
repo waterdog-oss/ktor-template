@@ -48,35 +48,35 @@ data class PageResponse<T>(
                 links = PageResponseLink(
                     self = PaginationUtils.buildPaginationLink(
                         meta.page,
-                        pageRequest.size,
+                        meta.size,
                         pageRequest.sort,
                         pageRequest.filter,
                         path
                     ),
                     first = PaginationUtils.buildPaginationLink(
                         meta.firstPage,
-                        pageRequest.size,
+                        meta.size,
                         pageRequest.sort,
                         pageRequest.filter,
                         path
                     ),
                     prev = if (meta.previousPage != null) PaginationUtils.buildPaginationLink(
                         meta.previousPage,
-                        pageRequest.size,
+                        meta.size,
                         pageRequest.sort,
                         pageRequest.filter,
                         path
                     ) else null,
                     next = if (meta.nextPage != null) PaginationUtils.buildPaginationLink(
                         meta.nextPage,
-                        pageRequest.size,
+                        meta.size,
                         pageRequest.sort,
                         pageRequest.filter,
                         path
                     ) else null,
                     last = PaginationUtils.buildPaginationLink(
                         meta.lastPage,
-                        pageRequest.size,
+                        meta.size,
                         pageRequest.sort,
                         pageRequest.filter,
                         path
