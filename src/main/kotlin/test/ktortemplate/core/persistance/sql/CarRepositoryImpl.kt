@@ -34,13 +34,13 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
                 it[model] = car.model
             } get CarMappingsTable.id
 
-            Car(newCarId, car.brand, car.model)
+            Car(newCarId.value, car.brand, car.model)
         }
     }
 
     override fun count(): Int {
         return dbc.query {
-            CarMappingsTable.selectAll().count()
+            CarMappingsTable.selectAll().count().toInt()
         }
     }
 
@@ -58,7 +58,7 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
 
     private fun resultToModel(rstRow: ResultRow): Car {
         return Car(
-            rstRow[CarMappingsTable.id],
+            rstRow[CarMappingsTable.id].value,
             rstRow[CarMappingsTable.brand],
             rstRow[CarMappingsTable.model]
         )
