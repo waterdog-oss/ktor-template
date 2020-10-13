@@ -1,96 +1,28 @@
 package test.ktortemplate.core
 
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.features.CallLogging
-import io.ktor.features.Compression
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.deflate
-import io.ktor.features.gzip
-import io.ktor.features.identity
-import io.ktor.http.ContentType
-import io.ktor.jackson.JacksonConverter
-import io.ktor.routing.Routing
+import io.ktor.config.ApplicationConfig
+import io.ktor.config.MapApplicationConfig
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.withTestApplication
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.koin.dsl.module
-import test.ktortemplate.conf.database.DatabaseConnection
-import test.ktortemplate.core.httphandler.defaultRoutes
-import test.ktortemplate.core.persistance.CarRepository
-import test.ktortemplate.core.persistance.PartRepository
-import test.ktortemplate.core.persistance.sql.CarMappingsTable
-import test.ktortemplate.core.persistance.sql.CarRepositoryImpl
-import test.ktortemplate.core.persistance.sql.PartMappingsTable
-import test.ktortemplate.core.persistance.sql.PartRepositoryImpl
-import test.ktortemplate.core.service.CarService
-import test.ktortemplate.core.service.CarServiceImpl
-import test.ktortemplate.core.utils.JsonSettings
-import javax.sql.DataSource
+import io.ktor.util.KtorExperimentalAPI
+import test.ktortemplate.containers.PgSQLContainerFactory
+import test.ktortemplate.module
 
-private fun bootstrapDatabase(dbc: DatabaseConnection) {
-    dbc.query {
-        SchemaUtils.create(CarMappingsTable)
-        SchemaUtils.create(PartMappingsTable)
-    }
-}
+@KtorExperimentalAPI
+val testDatabaseConfigs: ApplicationConfig = MapApplicationConfig(
+    Pair("datasource.driver", PgSQLContainerFactory.instance.driverClassName),
+    Pair("datasource.jdbcUrl", PgSQLContainerFactory.instance.jdbcUrl),
+    Pair("datasource.username", PgSQLContainerFactory.instance.username),
+    Pair("datasource.password", PgSQLContainerFactory.instance.password),
+    Pair("datasource.pool.defaultIsolation", "TRANSACTION_REPEATABLE_READ"),
+    Pair("datasource.pool.maxPoolSize", "5")
+)
 
-fun initServicesAndRepos() = module {
-    single<CarRepository> { CarRepositoryImpl() }
-    single<PartRepository> { PartRepositoryImpl() }
-    single<CarService> { CarServiceImpl() }
-}
-
-fun initDbCore() = module {
-    val dataSource: DataSource = HikariDataSource(
-        HikariConfig().apply {
-            driverClassName = "org.h2.Driver"
-            jdbcUrl = "jdbc:h2:mem:test"
-            maximumPoolSize = 5
-            isAutoCommit = true
-            transactionIsolation = "TRANSACTION_REPEATABLE_READ"
-            leakDetectionThreshold = 10000
-            poolName = "sat"
-            validate()
-        }
-    )
-
-    val dbc = DatabaseConnection(dataSource)
-    bootstrapDatabase(dbc)
-    single { dbc }
-}
-
-fun Application.testModule() {
-
-    install(DefaultHeaders)
-    install(Compression) {
-        gzip {
-            priority = 100.0
-        }
-        identity {
-            priority = 10.0
-        }
-        deflate {
-            priority = 1.0
-        }
-    }
-
-    install(CallLogging)
-    install(ContentNegotiation) {
-        register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
-    }
-    install(Routing) {
-        defaultRoutes()
-    }
-}
-
+@KtorExperimentalAPI
 fun <R> testApp(test: TestApplicationEngine.() -> R): R {
     return withTestApplication(
         {
-            testModule()
+            module(testDatabaseConfigs)
         },
         test
     )

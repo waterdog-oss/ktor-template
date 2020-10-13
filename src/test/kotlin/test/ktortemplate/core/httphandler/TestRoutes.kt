@@ -4,18 +4,16 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
+import io.ktor.util.KtorExperimentalAPI
 import org.amshove.kluent.`should be equal to`
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import test.ktortemplate.core.initDbCore
-import test.ktortemplate.core.initServicesAndRepos
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
@@ -23,18 +21,16 @@ import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.JsonSettings
 import java.util.UUID
 
+@KtorExperimentalAPI
+@Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestRoutes : KoinTest {
 
     private val carRepository: CarRepository by inject()
 
-    @BeforeAll
-    fun setup() {
-        val appModules = listOf(
-            initDbCore(),
-            initServicesAndRepos()
-        )
-        startKoin { modules(appModules) }
+    companion object {
+        @Container
+        private val dbContainer = PgSQLContainerFactory.instance
     }
 
     @AfterEach
@@ -44,11 +40,6 @@ class TestRoutes : KoinTest {
             carRepository.delete(it.id)
         }
         carRepository.count() `should be equal to` 0
-    }
-
-    @AfterAll
-    fun close() {
-        stopKoin()
     }
 
     @Test
