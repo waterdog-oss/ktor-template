@@ -122,7 +122,7 @@ class TestRoutes : KoinTest {
             res.data.size `should be equal to` 3
             res.data `should be equal to` savedCars.subList(0, 3)
 
-            // Verify pagination headers
+            // Verify pagination info
             res.meta.page `should be equal to` 0
             res.meta.size `should be equal to` 3
             res.meta.totalElements `should be equal to` savedCars.size
@@ -143,7 +143,7 @@ class TestRoutes : KoinTest {
             res.data.size `should be equal to` 2
             res.data `should be equal to` savedCars.subList(3, 5)
 
-            // Verify pagination headers
+            // Verify pagination info
             res.meta.page `should be equal to` 1
             res.meta.size `should be equal to` 3
             res.meta.totalElements `should be equal to` savedCars.size
@@ -163,7 +163,7 @@ class TestRoutes : KoinTest {
             val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
             res.data.size `should be equal to` 0
 
-            // Verify pagination headers
+            // Verify pagination info
             res.meta.first `should be equal to` false
             res.meta.last `should be equal to` false
             res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5"
@@ -184,7 +184,7 @@ class TestRoutes : KoinTest {
             val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
             res.data `should be equal to` savedCars.sortedBy { it.id }
 
-            // Verify pagination headers
+            // Verify pagination info
             res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=asc"
         }
 
@@ -199,7 +199,7 @@ class TestRoutes : KoinTest {
             val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
             res.data `should be equal to` savedCars.sortedByDescending { it.id }
 
-            // Verify pagination headers
+            // Verify pagination info
             res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=desc"
         }
 
@@ -214,7 +214,7 @@ class TestRoutes : KoinTest {
             val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
             res.data `should be equal to` savedCars.sortedWith(compareBy<Car> { it.brand }.thenByDescending { it.model })
 
-            // Verify pagination headers
+            // Verify pagination info
             res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[brand]=asc&${PaginationUtils.PAGE_SORT}[model]=desc"
         }
 
@@ -229,7 +229,7 @@ class TestRoutes : KoinTest {
             val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
             res.data `should be equal to` savedCars.filter { it.brand == "brand10" && it.model == "model91" }
 
-            // Verify pagination headers
+            // Verify pagination info
             res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=brand10&${PaginationUtils.PAGE_FILTER}[model]=model91"
         }
 
@@ -256,7 +256,7 @@ class TestRoutes : KoinTest {
             val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
             res.data `should be equal to` savedCars.filter { it.id == 1L || it.id == 2L }
 
-            // Verify pagination headers
+            // Verify pagination info
             res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[id]=1,2"
         }
     }
