@@ -1,10 +1,6 @@
-package test.ktortemplate.core.utils
+package test.ktortemplate.core.utils.pagination
 
 import io.ktor.application.ApplicationCall
-import test.ktortemplate.core.model.FilterField
-import test.ktortemplate.core.model.PageRequest
-import test.ktortemplate.core.model.SortField
-import test.ktortemplate.core.model.SortFieldOrder
 
 object PaginationUtils {
     const val PAGE_NUMBER = "page[number]"

@@ -10,9 +10,9 @@ import io.ktor.routing.get
 import io.ktor.routing.post
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import test.ktortemplate.core.model.PageResponse
 import test.ktortemplate.core.service.CarService
-import test.ktortemplate.core.utils.parsePageRequest
+import test.ktortemplate.core.utils.pagination.PageResponse
+import test.ktortemplate.core.utils.pagination.parsePageRequest
 
 internal class DefaultRoutesInjector : KoinComponent {
     val carService: CarService by inject()

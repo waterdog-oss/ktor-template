@@ -1,7 +1,6 @@
-package test.ktortemplate.core.model
+package test.ktortemplate.core.utils.pagination
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import test.ktortemplate.core.utils.PaginationUtils
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class PageResponseMeta(

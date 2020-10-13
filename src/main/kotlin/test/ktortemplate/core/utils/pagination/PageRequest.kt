@@ -1,4 +1,4 @@
-package test.ktortemplate.core.model
+package test.ktortemplate.core.utils.pagination
 
 enum class SortFieldOrder {
     asc,

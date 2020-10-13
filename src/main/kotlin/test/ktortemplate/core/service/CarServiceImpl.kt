@@ -4,8 +4,8 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
-import test.ktortemplate.core.model.PageRequest
 import test.ktortemplate.core.persistance.CarRepository
+import test.ktortemplate.core.utils.pagination.PageRequest
 
 class CarServiceImpl : KoinComponent, CarService {
 

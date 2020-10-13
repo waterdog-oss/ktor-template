@@ -22,12 +22,12 @@ import test.ktortemplate.core.initDbCore
 import test.ktortemplate.core.initServicesAndRepos
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
-import test.ktortemplate.core.model.PageRequest
-import test.ktortemplate.core.model.PageResponse
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.JsonSettings
-import test.ktortemplate.core.utils.PaginationUtils
+import test.ktortemplate.core.utils.pagination.PageRequest
+import test.ktortemplate.core.utils.pagination.PageResponse
+import test.ktortemplate.core.utils.pagination.PaginationUtils
 import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

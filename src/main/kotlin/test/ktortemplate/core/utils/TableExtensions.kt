@@ -16,9 +16,9 @@ import org.jetbrains.exposed.sql.compoundAnd
 import org.jetbrains.exposed.sql.compoundOr
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import test.ktortemplate.core.model.FilterField
-import test.ktortemplate.core.model.SortField
-import test.ktortemplate.core.model.SortFieldOrder
+import test.ktortemplate.core.utils.pagination.FilterField
+import test.ktortemplate.core.utils.pagination.SortField
+import test.ktortemplate.core.utils.pagination.SortFieldOrder
 
 /**
  * Creates exposed query from list of FilterField

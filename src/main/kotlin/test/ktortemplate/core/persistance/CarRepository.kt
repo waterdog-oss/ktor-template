@@ -2,7 +2,7 @@ package test.ktortemplate.core.persistance
 
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
-import test.ktortemplate.core.model.PageRequest
+import test.ktortemplate.core.utils.pagination.PageRequest
 
 interface CarRepository {
     fun save(car: CarSaveCommand): Car
