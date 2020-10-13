@@ -21,7 +21,6 @@ import test.ktortemplate.conf.DevEnvironmentConfigurator
 import test.ktortemplate.conf.ProdEnvironmentConfigurator
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
-import test.ktortemplate.core.utils.PaginationHeaders
 
 @KtorExperimentalAPI
 fun Application.module() {
@@ -58,7 +57,6 @@ fun Application.module() {
         method(HttpMethod.Post)
         method(HttpMethod.Put)
         method(HttpMethod.Delete)
-        PaginationHeaders.corsExposedHeaders.forEach { exposeHeader(it) }
         anyHost()
     }
 
