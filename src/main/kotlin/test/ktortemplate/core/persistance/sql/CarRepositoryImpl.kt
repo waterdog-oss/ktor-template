@@ -10,9 +10,9 @@ import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
+import test.ktortemplate.core.utils.pagination.PageRequest
 import test.ktortemplate.core.utils.pagination.createFromFilters
 import test.ktortemplate.core.utils.pagination.createSorts
-import test.ktortemplate.core.utils.pagination.PageRequest
 
 class CarRepositoryImpl : CarRepository, KoinComponent {
 
