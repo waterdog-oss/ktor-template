@@ -14,15 +14,15 @@ class PageResponseDeserializer<T>(private val clazz: Class<T>) : JsonDeserialize
     @Throws(JsonParseException::class)
 
     override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext): PageResponse<T> {
-        val metaObject = json.asJsonObject.getAsJsonObject("meta")
-        val meta = JsonSettings.mapper.fromJson(metaObject, PageResponseMeta::class.java)
+        val meta = json.asJsonObject.getAsJsonObject("meta").let {
+            JsonSettings.mapper.fromJson(it, PageResponseMeta::class.java)
+        }
+        val links = json.asJsonObject.getAsJsonObject("links").let {
+            JsonSettings.mapper.fromJson(it, PageResponseLink::class.java)
+        }
 
-        val linksObject = json.asJsonObject.getAsJsonObject("links")
-        val links = JsonSettings.mapper.fromJson(linksObject, PageResponseLink::class.java)
-
-        val data = json.asJsonObject.getAsJsonArray("data")
         val list: MutableList<T> = ArrayList()
-        data.forEach {
+        json.asJsonObject.getAsJsonArray("data").forEach {
             list.add(context.deserialize(it, clazz))
         }
 
