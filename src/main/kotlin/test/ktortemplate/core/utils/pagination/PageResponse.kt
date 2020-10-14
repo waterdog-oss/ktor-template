@@ -1,8 +1,5 @@
 package test.ktortemplate.core.utils.pagination
 
-import com.fasterxml.jackson.annotation.JsonInclude
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class PageResponseMeta(
     val page: Int,
     val size: Int,
@@ -17,7 +14,6 @@ data class PageResponseMeta(
     val nextPage: Int? = if ((page + 1) in firstPage..lastPage) page + 1 else null
 }
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class PageResponseLink(
     val self: String,
     val first: String,

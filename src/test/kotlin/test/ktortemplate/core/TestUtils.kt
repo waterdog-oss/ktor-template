@@ -12,7 +12,7 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.deflate
 import io.ktor.features.gzip
 import io.ktor.features.identity
-import io.ktor.gson.*
+import io.ktor.gson.GsonConverter
 import io.ktor.http.ContentType
 import io.ktor.routing.Routing
 import io.ktor.server.testing.TestApplicationEngine
@@ -26,7 +26,7 @@ import test.ktortemplate.core.persistance.sql.CarMappingsTable
 import test.ktortemplate.core.persistance.sql.CarRepositoryImpl
 import test.ktortemplate.core.service.CarService
 import test.ktortemplate.core.service.CarServiceImpl
-import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.json.JsonSettings
 import javax.sql.DataSource
 
 private fun bootstrapDatabase(dbc: DatabaseConnection) {
