@@ -4,13 +4,15 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
+import test.ktortemplate.core.utils.pagination.PageRequest
+import test.ktortemplate.core.utils.pagination.createFromFilters
+import test.ktortemplate.core.utils.pagination.createSorts
 
 class CarRepositoryImpl : CarRepository, KoinComponent {
 
@@ -38,9 +40,9 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
         }
     }
 
-    override fun count(): Int {
+    override fun count(pageRequest: PageRequest): Int {
         return dbc.query {
-            CarMappingsTable.selectAll().count()
+            CarMappingsTable.createFromFilters(pageRequest.filter).count()
         }
     }
 
@@ -50,9 +52,13 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
         }
     }
 
-    override fun list(): List<Car> {
+    override fun list(pageRequest: PageRequest): List<Car> {
         return dbc.query {
-            CarMappingsTable.selectAll().map { resultToModel(it) }
+            CarMappingsTable
+                .createFromFilters(pageRequest.filter)
+                .limit(pageRequest.limit, pageRequest.offset)
+                .orderBy(*CarMappingsTable.createSorts(pageRequest.sort).toTypedArray())
+                .map { resultToModel(it) }
         }
     }
 
