@@ -1,5 +1,6 @@
 package test.ktortemplate.core
 
+import com.google.gson.Gson
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
@@ -11,14 +12,13 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.deflate
 import io.ktor.features.gzip
 import io.ktor.features.identity
+import io.ktor.gson.*
 import io.ktor.http.ContentType
-import io.ktor.jackson.JacksonConverter
 import io.ktor.routing.Routing
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.withTestApplication
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.koin.dsl.module
-import org.koin.ktor.ext.Koin
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.persistance.CarRepository
@@ -74,7 +74,7 @@ fun Application.testModule() {
 
     install(CallLogging)
     install(ContentNegotiation) {
-        register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
+        register(ContentType.Application.Json, GsonConverter(JsonSettings.mapper))
     }
     install(Routing) {
         defaultRoutes()
@@ -86,3 +86,5 @@ fun <R> testApp(test: TestApplicationEngine.() -> R): R {
         testModule()
     }, test)
 }
+
+inline fun <reified T> Gson.fromJson(value: String?) = this.fromJson(value, T::class.java)

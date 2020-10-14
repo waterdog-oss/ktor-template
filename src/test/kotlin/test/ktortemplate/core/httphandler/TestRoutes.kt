@@ -1,9 +1,9 @@
 package test.ktortemplate.core.httphandler
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
+import java.util.UUID
 import org.amshove.kluent.`should equal`
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -12,8 +12,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.test.inject
 import org.koin.test.KoinTest
+import org.koin.test.inject
+import test.ktortemplate.core.fromJson
 import test.ktortemplate.core.initDbCore
 import test.ktortemplate.core.initServicesAndRepos
 import test.ktortemplate.core.model.Car
@@ -21,7 +22,6 @@ import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.JsonSettings
-import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestRoutes : KoinTest {
@@ -34,7 +34,7 @@ class TestRoutes : KoinTest {
             initDbCore(),
             initServicesAndRepos()
         )
-        startKoin { modules(appModules)  }
+        startKoin { modules(appModules) }
     }
 
     @AfterEach
@@ -64,7 +64,8 @@ class TestRoutes : KoinTest {
 
         with(handleRequest(HttpMethod.Get, "/car/${newCar.id}")) {
             response.status() `should equal` HttpStatusCode.OK
-            val car: Car = JsonSettings.mapper.readValue(response.content!!)
+            val car: Car = JsonSettings.mapper.fromJson(response.content)
+
             car.id `should equal` newCar.id
             car.brand `should equal` newCar.brand
             car.model `should equal` newCar.model
