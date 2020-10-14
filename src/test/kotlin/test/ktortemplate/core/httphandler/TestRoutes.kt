@@ -17,7 +17,6 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import test.ktortemplate.core.fromJson
 import test.ktortemplate.core.initDbCore
 import test.ktortemplate.core.initServicesAndRepos
 import test.ktortemplate.core.model.Car
@@ -26,6 +25,7 @@ import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.json.JsonSettings
 import test.ktortemplate.core.utils.json.JsonSettings.PageResponseCarType
+import test.ktortemplate.core.utils.json.fromJson
 import test.ktortemplate.core.utils.pagination.PageRequest
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.PaginationUtils

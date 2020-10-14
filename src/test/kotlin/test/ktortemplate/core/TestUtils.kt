@@ -1,6 +1,5 @@
 package test.ktortemplate.core
 
-import com.google.gson.Gson
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
@@ -91,5 +90,3 @@ fun <R> testApp(test: TestApplicationEngine.() -> R): R {
         test
     )
 }
-
-inline fun <reified T> Gson.fromJson(value: String?) = this.fromJson(value, T::class.java)

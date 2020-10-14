@@ -16,8 +16,8 @@ object JsonSettings {
         setPrettyPrinting()
         registerTypeAdapter(PageResponseCarType, PageResponseDeserializer(Car::class.java))
     }.create()!!
-
-    // Helper function that infers class type. Not necessary, but nice to have
-    // val car: Car = JsonSettings.mapper.fromJson(response.content)
-    inline fun <reified T> Gson.fromJson(value: String?) = this.fromJson(value, T::class.java)
 }
+
+// Helper function that infers class type. Not necessary, but nice to have
+// val car: Car = JsonSettings.mapper.fromJson(response.content)
+inline fun <reified T> Gson.fromJson(value: String?) = this.fromJson(value, T::class.java)
