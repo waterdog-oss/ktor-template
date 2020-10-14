@@ -1,8 +1,8 @@
 package test.ktortemplate.conf.database
 
-import javax.sql.DataSource
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
+import javax.sql.DataSource
 
 class DatabaseConnection(private val dataSource: DataSource) {
     private val database: Database by lazy {

@@ -29,7 +29,7 @@ import test.ktortemplate.core.service.CarServiceImpl
 import test.ktortemplate.core.utils.JsonSettings
 import javax.sql.DataSource
 
-private fun bootstrapDatabase (dbc: DatabaseConnection) {
+private fun bootstrapDatabase(dbc: DatabaseConnection) {
     dbc.query {
         SchemaUtils.create(CarMappingsTable)
     }
@@ -41,16 +41,18 @@ fun initServicesAndRepos() = module {
 }
 
 fun initDbCore() = module {
-    val dataSource: DataSource = HikariDataSource(HikariConfig().apply {
-        driverClassName = "org.h2.Driver"
-        jdbcUrl = "jdbc:h2:mem:test"
-        maximumPoolSize = 5
-        isAutoCommit = true
-        transactionIsolation = "TRANSACTION_REPEATABLE_READ"
-        leakDetectionThreshold = 10000
-        poolName = "sat"
-        validate()
-    })
+    val dataSource: DataSource = HikariDataSource(
+        HikariConfig().apply {
+            driverClassName = "org.h2.Driver"
+            jdbcUrl = "jdbc:h2:mem:test"
+            maximumPoolSize = 5
+            isAutoCommit = true
+            transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+            leakDetectionThreshold = 10000
+            poolName = "sat"
+            validate()
+        }
+    )
 
     val dbc = DatabaseConnection(dataSource)
     bootstrapDatabase(dbc)
@@ -82,9 +84,12 @@ fun Application.testModule() {
 }
 
 fun <R> testApp(test: TestApplicationEngine.() -> R): R {
-    return withTestApplication({
-        testModule()
-    }, test)
+    return withTestApplication(
+        {
+            testModule()
+        },
+        test
+    )
 }
 
 inline fun <reified T> Gson.fromJson(value: String?) = this.fromJson(value, T::class.java)

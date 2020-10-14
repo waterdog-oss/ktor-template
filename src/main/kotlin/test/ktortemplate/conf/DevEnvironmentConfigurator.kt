@@ -3,7 +3,6 @@ package test.ktortemplate.conf
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.ApplicationEnvironment
-import javax.sql.DataSource
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -13,6 +12,7 @@ import test.ktortemplate.core.persistance.sql.CarMappingsTable
 import test.ktortemplate.core.persistance.sql.CarRepositoryImpl
 import test.ktortemplate.core.service.CarService
 import test.ktortemplate.core.service.CarServiceImpl
+import javax.sql.DataSource
 
 class DevEnvironmentConfigurator(private val environment: ApplicationEnvironment) :
     EnvironmentConfigurator {
@@ -32,18 +32,20 @@ class DevEnvironmentConfigurator(private val environment: ApplicationEnvironment
     }
 
     private fun initDbCore() = module {
-        val dataSource: DataSource = HikariDataSource(HikariConfig().apply {
-            driverClassName = environment.config.property("dev.datasource.driver").getString()
-            jdbcUrl = environment.config.property("dev.datasource.jdbcUrl").getString()
-            username = "user"
-            password = "test"
-            maximumPoolSize = 5
-            isAutoCommit = true
-            transactionIsolation = "TRANSACTION_REPEATABLE_READ"
-            leakDetectionThreshold = 10000
-            poolName = "ktortemplatepool"
-            validate()
-        })
+        val dataSource: DataSource = HikariDataSource(
+            HikariConfig().apply {
+                driverClassName = environment.config.property("dev.datasource.driver").getString()
+                jdbcUrl = environment.config.property("dev.datasource.jdbcUrl").getString()
+                username = "user"
+                password = "test"
+                maximumPoolSize = 5
+                isAutoCommit = true
+                transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+                leakDetectionThreshold = 10000
+                poolName = "ktortemplatepool"
+                validate()
+            }
+        )
 
         val databaseConnection = DatabaseConnection(dataSource)
         single { databaseConnection }
