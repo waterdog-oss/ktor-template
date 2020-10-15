@@ -27,19 +27,19 @@ fun Route.defaultRoutes() {
     /**
      * Routes registered here will be the default ones if no Accept header is passed.
      */
-    accept(contentType = ApiVersion.JSON.latest.contentType) {
+    accept(contentType = ApiVersion.JSON.Latest.contentType) {
         get("/resource") {
             call.respond("{ \"response\": \"v2\" }")
         }
     }
 
-    accept(contentType = ApiVersion.JSON.v1.contentType) {
+    accept(contentType = ApiVersion.JSON.V1.contentType) {
         get("/resource") {
             call.respond("{ \"response\": \"v1\" }")
         }
     }
 
-    accept(contentType = ApiVersion.XML.latest.contentType) {
+    accept(contentType = ApiVersion.XML.Latest.contentType) {
         get("/resource") {
             call.respond("<response>latest</response>")
         }

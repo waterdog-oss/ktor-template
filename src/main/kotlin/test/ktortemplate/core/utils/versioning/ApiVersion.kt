@@ -6,13 +6,13 @@ object ApiVersion {
     private const val prefix = "vnd.ktortemplate"
 
     enum class JSON(val contentType: ContentType) {
-        v1(ContentType("application", "$prefix.v1+json")),
-        v2(ContentType("application", "$prefix.v2+json")),
-        latest(v2.contentType)
+        V1(ContentType("application", "$prefix.v1+json")),
+        V2(ContentType("application", "$prefix.v2+json")),
+        Latest(V2.contentType)
     }
 
     enum class XML(val contentType: ContentType) {
-        v1(ContentType("application", "$prefix.v1+xml")),
-        latest(v1.contentType)
+        V1(ContentType("application", "$prefix.v1+xml")),
+        Latest(V1.contentType)
     }
 }
