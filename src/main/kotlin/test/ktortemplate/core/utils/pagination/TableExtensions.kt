@@ -3,6 +3,7 @@ package test.ktortemplate.core.utils.pagination
 import org.jetbrains.exposed.sql.AutoIncColumnType
 import org.jetbrains.exposed.sql.BooleanColumnType
 import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.EntityIDColumnType
 import org.jetbrains.exposed.sql.Expression
 import org.jetbrains.exposed.sql.IntegerColumnType
 import org.jetbrains.exposed.sql.LongColumnType
@@ -33,7 +34,7 @@ fun Table.createFilters(filters: List<FilterField>): List<Op<Boolean>> {
     return filters.map { filterField ->
         val column = this.columns.single { it.name == filterField.field }
         when (column.columnType) {
-            is LongColumnType, is AutoIncColumnType -> {
+            is LongColumnType, is AutoIncColumnType, is EntityIDColumnType<*> -> {
                 column as Column<Long>
                 filterField.values.map { value -> Op.build { column.eq(value.toLong()) } }.compoundOr()
             }

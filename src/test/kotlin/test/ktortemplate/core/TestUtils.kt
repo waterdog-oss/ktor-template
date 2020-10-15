@@ -21,8 +21,11 @@ import org.koin.dsl.module
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.persistance.CarRepository
+import test.ktortemplate.core.persistance.PartRepository
 import test.ktortemplate.core.persistance.sql.CarMappingsTable
 import test.ktortemplate.core.persistance.sql.CarRepositoryImpl
+import test.ktortemplate.core.persistance.sql.PartMappingsTable
+import test.ktortemplate.core.persistance.sql.PartRepositoryImpl
 import test.ktortemplate.core.service.CarService
 import test.ktortemplate.core.service.CarServiceImpl
 import test.ktortemplate.core.utils.JsonSettings
@@ -31,11 +34,13 @@ import javax.sql.DataSource
 private fun bootstrapDatabase(dbc: DatabaseConnection) {
     dbc.query {
         SchemaUtils.create(CarMappingsTable)
+        SchemaUtils.create(PartMappingsTable)
     }
 }
 
 fun initServicesAndRepos() = module {
     single<CarRepository> { CarRepositoryImpl() }
+    single<PartRepository> { PartRepositoryImpl() }
     single<CarService> { CarServiceImpl() }
 }
 

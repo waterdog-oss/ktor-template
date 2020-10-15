@@ -36,13 +36,13 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
                 it[model] = car.model
             } get CarMappingsTable.id
 
-            Car(newCarId, car.brand, car.model)
+            Car(newCarId.value, car.brand, car.model)
         }
     }
 
     override fun count(pageRequest: PageRequest): Int {
         return dbc.query {
-            CarMappingsTable.createFromFilters(pageRequest.filter).count()
+            CarMappingsTable.createFromFilters(pageRequest.filter).count().toInt()
         }
     }
 
@@ -56,7 +56,7 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
         return dbc.query {
             CarMappingsTable
                 .createFromFilters(pageRequest.filter)
-                .limit(pageRequest.limit, pageRequest.offset)
+                .limit(pageRequest.limit, pageRequest.offset.toLong())
                 .orderBy(*CarMappingsTable.createSorts(pageRequest.sort).toTypedArray())
                 .map { resultToModel(it) }
         }
@@ -64,7 +64,7 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
 
     private fun resultToModel(rstRow: ResultRow): Car {
         return Car(
-            rstRow[CarMappingsTable.id],
+            rstRow[CarMappingsTable.id].value,
             rstRow[CarMappingsTable.brand],
             rstRow[CarMappingsTable.model]
         )
