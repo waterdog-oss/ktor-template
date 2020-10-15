@@ -50,7 +50,7 @@ fun Application.module() {
     }
     install(ContentNegotiation) {
         register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
-        ApiVersion.JSON.values().forEach { register(it.contentType, JacksonConverter(JsonSettings.mapper)) }
+        ApiVersion.Json.values().forEach { register(it.contentType, JacksonConverter(JsonSettings.mapper)) }
     }
 
     install(CORS) {
