@@ -6,6 +6,7 @@ import io.ktor.request.path
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import io.ktor.routing.accept
 import io.ktor.routing.get
 import io.ktor.routing.post
 import org.koin.core.KoinComponent
@@ -13,6 +14,7 @@ import org.koin.core.inject
 import test.ktortemplate.core.service.CarService
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.parsePageRequest
+import test.ktortemplate.core.utils.versioning.ApiVersion
 
 internal class DefaultRoutesInjector : KoinComponent {
     val carService: CarService by inject()
@@ -21,6 +23,27 @@ internal class DefaultRoutesInjector : KoinComponent {
 fun Route.defaultRoutes() {
     val injector = DefaultRoutesInjector()
     val carService = injector.carService
+
+    /**
+     * Routes registered here will be the default ones if no Accept header is passed.
+     */
+    accept(contentType = ApiVersion.JSON.latest.contentType) {
+        get("/resource") {
+            call.respond("{ \"response\": \"v2\" }")
+        }
+    }
+
+    accept(contentType = ApiVersion.JSON.v1.contentType) {
+        get("/resource") {
+            call.respond("{ \"response\": \"v1\" }")
+        }
+    }
+
+    accept(contentType = ApiVersion.XML.latest.contentType) {
+        get("/resource") {
+            call.respond("<response>latest</response>")
+        }
+    }
 
     get("/cars") {
         val pageRequest = call.parsePageRequest()
