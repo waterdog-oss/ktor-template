@@ -2,11 +2,12 @@ package test.ktortemplate.core.persistance
 
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
+import test.ktortemplate.core.utils.pagination.PageRequest
 
 interface CarRepository {
     fun save(car: CarSaveCommand): Car
     fun getById(id: Long): Car?
-    fun count(): Int
+    fun count(pageRequest: PageRequest = PageRequest()): Int
     fun delete(id: Long)
-    fun list(): List<Car>
+    fun list(pageRequest: PageRequest = PageRequest()): List<Car>
 }
