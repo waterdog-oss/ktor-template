@@ -10,6 +10,8 @@ import io.ktor.routing.get
 import io.ktor.routing.post
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import test.ktortemplate.core.model.Car
+import test.ktortemplate.core.model.Test
 import test.ktortemplate.core.service.CarService
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.parsePageRequest
@@ -21,6 +23,12 @@ internal class DefaultRoutesInjector : KoinComponent {
 fun Route.defaultRoutes() {
     val injector = DefaultRoutesInjector()
     val carService = injector.carService
+
+    get("/test") {
+        val car = Car(123, "asd", "asddd")
+        val test = Test(listOf(car), null)
+        call.respond(test)
+    }
 
     get("/cars") {
         val pageRequest = call.parsePageRequest()

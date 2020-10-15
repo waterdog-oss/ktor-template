@@ -1,5 +1,8 @@
 package test.ktortemplate.core.utils.pagination
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class PageResponseMeta(
     val page: Int,
     val size: Int,
@@ -14,6 +17,7 @@ data class PageResponseMeta(
     val nextPage: Int? = if ((page + 1) in firstPage..lastPage) page + 1 else null
 }
 
+@Serializable
 data class PageResponseLink(
     val self: String,
     val first: String,
@@ -25,6 +29,7 @@ data class PageResponseLink(
 /**
  * Envelope for data responses with pagination
  */
+@Serializable
 data class PageResponse<T>(
     val meta: PageResponseMeta,
     val data: List<T>,
