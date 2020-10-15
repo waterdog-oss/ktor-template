@@ -21,25 +21,24 @@ import test.ktortemplate.core.model.Part
 import test.ktortemplate.core.model.RegisterPartReplacementCommand
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.persistance.PartRepository
-import test.ktortemplate.core.testDatabaseConfigs
 
 @Testcontainers
 @KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestCarService : KoinTest {
 
+    companion object {
+        @Container
+        private val dbContainer = PgSQLContainerFactory.newInstance()
+    }
+
     private val carRepository: CarRepository by inject()
     private val partRepository: PartRepository by inject()
     private val carService: CarService by inject()
 
-    companion object {
-        @Container
-        private val dbContainer = PgSQLContainerFactory.instance
-    }
-
     @BeforeAll
     fun setup() {
-        val appModules = EnvironmentConfigurator(testDatabaseConfigs).getDependencyInjectionModules()
+        val appModules = EnvironmentConfigurator(dbContainer.configInfo()).getDependencyInjectionModules()
         startKoin { modules(appModules) }
     }
 

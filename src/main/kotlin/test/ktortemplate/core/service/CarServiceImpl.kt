@@ -9,12 +9,15 @@ import test.ktortemplate.core.model.Part
 import test.ktortemplate.core.model.RegisterPartReplacementCommand
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.persistance.PartRepository
+import test.ktortemplate.core.utils.pagination.PageRequest
 
 class CarServiceImpl : KoinComponent, CarService {
 
     private val carRepository: CarRepository by inject()
     private val partRepository: PartRepository by inject()
     private val dbc: DatabaseConnection by inject()
+
+    override fun count(pageRequest: PageRequest): Int = this.carRepository.count(pageRequest)
 
     override fun getCarById(carId: Long): Car? = this.carRepository.getById(carId)
 
@@ -32,4 +35,7 @@ class CarServiceImpl : KoinComponent, CarService {
             car
         }
     }
+
+    override fun list(pageRequest: PageRequest): List<Car> =
+        this.carRepository.list(pageRequest)
 }
