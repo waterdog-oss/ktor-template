@@ -9,7 +9,6 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
-import test.ktortemplate.core.model.validate
 import test.ktortemplate.core.service.CarService
 
 internal class DefaultRoutesInjector : KoinComponent {

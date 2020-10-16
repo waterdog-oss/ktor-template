@@ -55,7 +55,8 @@ dependencies {
     implementation "org.koin:koin-core-ext:${koin_version}"
     implementation "org.koin:koin-ktor:${koin_version}"
 
-    implementation "com.capraro:kalidation:1.5.0"
+    // validation
+    implementation "org.valiktor:valiktor-core:0.12.0"
 
     // Database stuff
     implementation "com.h2database:h2:1.4.197"
