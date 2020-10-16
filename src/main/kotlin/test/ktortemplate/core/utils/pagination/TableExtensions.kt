@@ -31,11 +31,11 @@ fun Table.fromFilters(filters: List<FilterField>): Query {
 
 /**
  * Creates list of database operations from a list of consumer filters.
- * Support to more types can be added as needed bellow.
+ * Using columnType.valueFromDB() to get the underlying column data type.
  */
 fun Table.createFilters(filters: List<FilterField>): List<Op<Boolean>> {
     return filters.map { filterField ->
-        val column = this.columns.single { it.name == filterField.field }
+        val column: Column<*> = this.columns.single { it.name == filterField.field }
         val valueFromDB = column.columnType.valueFromDB(filterField.values.first()).let {
             when (it) {
                 is EntityID<*> -> it.value
@@ -43,22 +43,22 @@ fun Table.createFilters(filters: List<FilterField>): List<Op<Boolean>> {
             }
         }
 
+        // Support to more types can be added as needed bellow
         when (valueFromDB) {
-            is Long -> {
-                filterField.values.map { value -> Op.build { column.asType<Long>().eq(value.toLong()) } }.compoundOr()
+            is Long -> column.asType<Long>().let {
+                filterField.values.map { value -> Op.build { it.eq(value.toLong()) } }.compoundOr()
             }
-            is Int -> {
-                filterField.values.map { value -> Op.build { column.asType<Int>().eq(value.toInt()) } }.compoundOr()
+            is Int -> column.asType<Int>().let {
+                filterField.values.map { value -> Op.build { it.eq(value.toInt()) } }.compoundOr()
             }
-            is String -> {
-                filterField.values.map { value -> Op.build { column.asType<String>().eq(value) } }.compoundOr()
+            is String -> column.asType<String>().let {
+                filterField.values.map { value -> Op.build { it.eq(value) } }.compoundOr()
             }
-            is Boolean -> {
-                Op.build { column.asType<Boolean>().eq(filterField.values.first().toBoolean()) }
+            is Boolean -> column.asType<Boolean>().let {
+                Op.build { it.eq(filterField.values.first().toBoolean()) }
             }
-            is UUID -> {
-                filterField.values.map { value -> Op.build { column.asType<UUID>().eq(UUID.fromString(value)) } }
-                    .compoundOr()
+            is UUID -> column.asType<UUID>().let {
+                filterField.values.map { value -> Op.build { it.eq(UUID.fromString(value)) } }.compoundOr()
             }
             else -> throw NotImplementedError("Column ${column.columnType} is not implemented")
         }
