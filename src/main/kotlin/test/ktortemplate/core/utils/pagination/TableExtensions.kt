@@ -1,54 +1,64 @@
 package test.ktortemplate.core.utils.pagination
 
-import org.jetbrains.exposed.sql.AutoIncColumnType
-import org.jetbrains.exposed.sql.BooleanColumnType
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.EntityIDColumnType
 import org.jetbrains.exposed.sql.Expression
-import org.jetbrains.exposed.sql.IntegerColumnType
-import org.jetbrains.exposed.sql.LongColumnType
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.TextColumnType
-import org.jetbrains.exposed.sql.VarCharColumnType
 import org.jetbrains.exposed.sql.compoundAnd
 import org.jetbrains.exposed.sql.compoundOr
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import java.util.UUID
 
 /**
- * Creates exposed query from list of FilterField
+ * Method that forces cast from Column<*> to Column<T>
  */
-fun Table.createFromFilters(filters: List<FilterField>): Query {
+fun <T> Column<*>.asType(): Column<T> {
+    @Suppress("UNCHECKED_CAST")
+    return this as Column<T>
+}
+
+/**
+ * Creates query from list of consumer filters.
+ */
+fun Table.fromFilters(filters: List<FilterField>): Query {
     val filtersOperations = this.createFilters(filters)
     return if (filtersOperations.isEmpty()) this.selectAll() else this.select { filtersOperations.compoundAnd() }
 }
 
 /**
- * Creates list of exposed operations from list of FilterField.
- * Add support to more fields when needed.
+ * Creates list of database operations from a list of consumer filters.
+ * Support to more types can be added as needed bellow.
  */
 fun Table.createFilters(filters: List<FilterField>): List<Op<Boolean>> {
     return filters.map { filterField ->
         val column = this.columns.single { it.name == filterField.field }
-        when (column.columnType) {
-            is LongColumnType, is AutoIncColumnType, is EntityIDColumnType<*> -> {
-                column as Column<Long>
-                filterField.values.map { value -> Op.build { column.eq(value.toLong()) } }.compoundOr()
+        val valueFromDB = column.columnType.valueFromDB(filterField.values.first()).let {
+            when (it) {
+                is EntityID<*> -> it.value
+                else -> it
             }
-            is IntegerColumnType -> {
-                column as Column<Int>
-                filterField.values.map { value -> Op.build { column.eq(value.toInt()) } }.compoundOr()
+        }
+
+        when (valueFromDB) {
+            is Long -> {
+                filterField.values.map { value -> Op.build { column.asType<Long>().eq(value.toLong()) } }.compoundOr()
             }
-            is VarCharColumnType, is TextColumnType -> {
-                column as Column<String>
-                filterField.values.map { value -> Op.build { column.eq(value) } }.compoundOr()
+            is Int -> {
+                filterField.values.map { value -> Op.build { column.asType<Int>().eq(value.toInt()) } }.compoundOr()
             }
-            is BooleanColumnType -> {
-                column as Column<Boolean>
-                Op.build { column.eq(filterField.values.first().toBoolean()) }
+            is String -> {
+                filterField.values.map { value -> Op.build { column.asType<String>().eq(value) } }.compoundOr()
+            }
+            is Boolean -> {
+                Op.build { column.asType<Boolean>().eq(filterField.values.first().toBoolean()) }
+            }
+            is UUID -> {
+                filterField.values.map { value -> Op.build { column.asType<UUID>().eq(UUID.fromString(value)) } }
+                    .compoundOr()
             }
             else -> throw NotImplementedError("Column ${column.columnType} is not implemented")
         }
@@ -56,7 +66,7 @@ fun Table.createFilters(filters: List<FilterField>): List<Op<Boolean>> {
 }
 
 /**
- * Creates list of exposed order expressions from list of SortField.
+ * Creates list of order expressions from list of consumer sorts.
  */
 fun Table.createSorts(sorts: List<SortField>): List<Pair<Expression<*>, SortOrder>> {
     return sorts.map { sortField ->
