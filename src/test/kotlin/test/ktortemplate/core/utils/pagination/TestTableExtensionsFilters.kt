@@ -2,6 +2,7 @@ package test.ktortemplate.core.utils.pagination
 
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.util.KtorExperimentalAPI
+import java.util.UUID
 import org.amshove.kluent.`should be equal to`
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
@@ -20,7 +21,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.testApp
-import java.util.UUID
 
 @KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -66,7 +66,7 @@ class TestTableExtensionsFilters : KoinTest {
         }
 
         @Test
-        fun `No results should be returned with no entry`() = testAppWithConfig {
+        fun `No results should be returned with no matched entry`() = testAppWithConfig {
             insertTestEntry()
             countColumnEntries(TestTable.id.name, "otherId") `should be equal to` 0
         }
@@ -81,7 +81,7 @@ class TestTableExtensionsFilters : KoinTest {
         }
 
         @Test
-        fun `No results should be returned with no entry`() = testAppWithConfig {
+        fun `No results should be returned with no matched entry`() = testAppWithConfig {
             insertTestEntry()
             countColumnEntries(TestTable.long.name, "2") `should be equal to` 0
         }
@@ -96,7 +96,7 @@ class TestTableExtensionsFilters : KoinTest {
         }
 
         @Test
-        fun `No results should be returned with no entry`() = testAppWithConfig {
+        fun `No results should be returned with no matched entry`() = testAppWithConfig {
             insertTestEntry()
             countColumnEntries(TestTable.int.name, "2") `should be equal to` 0
         }
@@ -111,7 +111,7 @@ class TestTableExtensionsFilters : KoinTest {
         }
 
         @Test
-        fun `No results should be returned with no entry`() = testAppWithConfig {
+        fun `No results should be returned with no matched entry`() = testAppWithConfig {
             insertTestEntry()
             countColumnEntries(TestTable.string.name, "otherString") `should be equal to` 0
         }
@@ -126,7 +126,7 @@ class TestTableExtensionsFilters : KoinTest {
         }
 
         @Test
-        fun `No results should be returned with no entry`() = testAppWithConfig {
+        fun `No results should be returned with no matched entry`() = testAppWithConfig {
             insertTestEntry()
             countColumnEntries(TestTable.boolean.name, false.toString()) `should be equal to` 0
         }
@@ -141,7 +141,7 @@ class TestTableExtensionsFilters : KoinTest {
         }
 
         @Test
-        fun `No results should be returned with no entry`() = testAppWithConfig {
+        fun `No results should be returned with no matched entry`() = testAppWithConfig {
             insertTestEntry()
             countColumnEntries(TestTable.uuid.name, UUID.randomUUID().toString()) `should be equal to` 0
         }
