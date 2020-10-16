@@ -61,12 +61,12 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterId {
         @Test
         fun `String primary key type should be supported`() = testAppWithConfig {
-            executeTestQuery(TestTable.id.name, testId) `should be equal to` 1
+            countColumnEntries(TestTable.id.name, testId) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
-            executeTestQuery(TestTable.id.name, "otherId") `should be equal to` 0
+            countColumnEntries(TestTable.id.name, "otherId") `should be equal to` 0
         }
     }
 
@@ -74,12 +74,12 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterLong {
         @Test
         fun `Long primary key type should be supported`() = testAppWithConfig {
-            executeTestQuery(TestTable.long.name, testLong.toString()) `should be equal to` 1
+            countColumnEntries(TestTable.long.name, testLong.toString()) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
-            executeTestQuery(TestTable.long.name, "2") `should be equal to` 0
+            countColumnEntries(TestTable.long.name, "2") `should be equal to` 0
         }
     }
 
@@ -87,12 +87,12 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterInt {
         @Test
         fun `Int type should be supported`() = testAppWithConfig {
-            executeTestQuery(TestTable.int.name, testInt.toString()) `should be equal to` 1
+            countColumnEntries(TestTable.int.name, testInt.toString()) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
-            executeTestQuery(TestTable.int.name, "2") `should be equal to` 0
+            countColumnEntries(TestTable.int.name, "2") `should be equal to` 0
         }
     }
 
@@ -100,12 +100,12 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterString {
         @Test
         fun `String type should be supported`() = testAppWithConfig {
-            executeTestQuery(TestTable.string.name, testString) `should be equal to` 1
+            countColumnEntries(TestTable.string.name, testString) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
-            executeTestQuery(TestTable.string.name, "otherString") `should be equal to` 0
+            countColumnEntries(TestTable.string.name, "otherString") `should be equal to` 0
         }
     }
 
@@ -113,12 +113,12 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterBoolean {
         @Test
         fun `Boolean type should be supported`() = testAppWithConfig {
-            executeTestQuery(TestTable.boolean.name, testBoolean.toString()) `should be equal to` 1
+            countColumnEntries(TestTable.boolean.name, testBoolean.toString()) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
-            executeTestQuery(TestTable.boolean.name, false.toString()) `should be equal to` 0
+            countColumnEntries(TestTable.boolean.name, false.toString()) `should be equal to` 0
         }
     }
 
@@ -126,19 +126,19 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterUUID {
         @Test
         fun `UUID type should be supported`() = testAppWithConfig {
-            executeTestQuery(TestTable.uuid.name, testUUID.toString()) `should be equal to` 1
+            countColumnEntries(TestTable.uuid.name, testUUID.toString()) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
-            executeTestQuery(TestTable.uuid.name, UUID.randomUUID().toString()) `should be equal to` 0
+            countColumnEntries(TestTable.uuid.name, UUID.randomUUID().toString()) `should be equal to` 0
         }
     }
 
     /**
      * Helpers
      */
-    private fun executeTestQuery(columnName: String, columnValue: String): Long {
+    private fun countColumnEntries(columnName: String, columnValue: String): Long {
         return dbc.query {
             // Create table and insert test entry
             SchemaUtils.create(TestTable)
