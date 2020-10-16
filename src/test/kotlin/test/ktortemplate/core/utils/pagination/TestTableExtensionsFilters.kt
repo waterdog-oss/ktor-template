@@ -75,7 +75,7 @@ class TestTableExtensionsFilters : KoinTest {
     @Nested
     inner class TestFilterLong {
         @Test
-        fun `Long primary key type should be supported`() = testAppWithConfig {
+        fun `Long type should be supported`() = testAppWithConfig {
             insertTestEntry()
             countColumnEntries(TestTable.long.name, testLong.toString()) `should be equal to` 1
         }
