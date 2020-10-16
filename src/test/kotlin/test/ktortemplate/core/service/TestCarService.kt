@@ -1,5 +1,6 @@
 package test.ktortemplate.core.service
 
+import io.ktor.util.KtorExperimentalAPI
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -11,16 +12,25 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import test.ktortemplate.core.initDbCore
-import test.ktortemplate.core.initServicesAndRepos
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import test.ktortemplate.conf.EnvironmentConfigurator
+import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.model.Part
 import test.ktortemplate.core.model.RegisterPartReplacementCommand
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.persistance.PartRepository
 
+@Testcontainers
+@KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestCarService : KoinTest {
+
+    companion object {
+        @Container
+        private val dbContainer = PgSQLContainerFactory.newInstance()
+    }
 
     private val carRepository: CarRepository by inject()
     private val partRepository: PartRepository by inject()
@@ -28,10 +38,7 @@ class TestCarService : KoinTest {
 
     @BeforeAll
     fun setup() {
-        val appModules = listOf(
-            initDbCore(),
-            initServicesAndRepos()
-        )
+        val appModules = EnvironmentConfigurator(dbContainer.configInfo()).getDependencyInjectionModules()
         startKoin { modules(appModules) }
     }
 
@@ -65,8 +72,8 @@ class TestCarService : KoinTest {
         val partReplacement = RegisterPartReplacementCommand(
             carId = car.id,
             parts = listOf(
-                Part(partNo = 1L, manufacturer = "Bosch", desc = "Spark plug"),
-                Part(partNo = 2L, manufacturer = "Wurth", desc = "Air conditioner filter"),
+                Part(partNo = 1L, manufacturer = "Bosch", description = "Spark plug"),
+                Part(partNo = 2L, manufacturer = "Wurth", description = "Air conditioner filter"),
             )
         )
 
@@ -87,9 +94,9 @@ class TestCarService : KoinTest {
         val partReplacement = RegisterPartReplacementCommand(
             carId = car.id,
             parts = listOf(
-                Part(partNo = 1L, manufacturer = "Bosch", desc = "Spark plug"),
-                Part(partNo = 2L, manufacturer = "Wurth", desc = "Air conditioner filter"),
-                Part(partNo = 1L, manufacturer = "Bosch", desc = "Spark plug") // note the duplicate part
+                Part(partNo = 1L, manufacturer = "Bosch", description = "Spark plug"),
+                Part(partNo = 2L, manufacturer = "Wurth", description = "Air conditioner filter"),
+                Part(partNo = 1L, manufacturer = "Bosch", description = "Spark plug") // note the duplicate part
             )
         )
 

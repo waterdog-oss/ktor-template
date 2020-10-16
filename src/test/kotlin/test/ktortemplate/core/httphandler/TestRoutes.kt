@@ -5,21 +5,20 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
+import io.ktor.util.KtorExperimentalAPI
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be greater than`
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import test.ktortemplate.core.initDbCore
-import test.ktortemplate.core.initServicesAndRepos
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
@@ -30,19 +29,17 @@ import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.PaginationUtils
 import java.util.UUID
 
+@KtorExperimentalAPI
+@Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestRoutes : KoinTest {
 
-    private val carRepository: CarRepository by inject()
-
-    @BeforeAll
-    fun setup() {
-        val appModules = listOf(
-            initDbCore(),
-            initServicesAndRepos()
-        )
-        startKoin { modules(appModules) }
+    companion object {
+        @Container
+        private val dbContainer = PgSQLContainerFactory.newInstance()
     }
+
+    private val carRepository: CarRepository by inject()
 
     @AfterEach
     fun cleanDatabase() {
@@ -53,20 +50,15 @@ class TestRoutes : KoinTest {
         carRepository.count() `should be equal to` 0
     }
 
-    @AfterAll
-    fun close() {
-        stopKoin()
-    }
-
     @Test
-    fun `Fetching a car that does not exists returns a 404 Not Found`() = testApp<Unit> {
+    fun `Fetching a car that does not exists returns a 404 Not Found`() = testAppWithConfig {
         with(handleRequest(HttpMethod.Get, "/cars/12345")) {
             response.status() `should be equal to` HttpStatusCode.NotFound
         }
     }
 
     @Test
-    fun `Fetching a car that exists returns correctly`() = testApp<Unit> {
+    fun `Fetching a car that exists returns correctly`() = testAppWithConfig {
         val newCar = insertCar()
 
         with(handleRequest(HttpMethod.Get, "/cars/${newCar.id}")) {
@@ -79,7 +71,7 @@ class TestRoutes : KoinTest {
     }
 
     @Test
-    fun `Creating a new car returns correctly`() = testApp<Unit> {
+    fun `Creating a new car returns correctly`() = testAppWithConfig {
         val cmd = CarSaveCommand("brand", "model")
 
         with(
@@ -98,7 +90,7 @@ class TestRoutes : KoinTest {
     }
 
     @Test
-    fun `Listing cars should returns a list of cars with correct pagination and sort`() = testApp<Unit> {
+    fun `Listing cars should returns a list of cars with correct pagination and sort`() = testAppWithConfig {
         val savedCars = listOf(
             insertCar(brand = "brand10", model = "model91"),
             insertCar(brand = "brand72", model = "model12"),
@@ -267,5 +259,9 @@ class TestRoutes : KoinTest {
     ): Car {
         val newCar = CarSaveCommand(brand, model)
         return this.carRepository.save(newCar)
+    }
+
+    private fun <R> testAppWithConfig(test: TestApplicationEngine.() -> R) {
+        testApp(dbContainer.configInfo(), test)
     }
 }

@@ -36,8 +36,8 @@ internal class PartRepositoryImpl : PartRepository, KoinComponent {
             PartMappingsTable.insert {
                 it[PartMappingsTable.carId] = carId
                 it[partNo] = part.partNo
-                it[desc] = part.desc
-                it[manufacturer] = part.desc
+                it[description] = part.description
+                it[manufacturer] = part.description
             }
         }
 
@@ -48,7 +48,7 @@ internal class PartRepositoryImpl : PartRepository, KoinComponent {
         return Part(
             partNo = row[PartMappingsTable.partNo],
             manufacturer = row[PartMappingsTable.manufacturer],
-            desc = row[PartMappingsTable.desc]
+            description = row[PartMappingsTable.description]
         )
     }
 }

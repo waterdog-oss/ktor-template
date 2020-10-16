@@ -3,6 +3,7 @@ package test.ktortemplate
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.application.log
+import io.ktor.config.ApplicationConfig
 import io.ktor.features.CORS
 import io.ktor.features.CallLogging
 import io.ktor.features.Compression
@@ -17,19 +18,14 @@ import io.ktor.jackson.JacksonConverter
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import org.koin.ktor.ext.Koin
-import test.ktortemplate.conf.DevEnvironmentConfigurator
-import test.ktortemplate.conf.ProdEnvironmentConfigurator
+import test.ktortemplate.conf.EnvironmentConfigurator
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
 
 @KtorExperimentalAPI
-fun Application.module() {
+fun Application.module(configOverrides: ApplicationConfig?) {
 
-    val modules = when {
-        isDev -> DevEnvironmentConfigurator(environment).buildEnvironmentConfig()
-        isProd -> ProdEnvironmentConfigurator(environment).buildEnvironmentConfig()
-        else -> DevEnvironmentConfigurator(environment).buildEnvironmentConfig()
-    }
+    val modules = EnvironmentConfigurator(environment.config, configOverrides).getDependencyInjectionModules()
 
     install(DefaultHeaders)
     install(Compression) {
@@ -70,7 +66,3 @@ fun Application.module() {
 
     log.info("Ktor server started...")
 }
-
-val Application.envKind get() = environment.config.property("ktor.environment").getString()
-val Application.isDev get() = envKind == "dev"
-val Application.isProd get() = envKind == "prod"
