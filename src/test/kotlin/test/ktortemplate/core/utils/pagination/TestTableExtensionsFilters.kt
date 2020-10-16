@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.insert
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -142,7 +142,7 @@ class TestTableExtensionsFilters : KoinTest {
         return dbc.query {
             // Create table and insert test entry
             SchemaUtils.create(TestTable)
-            TestTable.insertAndGetId {
+            TestTable.insert {
                 it[id] = testId
                 it[long] = testLong
                 it[int] = testInt
