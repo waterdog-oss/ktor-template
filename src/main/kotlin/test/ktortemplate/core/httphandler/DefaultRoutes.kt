@@ -10,29 +10,44 @@ import org.koin.core.inject
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.service.CarService
+import test.ktortemplate.core.utils.pagination.PageResponse
+import test.ktortemplate.core.utils.pagination.parsePageRequest
 
 internal class DefaultRoutesInjector : KoinComponent {
-    val service: CarService by inject()
+    val carService: CarService by inject()
 }
 
 fun Route.defaultRoutes() {
-
     val injector = DefaultRoutesInjector()
-    val service = injector.service
+    val carService = injector.carService
 
-    get("/car/{id}") {
+    get("/cars") {
+        val pageRequest = call.parsePageRequest()
+        val totalElements = carService.count(pageRequest)
+        val data = carService.list(pageRequest)
+        call.respond(
+            PageResponse.from(
+                pageRequest = pageRequest,
+                totalElements = totalElements,
+                data = data,
+                path = call.request.path()
+            )
+        )
+    }
+
+    get("/cars/{id}") {
         val carId = call.parameters["id"]?.toLong() ?: -1
-        when (val car = service.getCarById(carId)) {
+        when (val car = carService.getCarById(carId)) {
             null -> call.respond(HttpStatusCode.NotFound)
             else -> call.respond(car)
         }
     }
 
-    post("/car") {
+    post("/cars") {
         val newCar = call.receive<Car>()
         newCar.validate()
 
-        val insertedCar = service.insertNewCar(CarSaveCommand(newCar.brand, newCar.model))
+        val insertedCar = carService.insertNewCar(CarSaveCommand(newCar.brand, newCar.model))
         call.respond(insertedCar)
     }
 }

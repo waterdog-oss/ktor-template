@@ -23,6 +23,11 @@ abstract class Validatable<T> {
         }
     }
 
+    /**
+     * All rules defined in rules method will be applied here.
+     *
+     * @throws AppException if a validation fails
+     */
     fun validate() {
         try {
             applyRules()
@@ -40,10 +45,15 @@ abstract class Validatable<T> {
         when(valiktorConstraint) {
             is Between<*>           -> minMaxMap(valiktorConstraint.start, valiktorConstraint.end)
             is NotBetween<*>        -> minMaxMap(valiktorConstraint.start, valiktorConstraint.end)
+            is Size                 -> minMaxMap(valiktorConstraint.min, valiktorConstraint.max)
+            is In<*>                -> valueMap(valiktorConstraint.values)
+            is NotIn<*>             -> valueMap(valiktorConstraint.values)
             is GreaterOrEqual<*>    -> valueMap(valiktorConstraint.value)
             is Greater<*>           -> valueMap(valiktorConstraint.value)
             is LessOrEqual<*>       -> valueMap(valiktorConstraint.value)
             is Less<*>              -> valueMap(valiktorConstraint.value)
+            is Equals<*>            -> valueMap(valiktorConstraint.value)
+            is NotEquals<*>         -> valueMap(valiktorConstraint.value)
             else                    -> mapOf()
         }
 
@@ -56,7 +66,7 @@ abstract class Validatable<T> {
             valiktorEx.constraintViolations
                 .map {
                     ErrorDefinition(
-                        "errors.validation.${it.property}.${it.constraint.name}",
+                        "errors.validation.${it.property}.${it.constraint.name}".toLowerCase(),
                         it.property,
                         violatedConstraint2map(it.constraint)) }
                 .toList())
