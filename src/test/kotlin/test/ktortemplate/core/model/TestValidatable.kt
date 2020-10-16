@@ -22,7 +22,6 @@ class TestValidatable {
 
     @Test
     fun `Validate a list a with an invalid wheel definition`() {
-
         val wheels = listOf(
             Wheel(17, 225),
             Wheel(17, 255),

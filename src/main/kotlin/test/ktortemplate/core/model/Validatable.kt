@@ -5,13 +5,31 @@ import org.valiktor.Constraint
 import org.valiktor.ConstraintViolationException
 import org.valiktor.Validator
 import org.valiktor.constraints.*
+import org.valiktor.validate
 import test.ktortemplate.core.exception.AppException
 import test.ktortemplate.core.exception.ErrorCode
 import test.ktortemplate.core.exception.ErrorDefinition
 
 abstract class Validatable<T> {
 
-    internal abstract fun validationSpec(obj: Validator<T>? = null)
+    protected abstract fun rules(validator: Validator<T>)
+
+    fun applyRules(validator: Validator<T>? = null) {
+        validator?.let{
+            rules(it)
+        } ?: validate(this) {
+            @Suppress("UNCHECKED_CAST")
+            rules(this as Validator<T>)
+        }
+    }
+
+    fun validate() {
+        try {
+            applyRules()
+        } catch (ex: ConstraintViolationException) {
+            throw valiktorException2AppException(ex)
+        }
+    }
 
     private fun minMaxMap(min: Any?, max: Any?) =
         mapOf("min" to min.toString(), "max" to max.toString())
@@ -43,13 +61,5 @@ abstract class Validatable<T> {
                         violatedConstraint2map(it.constraint)) }
                 .toList())
         return validationException
-    }
-
-    fun validate() {
-        try {
-            validationSpec()
-        } catch (ex: ConstraintViolationException) {
-            throw valiktorException2AppException(ex)
-        }
     }
 }
