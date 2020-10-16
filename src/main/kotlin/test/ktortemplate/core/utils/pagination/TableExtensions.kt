@@ -1,6 +1,5 @@
 package test.ktortemplate.core.utils.pagination
 
-import java.util.UUID
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Expression
@@ -12,6 +11,7 @@ import org.jetbrains.exposed.sql.compoundAnd
 import org.jetbrains.exposed.sql.compoundOr
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import java.util.UUID
 
 /**
  * Method that forces cast from Column<*> to Column<T>
