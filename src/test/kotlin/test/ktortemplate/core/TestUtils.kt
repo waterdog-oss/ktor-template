@@ -16,20 +16,17 @@ import io.ktor.routing.Routing
 import io.ktor.serialization.json
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.withTestApplication
-import javax.sql.DataSource
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.koin.dsl.module
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.httphandler.defaultRoutes
-import test.ktortemplate.core.model.Car
-import test.ktortemplate.core.model.Test
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.persistance.sql.CarMappingsTable
 import test.ktortemplate.core.persistance.sql.CarRepositoryImpl
 import test.ktortemplate.core.service.CarService
 import test.ktortemplate.core.service.CarServiceImpl
 import test.ktortemplate.core.utils.json.JsonSettings
+import javax.sql.DataSource
 
 private fun bootstrapDatabase(dbc: DatabaseConnection) {
     dbc.query {
@@ -62,16 +59,6 @@ fun initDbCore() = module {
 }
 
 fun Application.testModule() {
-
-    val car = Car(123, "asd", "asddd")
-    val test = Test(listOf(car), null)
-
-    val x = JsonSettings.toJson(test)
-    println(x)
-
-    val carr: Test<Car> = JsonSettings.fromJson(x)
-    println(carr)
-
     install(DefaultHeaders)
     install(Compression) {
         gzip {

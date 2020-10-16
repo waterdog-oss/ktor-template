@@ -10,9 +10,8 @@ import io.ktor.routing.get
 import io.ktor.routing.post
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import test.ktortemplate.core.model.Car
-import test.ktortemplate.core.model.Test
 import test.ktortemplate.core.service.CarService
+import test.ktortemplate.core.utils.json.JsonSettings
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.parsePageRequest
 
@@ -24,22 +23,18 @@ fun Route.defaultRoutes() {
     val injector = DefaultRoutesInjector()
     val carService = injector.carService
 
-    get("/test") {
-        val car = Car(123, "asd", "asddd")
-        val test = Test(listOf(car), null)
-        call.respond(test)
-    }
-
     get("/cars") {
         val pageRequest = call.parsePageRequest()
         val totalElements = carService.count(pageRequest)
         val data = carService.list(pageRequest)
         call.respond(
-            PageResponse.from(
-                pageRequest = pageRequest,
-                totalElements = totalElements,
-                data = data,
-                path = call.request.path()
+            JsonSettings.toJson(
+                PageResponse.from(
+                    pageRequest = pageRequest,
+                    totalElements = totalElements,
+                    data = data,
+                    path = call.request.path()
+                )
             )
         )
     }

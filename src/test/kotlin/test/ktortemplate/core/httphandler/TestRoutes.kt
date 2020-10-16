@@ -65,13 +65,6 @@ class TestRoutes : KoinTest {
     }
 
     @Test
-    fun `Test`() = testApp<Unit> {
-        with(handleRequest(HttpMethod.Get, "/test")) {
-            response.status() `should be equal to` HttpStatusCode.NotFound
-        }
-    }
-
-    @Test
     fun `Fetching a car that exists returns correctly`() = testApp<Unit> {
         val newCar = insertCar()
 
