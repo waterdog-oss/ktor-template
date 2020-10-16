@@ -1,5 +1,6 @@
 package test.ktortemplate.core.utils.pagination
 
+import java.util.UUID
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Expression
@@ -11,7 +12,6 @@ import org.jetbrains.exposed.sql.compoundAnd
 import org.jetbrains.exposed.sql.compoundOr
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import java.util.UUID
 
 /**
  * Method that forces cast from Column<*> to Column<T>
@@ -55,7 +55,7 @@ fun Table.createFilters(filters: List<FilterField>): List<Op<Boolean>> {
                 filterField.values.map { value -> Op.build { it.eq(value) } }.compoundOr()
             }
             is Boolean -> column.asType<Boolean>().let {
-                Op.build { it.eq(filterField.values.first().toBoolean()) }
+                filterField.values.map { value -> Op.build { it.eq(value.toBoolean()) } }.compoundOr()
             }
             is UUID -> column.asType<UUID>().let {
                 filterField.values.map { value -> Op.build { it.eq(UUID.fromString(value)) } }.compoundOr()
