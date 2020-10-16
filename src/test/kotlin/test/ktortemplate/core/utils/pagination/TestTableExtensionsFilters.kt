@@ -2,7 +2,6 @@ package test.ktortemplate.core.utils.pagination
 
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.util.KtorExperimentalAPI
-import java.util.UUID
 import org.amshove.kluent.`should be equal to`
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
@@ -21,6 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.testApp
+import java.util.UUID
 
 @KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
