@@ -61,11 +61,13 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterId {
         @Test
         fun `String primary key type should be supported`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.id.name, testId) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.id.name, "otherId") `should be equal to` 0
         }
     }
@@ -74,11 +76,13 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterLong {
         @Test
         fun `Long primary key type should be supported`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.long.name, testLong.toString()) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.long.name, "2") `should be equal to` 0
         }
     }
@@ -87,11 +91,13 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterInt {
         @Test
         fun `Int type should be supported`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.int.name, testInt.toString()) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.int.name, "2") `should be equal to` 0
         }
     }
@@ -100,11 +106,13 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterString {
         @Test
         fun `String type should be supported`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.string.name, testString) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.string.name, "otherString") `should be equal to` 0
         }
     }
@@ -113,11 +121,13 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterBoolean {
         @Test
         fun `Boolean type should be supported`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.boolean.name, testBoolean.toString()) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.boolean.name, false.toString()) `should be equal to` 0
         }
     }
@@ -126,11 +136,13 @@ class TestTableExtensionsFilters : KoinTest {
     inner class TestFilterUUID {
         @Test
         fun `UUID type should be supported`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.uuid.name, testUUID.toString()) `should be equal to` 1
         }
 
         @Test
         fun `No results should be returned with no entry`() = testAppWithConfig {
+            insertTestEntry()
             countColumnEntries(TestTable.uuid.name, UUID.randomUUID().toString()) `should be equal to` 0
         }
     }
@@ -140,7 +152,19 @@ class TestTableExtensionsFilters : KoinTest {
      */
     private fun countColumnEntries(columnName: String, columnValue: String): Long {
         return dbc.query {
-            // Create table and insert test entry
+            TestTable.fromFilters(
+                listOf(
+                    FilterField(
+                        field = columnName,
+                        values = listOf(columnValue)
+                    )
+                )
+            ).count()
+        }
+    }
+
+    private fun insertTestEntry() {
+        dbc.query {
             SchemaUtils.create(TestTable)
             TestTable.insert {
                 it[id] = testId
@@ -150,16 +174,6 @@ class TestTableExtensionsFilters : KoinTest {
                 it[boolean] = testBoolean
                 it[uuid] = testUUID
             }
-
-            // Count with provided filters
-            TestTable.fromFilters(
-                listOf(
-                    FilterField(
-                        field = columnName,
-                        values = listOf(columnValue)
-                    )
-                )
-            ).count()
         }
     }
 
