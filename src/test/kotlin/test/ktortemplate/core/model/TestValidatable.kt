@@ -6,6 +6,8 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
+import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.setBody
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain any`
 import org.amshove.kluent.shouldNotBeEqualTo
@@ -47,8 +49,8 @@ class TestValidatable : KoinTest {
         val wheels = listOf(
             Wheel(17, 225),
             Wheel(17, 255),
-            Wheel(3, 225)
-        ) // <-- invalid diameter
+            Wheel(3, 225) // <-- invalid diameter
+        )
         val exception = assertThrows<AppException> {
             Car(1, "porsche", "911", wheels).validate()
         }
