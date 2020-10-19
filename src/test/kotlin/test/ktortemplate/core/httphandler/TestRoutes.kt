@@ -72,7 +72,7 @@ class TestRoutes : KoinTest {
 
     @Test
     fun `Creating a new car returns correctly`() = testAppWithConfig {
-        val cmd = CarSaveCommand("brand", "model")
+        val cmd = CarSaveCommand("porsche", "spyder")
 
         with(
             handleRequest(HttpMethod.Post, "/cars") {

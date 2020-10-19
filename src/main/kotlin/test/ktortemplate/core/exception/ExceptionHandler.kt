@@ -26,7 +26,7 @@ fun StatusPages.Configuration.appException() {
 }
 
 fun StatusPages.Configuration.defaultStatusCodes() {
-    status(HttpStatusCode.NotFound) { call.respond(ErrorDTO(HttpStatusCode.NotFound.value)) }
+    status(HttpStatusCode.NotFound) { call.respond(HttpStatusCode.NotFound, ErrorDTO(HttpStatusCode.NotFound.value)) }
     // TODO customize response for some status codes if necessary
 }
 
