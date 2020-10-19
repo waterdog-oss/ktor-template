@@ -1,10 +1,12 @@
 package test.ktortemplate.core.model
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.http.*
-import io.ktor.server.testing.*
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.TestApplicationEngine
 import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be greater than`
 import org.amshove.kluent.`should contain any`
 import org.amshove.kluent.shouldNotBeEqualTo
 import org.junit.jupiter.api.Test
@@ -16,7 +18,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.exception.AppException
 import test.ktortemplate.core.exception.ErrorDTO
-import test.ktortemplate.core.httphandler.TestRoutes
 import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.JsonSettings
 
@@ -46,7 +47,8 @@ class TestValidatable : KoinTest {
         val wheels = listOf(
             Wheel(17, 225),
             Wheel(17, 255),
-            Wheel(3, 225)) // <-- invalid diameter
+            Wheel(3, 225)
+        ) // <-- invalid diameter
         val exception = assertThrows<AppException> {
             Car(1, "porsche", "911", wheels).validate()
         }
@@ -55,8 +57,12 @@ class TestValidatable : KoinTest {
 
     @Test
     fun `Posting a car with success`() = testAppWithConfig {
-        val car = Car(0, "porsche", "911",
-            listOf(Wheel(15, 195), Wheel(15, 195), Wheel(15, 195)))
+        val car = Car(
+            0,
+            "porsche",
+            "911",
+            listOf(Wheel(15, 195), Wheel(15, 195), Wheel(15, 195))
+        )
 
         with(
             handleRequest(HttpMethod.Post, "/cars") {

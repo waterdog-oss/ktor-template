@@ -1,6 +1,6 @@
 package test.ktortemplate.core.exception
 
-import io.ktor.http.*
+import io.ktor.http.HttpStatusCode
 
 enum class ErrorCode(val httpStatusCode: HttpStatusCode, val messageCode: String) {
     // client errors

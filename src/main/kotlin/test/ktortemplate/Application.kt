@@ -3,8 +3,16 @@ package test.ktortemplate
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.application.log
-import io.ktor.config.*
-import io.ktor.features.*
+import io.ktor.config.ApplicationConfig
+import io.ktor.features.CORS
+import io.ktor.features.CallLogging
+import io.ktor.features.Compression
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.DefaultHeaders
+import io.ktor.features.StatusPages
+import io.ktor.features.deflate
+import io.ktor.features.gzip
+import io.ktor.features.identity
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.JacksonConverter
@@ -12,9 +20,9 @@ import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import org.koin.ktor.ext.Koin
 import test.ktortemplate.conf.EnvironmentConfigurator
-import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.exception.appException
 import test.ktortemplate.core.exception.defaultStatusCodes
+import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
 
 @KtorExperimentalAPI

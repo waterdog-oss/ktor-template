@@ -1,10 +1,13 @@
 package test.ktortemplate.core.httphandler
 
-import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.application.call
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.path
+import io.ktor.request.receive
+import io.ktor.response.respond
+import io.ktor.routing.Route
+import io.ktor.routing.get
+import io.ktor.routing.post
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.core.model.Car

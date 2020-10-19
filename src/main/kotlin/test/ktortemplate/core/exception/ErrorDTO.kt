@@ -1,12 +1,12 @@
 package test.ktortemplate.core.exception
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import java.util.*
+import java.util.UUID
 
 /**
  * Intended to be the result of an erroneous http call.
  */
-data class ErrorDTO (
+data class ErrorDTO(
     val httpStatusCode: Int,
     val messageCode: String? = null,
     val title: String? = null,
@@ -18,7 +18,6 @@ data class ErrorDTO (
         return "ErrorDTO(id=$id, httpStatusCode=$httpStatusCode, messageCode=$messageCode, title=$title, errors=$errors)"
     }
 }
-
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ErrorDefinition(val errorCode: String, val field: String?, val args: Map<String, String>) {

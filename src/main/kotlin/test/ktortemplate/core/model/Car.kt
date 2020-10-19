@@ -10,15 +10,13 @@ data class Car(val id: Long, val brand: String, val model: String, val wheels: L
     override fun rules(validator: Validator<Car>) {
         validator
             .validate(Car::brand)
-                .hasSize(3, 20)
-                .isIn("porsche", "lamborghini", "koenigsegg")
+            .hasSize(3, 20)
+            .isIn("porsche", "lamborghini", "koenigsegg")
         validator
             .validate(Car::wheels)
-                .hasSize(3, 6)
-                .validateForEach { it.applyRules(this) }
+            .hasSize(3, 6)
+            .validateForEach { it.applyRules(this) }
     }
 }
 
 data class CarSaveCommand(val brand: String, val model: String)
-
-
