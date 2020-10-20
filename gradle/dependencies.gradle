@@ -3,7 +3,7 @@ ext.versions = [
     koin: '2.1.6',
     ktor: '1.4.1',
     exposed: '0.27.1',
-    testContainers: '1.14.3',
+    testContainers: '1.15.0-rc2',
     junit: '5.6.0'
 ]
 
@@ -39,6 +39,7 @@ ext.deps = [
         junit: "org.testcontainers:junit-jupiter:${versions.testContainers}",
         postgres: "org.testcontainers:postgresql:${versions.testContainers}"
     ],
+    valiktor: "org.valiktor:valiktor-core:0.12.0",
     logback: "ch.qos.logback:logback-classic:1.2.3",
     postgresql: "org.postgresql:postgresql:42.2.17",
     hikari: "com.zaxxer:HikariCP:3.4.5",

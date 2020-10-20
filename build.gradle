@@ -63,6 +63,7 @@ dependencies {
     implementation deps.koin.coreExt
     implementation deps.koin.ktor
 
+    implementation deps.valiktor
     // Database stuff
     implementation deps.postgresql
     implementation deps.hikari

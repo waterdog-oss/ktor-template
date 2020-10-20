@@ -9,6 +9,7 @@ import io.ktor.features.CallLogging
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
+import io.ktor.features.StatusPages
 import io.ktor.features.deflate
 import io.ktor.features.gzip
 import io.ktor.features.identity
@@ -19,6 +20,8 @@ import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import org.koin.ktor.ext.Koin
 import test.ktortemplate.conf.EnvironmentConfigurator
+import test.ktortemplate.core.exception.appException
+import test.ktortemplate.core.exception.defaultStatusCodes
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
 
@@ -62,6 +65,11 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
 
     install(Routing) {
         defaultRoutes()
+    }
+
+    install(StatusPages) {
+        appException()
+        defaultStatusCodes()
     }
 
     log.info("Ktor server started...")
