@@ -24,7 +24,7 @@ services:
       - DB_PASSWORD=password
       - KTOR_ENV=dev
       - KTOR_PORT=8080
-      - JAVA_OPTS=-server -Xms256m -Xmx512m -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -XX:NativeMemoryTracking=summary -Xrunjdwp:server=y,transport=dt_socket,address=5005,suspend=n
+      - JAVA_OPTS=-server -Xms256m -Xmx512m -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -XX:NativeMemoryTracking=summary -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     links:
       - test-db
     container_name: ktor-template-app

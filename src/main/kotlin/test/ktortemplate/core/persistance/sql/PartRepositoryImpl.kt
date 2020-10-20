@@ -5,42 +5,34 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.koin.core.KoinComponent
-import org.koin.core.inject
-import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.model.Part
 import test.ktortemplate.core.persistance.PartRepository
 
-internal class PartRepositoryImpl : PartRepository, KoinComponent {
+internal class PartRepositoryImpl : PartRepository {
 
-    private val dbc: DatabaseConnection by inject()
-
-    override suspend fun list(): List<Part> {
-        return dbc.suspendedQuery { PartMappingsTable.selectAll().map { toModel(it) } }
+    override fun list(): List<Part> {
+        return PartMappingsTable.selectAll().map { toModel(it) }
     }
 
-    override suspend fun delete(partNo: Long) {
-        dbc.suspendedQuery { PartMappingsTable.deleteWhere { PartMappingsTable.partNo eq partNo } }
+    override fun delete(partNo: Long) {
+        PartMappingsTable.deleteWhere { PartMappingsTable.partNo eq partNo }
     }
 
-    override suspend fun count(): Int {
-        return dbc.suspendedQuery { PartMappingsTable.selectAll().count().toInt() }
+    override fun count(): Int {
+        return PartMappingsTable.selectAll().count().toInt()
     }
 
-    override suspend fun getPartsForCar(carId: Long): List<Part> {
-        return dbc.suspendedQuery { PartMappingsTable.select { PartMappingsTable.carId eq carId }.map { toModel(it) } }
+    override fun getPartsForCar(carId: Long): List<Part> {
+        return PartMappingsTable.select { PartMappingsTable.carId eq carId }.map { toModel(it) }
     }
 
-    override suspend fun addPartToCar(carId: Long, part: Part): Part {
-        dbc.suspendedQuery {
-            PartMappingsTable.insert {
-                it[PartMappingsTable.carId] = carId
-                it[partNo] = part.partNo
-                it[description] = part.description
-                it[manufacturer] = part.description
-            }
+    override fun addPartToCar(carId: Long, part: Part): Part {
+        PartMappingsTable.insert {
+            it[PartMappingsTable.carId] = carId
+            it[partNo] = part.partNo
+            it[description] = part.description
+            it[manufacturer] = part.description
         }
-
         return part
     }
 

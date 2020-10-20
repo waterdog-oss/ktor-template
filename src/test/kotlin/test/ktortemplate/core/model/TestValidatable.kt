@@ -73,8 +73,9 @@ class TestValidatable : KoinTest {
             }
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.mapper.readValue(response.content!!)
-            car.id shouldNotBeEqualTo 0
+            println(response.content!!)
+            val newCar: Car = JsonSettings.mapper.readValue(response.content!!)
+            newCar.id shouldNotBeEqualTo 0
         }
     }
 

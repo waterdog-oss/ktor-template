@@ -21,6 +21,7 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
@@ -43,10 +44,11 @@ class TestRoutes : KoinTest {
     }
 
     private val carRepository: CarRepository by inject()
+    private val dbc: DatabaseConnection by inject()
 
     @AfterEach
     fun cleanDatabase() {
-        runBlocking {
+        dbc.query {
             val cars =
                 carRepository.list(PageRequest(page = 0, size = Int.MAX_VALUE, sort = listOf(), filter = listOf()))
             cars.forEach {
@@ -91,7 +93,7 @@ class TestRoutes : KoinTest {
             car.id `should be greater than` 0
             car.brand `should be equal to` cmd.brand
             car.model `should be equal to` cmd.model
-            carRepository.count() `should be equal to` 1
+            countCars() `should be equal to` 1
         }
     }
 
@@ -301,7 +303,7 @@ class TestRoutes : KoinTest {
         }
     }
 
-    private suspend fun generateCars(n: Int): List<Car> {
+    private fun generateCars(n: Int): List<Car> {
         val result: MutableList<Car> = mutableListOf()
         repeat(n) {
             val id = UUID.randomUUID()
@@ -310,12 +312,18 @@ class TestRoutes : KoinTest {
         return result
     }
 
-    private suspend fun insertCar(
+    private fun insertCar(
         brand: String = UUID.randomUUID().toString(),
         model: String = UUID.randomUUID().toString()
     ): Car {
-        val newCar = CarSaveCommand(brand, model)
-        return this.carRepository.save(newCar)
+        return dbc.query {
+            val newCar = CarSaveCommand(brand, model)
+            carRepository.save(newCar)
+        }
+    }
+
+    private fun countCars(): Int {
+        return dbc.query { carRepository.count() }
     }
 
     private fun <R> testAppWithConfig(test: suspend TestApplicationEngine.() -> R) {

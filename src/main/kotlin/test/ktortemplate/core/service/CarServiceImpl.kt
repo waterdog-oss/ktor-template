@@ -1,6 +1,5 @@
 package test.ktortemplate.core.service
 
-import org.jetbrains.exposed.sql.transactions.transactionManager
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.conf.database.DatabaseConnection
@@ -18,17 +17,21 @@ class CarServiceImpl : KoinComponent, CarService {
     private val partRepository: PartRepository by inject()
     private val dbc: DatabaseConnection by inject()
 
-    override suspend fun count(pageRequest: PageRequest): Int = this.carRepository.count(pageRequest)
+    override suspend fun count(pageRequest: PageRequest): Int {
+        return dbc.suspendedQuery { carRepository.count(pageRequest) }
+    }
 
-    override suspend fun getCarById(carId: Long): Car? = this.carRepository.getById(carId)
+    override suspend fun getCarById(carId: Long): Car? {
+        return dbc.suspendedQuery { carRepository.getById(carId) }
+    }
 
-    override suspend fun insertNewCar(newCar: CarSaveCommand): Car = this.carRepository.save(newCar)
+    override suspend fun insertNewCar(newCar: CarSaveCommand): Car {
+        return dbc.suspendedQuery { carRepository.save(newCar) }
+    }
 
     override suspend fun registerPartReplacement(replacedParts: RegisterPartReplacementCommand): Car {
         // this runs the operation as a single transaction
         return dbc.suspendedQuery {
-            println("Root manager: ${db.transactionManager}")
-            println("Root transaction: $id")
             val car = carRepository.getById(replacedParts.carId)
             requireNotNull(car) { "Car must exist" }
             for (part: Part in replacedParts.parts) {
@@ -39,6 +42,9 @@ class CarServiceImpl : KoinComponent, CarService {
         }
     }
 
-    override suspend fun list(pageRequest: PageRequest): List<Car> =
-        this.carRepository.list(pageRequest)
+    override suspend fun list(pageRequest: PageRequest): List<Car> {
+        return dbc.suspendedQuery {
+            carRepository.list(pageRequest)
+        }
+    }
 }
