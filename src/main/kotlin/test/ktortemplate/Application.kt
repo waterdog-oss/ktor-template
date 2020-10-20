@@ -26,7 +26,7 @@ import test.ktortemplate.core.utils.healthcheck.liveness
 import test.ktortemplate.core.utils.healthcheck.readiness
 
 @KtorExperimentalAPI
-fun Application.module(configOverrides: ApplicationConfig?) {
+fun Application.module(configOverrides: ApplicationConfig? = null) {
 
     val modules = EnvironmentConfigurator(environment.config, configOverrides).getDependencyInjectionModules()
 
