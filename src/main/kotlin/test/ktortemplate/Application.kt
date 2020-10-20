@@ -21,6 +21,9 @@ import org.koin.ktor.ext.Koin
 import test.ktortemplate.conf.EnvironmentConfigurator
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.healthcheck.Health
+import test.ktortemplate.core.utils.healthcheck.liveness
+import test.ktortemplate.core.utils.healthcheck.readiness
 
 @KtorExperimentalAPI
 fun Application.module(configOverrides: ApplicationConfig?) {
@@ -62,6 +65,11 @@ fun Application.module(configOverrides: ApplicationConfig?) {
 
     install(Routing) {
         defaultRoutes()
+    }
+
+    install(Health) {
+        liveness()
+        readiness()
     }
 
     log.info("Ktor server started...")
