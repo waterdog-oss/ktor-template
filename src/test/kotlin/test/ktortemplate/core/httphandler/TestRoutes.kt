@@ -1,5 +1,7 @@
 package test.ktortemplate.core.httphandler
 
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Types
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -24,11 +26,10 @@ import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.json.JsonSettings
-import test.ktortemplate.core.utils.json.JsonSettings.PageResponseCarType
-import test.ktortemplate.core.utils.json.fromJson
 import test.ktortemplate.core.utils.pagination.PageRequest
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.PaginationUtils
+import java.lang.reflect.Type
 import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -72,7 +73,7 @@ class TestRoutes : KoinTest {
 
         with(handleRequest(HttpMethod.Get, "/cars/${newCar.id}")) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.mapper.fromJson(response.content)
+            val car: Car = JsonSettings.fromJson(response.content)
             car.id `should be equal to` newCar.id
             car.brand `should be equal to` newCar.brand
             car.model `should be equal to` newCar.model
@@ -86,11 +87,11 @@ class TestRoutes : KoinTest {
         with(
             handleRequest(HttpMethod.Post, "/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(JsonSettings.mapper.toJson(cmd))
+                setBody(JsonSettings.toJson(cmd))
             }
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.mapper.fromJson(response.content)
+            val car: Car = JsonSettings.fromJson(response.content)
             car.id `should be greater than` 0
             car.brand `should be equal to` cmd.brand
             car.model `should be equal to` cmd.model
@@ -108,10 +109,13 @@ class TestRoutes : KoinTest {
             insertCar(brand = "brand34", model = "model95")
         )
 
+        val type: Type = Types.newParameterizedType(PageResponse::class.java, Car::class.java)
+        val jsonAdapter: JsonAdapter<PageResponse<Car>> = JsonSettings.mapper.adapter(type)
+
         // Get all
         with(handleRequest(HttpMethod.Get, "/cars")) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.fromJson(response.content, PageResponseCarType)
+            val res: PageResponse<Car> = JsonSettings.fromJson(response.content, jsonAdapter)
             res.data.size `should be equal to` savedCars.size
             res.data `should be equal to` savedCars
         }
@@ -119,7 +123,7 @@ class TestRoutes : KoinTest {
         // Get first page
         with(handleRequest(HttpMethod.Get, "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3")) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.fromJson(response.content, PageResponseCarType)
+            val res: PageResponse<Car> = JsonSettings.fromJson(response.content, jsonAdapter)
 
             res.data.size `should be equal to` 3
             res.data `should be equal to` savedCars.subList(0, 3)
@@ -141,7 +145,7 @@ class TestRoutes : KoinTest {
         // Get second page
         with(handleRequest(HttpMethod.Get, "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3")) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.fromJson(response.content, PageResponseCarType)
+            val res: PageResponse<Car> = JsonSettings.fromJson(response.content, jsonAdapter)
             res.data.size `should be equal to` 2
             res.data `should be equal to` savedCars.subList(3, 5)
 
@@ -162,7 +166,7 @@ class TestRoutes : KoinTest {
         // Get not existing page
         with(handleRequest(HttpMethod.Get, "/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5")) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.fromJson(response.content, PageResponseCarType)
+            val res: PageResponse<Car> = JsonSettings.fromJson(response.content, jsonAdapter)
             res.data.size `should be equal to` 0
 
             // Verify pagination info
@@ -183,7 +187,7 @@ class TestRoutes : KoinTest {
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.fromJson(response.content, PageResponseCarType)
+            val res: PageResponse<Car> = JsonSettings.fromJson(response.content, jsonAdapter)
             res.data `should be equal to` savedCars.sortedBy { it.id }
 
             // Verify pagination info
@@ -198,7 +202,7 @@ class TestRoutes : KoinTest {
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.fromJson(response.content, PageResponseCarType)
+            val res: PageResponse<Car> = JsonSettings.fromJson(response.content, jsonAdapter)
             res.data `should be equal to` savedCars.sortedByDescending { it.id }
 
             // Verify pagination info
@@ -213,7 +217,7 @@ class TestRoutes : KoinTest {
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.fromJson(response.content, PageResponseCarType)
+            val res: PageResponse<Car> = JsonSettings.fromJson(response.content, jsonAdapter)
             res.data `should be equal to` savedCars.sortedWith(compareBy<Car> { it.brand }.thenByDescending { it.model })
 
             // Verify pagination info
@@ -228,7 +232,7 @@ class TestRoutes : KoinTest {
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.fromJson(response.content, PageResponseCarType)
+            val res: PageResponse<Car> = JsonSettings.fromJson(response.content, jsonAdapter)
             res.data `should be equal to` savedCars.filter { it.brand == "brand10" && it.model == "model91" }
 
             // Verify pagination info
@@ -243,7 +247,7 @@ class TestRoutes : KoinTest {
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.fromJson(response.content, PageResponseCarType)
+            val res: PageResponse<Car> = JsonSettings.fromJson(response.content, jsonAdapter)
             res.data `should be equal to` listOf()
         }
 
@@ -255,7 +259,7 @@ class TestRoutes : KoinTest {
             )
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.fromJson(response.content, PageResponseCarType)
+            val res: PageResponse<Car> = JsonSettings.fromJson(response.content, jsonAdapter)
             res.data `should be equal to` savedCars.filter { it.id == 1L || it.id == 2L }
 
             // Verify pagination info

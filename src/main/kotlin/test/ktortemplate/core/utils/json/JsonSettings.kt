@@ -1,23 +1,30 @@
 package test.ktortemplate.core.utils.json
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-import test.ktortemplate.core.model.Car
-import test.ktortemplate.core.utils.pagination.PageResponse
-import java.lang.reflect.Type
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 object JsonSettings {
 
-    val PageResponseCarType: Type = object : TypeToken<PageResponse<Car>>() {}.type
+    val mapper: Moshi = Moshi.Builder()
+        .addLast(KotlinJsonAdapterFactory())
+        .build()
 
-    val mapper = GsonBuilder().apply {
-        serializeNulls()
-        setPrettyPrinting()
-        registerTypeAdapter(PageResponseCarType, PageResponseDeserializer(Car::class.java))
-    }.create()!!
+    inline fun <reified T> fromJson(json: String?): T {
+        val jsonAdapter: JsonAdapter<T> = mapper.adapter(T::class.java)
+        return jsonAdapter.fromJson(json!!)!!
+    }
+
+    inline fun <reified T> toJson(value: T?): String {
+        val jsonAdapter: JsonAdapter<T> = mapper.adapter(T::class.java)
+        return jsonAdapter.toJson(value)
+    }
+
+    inline fun <reified T> fromJson(json: String?, customAdapter: JsonAdapter<T>): T {
+        return customAdapter.fromJson(json!!)!!
+    }
+
+    fun <T> toJson(value: T?, customAdapter: JsonAdapter<T>): String {
+        return customAdapter.toJson(value)
+    }
 }
-
-// Helper function that infers class type. Not necessary, but nice to have
-// val car: Car = JsonSettings.mapper.fromJson(response.content)
-inline fun <reified T> Gson.fromJson(value: String?) = this.fromJson(value, T::class.java)

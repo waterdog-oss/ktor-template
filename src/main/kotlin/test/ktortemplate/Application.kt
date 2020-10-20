@@ -11,7 +11,6 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.deflate
 import io.ktor.features.gzip
 import io.ktor.features.identity
-import io.ktor.gson.GsonConverter
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.routing.Routing
@@ -21,6 +20,7 @@ import test.ktortemplate.conf.DevEnvironmentConfigurator
 import test.ktortemplate.conf.ProdEnvironmentConfigurator
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.json.JsonSettings
+import test.ktortemplate.core.utils.json.MoshiConverter
 
 @KtorExperimentalAPI
 fun Application.module() {
@@ -48,7 +48,7 @@ fun Application.module() {
         level = org.slf4j.event.Level.INFO
     }
     install(ContentNegotiation) {
-        register(ContentType.Application.Json, GsonConverter(JsonSettings.mapper))
+        register(ContentType.Application.Json, MoshiConverter(JsonSettings.mapper))
     }
 
     install(CORS) {

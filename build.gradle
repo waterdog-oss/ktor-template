@@ -49,7 +49,7 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:1.2.3"
 
     implementation "io.ktor:ktor-server-netty:$ktor_version"
-    implementation "io.ktor:ktor-gson:$ktor_version"
+    implementation "com.squareup.moshi:moshi-kotlin:1.11.0"
     implementation "io.ktor:ktor-auth:$ktor_version"
 
     implementation "org.koin:koin-core:$koin_version"
