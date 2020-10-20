@@ -7,8 +7,14 @@ import kotlinx.serialization.json.Json
 object JsonSettings {
 
     val mapper = Json {
-        ignoreUnknownKeys = true
-        prettyPrint = true
+        encodeDefaults = false
+        ignoreUnknownKeys = false
+        isLenient = false
+        allowStructuredMapKeys = false
+        prettyPrint = false
+        coerceInputValues = false
+        classDiscriminator = "type"
+        allowSpecialFloatingPointValues = false
     }
 
     inline fun <reified T> fromJson(json: String?): T {
