@@ -9,9 +9,10 @@ internal class ProbesInjector : KoinComponent {
 }
 
 fun Health.Configuration.liveness() {
-    liveCheck("live") { true }
+    liveCheck("alive") { true }
 }
 
 fun Health.Configuration.readiness() {
     readyCheck("database") { ProbesInjector().dbc.ping() }
+    readyCheck("algorithm") { true }
 }

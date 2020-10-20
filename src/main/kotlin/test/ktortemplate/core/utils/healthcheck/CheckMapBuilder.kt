@@ -1,3 +1,7 @@
+/**
+ * Code created by https://github.com/zensum and cloned from
+ * https://github.com/zensum/ktor-health-check
+ */
 package test.ktortemplate.core.utils.healthcheck
 
 // A checkmap is simply a map of names to Check functions.

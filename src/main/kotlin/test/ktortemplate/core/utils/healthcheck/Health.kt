@@ -1,3 +1,7 @@
+/**
+ * Original code created by https://github.com/zensum and cloned from
+ * https://github.com/zensum/ktor-health-check
+ */
 package test.ktortemplate.core.utils.healthcheck
 
 import io.ktor.application.ApplicationCallPipeline
@@ -8,16 +12,11 @@ import io.ktor.request.path
 import io.ktor.response.respondText
 import io.ktor.util.AttributeKey
 
-// Liveness and readiness are established by looking
-// at a number of checks. A check can be something like
-// "Are we connected to the database?" or
-// "is this component in a live state?".
-
 // A check is a nullary function returning
 // a boolean indicating the success of the check.
 typealias Check = suspend () -> Boolean
 
-// We use Kubernetes' recomendations of healthz and readyz
+// We use a version of Kubernetes recommendations: liveness and readiness
 private const val LIVE_CHECK_URL = "liveness"
 private const val READY_CHECK_URL = "readiness"
 
@@ -33,8 +32,8 @@ class Health private constructor(val cfg: Configuration) {
         val checks = cfg.getChecksWithFunctions()
         if (checks.isEmpty()) return
         val lengths = checks.keys.map { it.length }
-        val maxL = lengths.max()!!
-        val minL = lengths.min()!!
+        val maxL = lengths.maxOrNull()!!
+        val minL = lengths.minOrNull()!!
         pipeline.intercept(ApplicationCallPipeline.Call) {
             val path = call.request.path().trim('/')
             if (path.length > maxL || path.length < minL) {
@@ -48,7 +47,7 @@ class Health private constructor(val cfg: Configuration) {
     }
     class Configuration internal constructor() {
         private var checks: Map<String, CheckMapBuilder> = emptyMap()
-        private var noHealth = false
+        private var noLive = false
         private var noReady = false
 
         internal fun getChecksWithFunctions() =
@@ -66,19 +65,19 @@ class Health private constructor(val cfg: Configuration) {
         }
 
         /**
-         * Calling this disables the default health check on /healthz
+         * Calling this disables the default live check on /liveness
          */
         fun disableLiveCheck() {
-            noHealth = true
-            ensureDisableUnambiguous("healthz")
+            noLive = true
+            ensureDisableUnambiguous(LIVE_CHECK_URL)
         }
 
         /**
-         * Calling this disabled the default ready check on /readyz
+         * Calling this disabled the default ready check on /readiness
          */
         fun disableReadyCheck() {
             noReady = true
-            ensureDisableUnambiguous("readyz")
+            ensureDisableUnambiguous(READY_CHECK_URL)
         }
 
         private fun getCheck(url: String) = checks.getOrElse(url) {
@@ -109,7 +108,7 @@ class Health private constructor(val cfg: Configuration) {
         }
 
         internal fun ensureWellKnown() {
-            if (!noHealth) {
+            if (!noLive) {
                 getCheck(READY_CHECK_URL)
             }
             if (!noReady) {
