@@ -15,23 +15,23 @@ internal class PartRepositoryImpl : PartRepository, KoinComponent {
 
     private val dbc: DatabaseConnection by inject()
 
-    override fun list(): List<Part> {
+    override suspend fun list(): List<Part> {
         return dbc.query { PartMappingsTable.selectAll().map { toModel(it) } }
     }
 
-    override fun delete(partNo: Long) {
+    override suspend fun delete(partNo: Long) {
         dbc.query { PartMappingsTable.deleteWhere { PartMappingsTable.partNo eq partNo } }
     }
 
-    override fun count(): Int {
+    override suspend fun count(): Int {
         return dbc.query { PartMappingsTable.selectAll().count().toInt() }
     }
 
-    override fun getPartsForCar(carId: Long): List<Part> {
+    override suspend fun getPartsForCar(carId: Long): List<Part> {
         return dbc.query { PartMappingsTable.select { PartMappingsTable.carId eq carId }.map { toModel(it) } }
     }
 
-    override fun addPartToCar(carId: Long, part: Part): Part {
+    override suspend fun addPartToCar(carId: Long, part: Part): Part {
         dbc.query {
             PartMappingsTable.insert {
                 it[PartMappingsTable.carId] = carId

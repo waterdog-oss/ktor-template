@@ -78,6 +78,7 @@ dependencies {
     testImplementation deps.junit.params
     testRuntimeOnly deps.junit.engine
     testImplementation deps.kluent
+    testImplementation deps.coroutinesTest
     testImplementation deps.testContainers.core
     testImplementation deps.testContainers.junit
     testImplementation deps.testContainers.postgres

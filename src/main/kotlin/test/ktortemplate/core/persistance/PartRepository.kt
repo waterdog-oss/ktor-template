@@ -3,9 +3,9 @@ package test.ktortemplate.core.persistance
 import test.ktortemplate.core.model.Part
 
 interface PartRepository {
-    fun list(): List<Part>
-    fun delete(partNo: Long)
-    fun count(): Int
-    fun getPartsForCar(carId: Long): List<Part>
-    fun addPartToCar(carId: Long, part: Part): Part
+    suspend fun list(): List<Part>
+    suspend fun delete(partNo: Long)
+    suspend fun count(): Int
+    suspend fun getPartsForCar(carId: Long): List<Part>
+    suspend fun addPartToCar(carId: Long, part: Part): Part
 }

@@ -9,6 +9,8 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be greater than`
 import org.junit.jupiter.api.AfterEach
@@ -45,11 +47,14 @@ class TestRoutes : KoinTest {
 
     @AfterEach
     fun cleanDatabase() {
-        val cars = carRepository.list(PageRequest(page = 0, size = Int.MAX_VALUE, sort = listOf(), filter = listOf()))
-        cars.forEach {
-            carRepository.delete(it.id)
+        runBlocking {
+            val cars =
+                carRepository.list(PageRequest(page = 0, size = Int.MAX_VALUE, sort = listOf(), filter = listOf()))
+            cars.forEach {
+                carRepository.delete(it.id)
+            }
+            carRepository.count() `should be equal to` 0
         }
-        carRepository.count() `should be equal to` 0
     }
 
     @Test
@@ -297,7 +302,7 @@ class TestRoutes : KoinTest {
         }
     }
 
-    private fun generateCars(n: Int): List<Car> {
+    private suspend fun generateCars(n: Int): List<Car> {
         val result: MutableList<Car> = mutableListOf()
         repeat(n) {
             val id = UUID.randomUUID()
@@ -306,7 +311,7 @@ class TestRoutes : KoinTest {
         return result
     }
 
-    private fun insertCar(
+    private suspend fun insertCar(
         brand: String = UUID.randomUUID().toString(),
         model: String = UUID.randomUUID().toString()
     ): Car {
@@ -314,7 +319,9 @@ class TestRoutes : KoinTest {
         return this.carRepository.save(newCar)
     }
 
-    private fun <R> testAppWithConfig(test: TestApplicationEngine.() -> R) {
-        testApp(dbContainer.configInfo(), test)
+    private fun <R> testAppWithConfig(test: suspend TestApplicationEngine.() -> R) {
+        testApp(dbContainer.configInfo()) {
+            runBlockingTest { test() }
+        }
     }
 }
