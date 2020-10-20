@@ -19,6 +19,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.koin.dsl.module
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.httphandler.defaultRoutes
+import test.ktortemplate.core.httphandler.testSerializationRoutes
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.persistance.sql.CarMappingsTable
 import test.ktortemplate.core.persistance.sql.CarRepositoryImpl
@@ -79,6 +80,7 @@ fun Application.testModule() {
     }
     install(Routing) {
         defaultRoutes()
+        testSerializationRoutes()
     }
 }
 

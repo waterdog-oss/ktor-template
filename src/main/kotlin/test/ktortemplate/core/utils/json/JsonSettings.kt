@@ -2,11 +2,24 @@ package test.ktortemplate.core.utils.json
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import test.ktortemplate.core.model.Const
+import test.ktortemplate.core.model.Expr
+import test.ktortemplate.core.model.InstantAdapter
+import test.ktortemplate.core.model.NotANumber
+import test.ktortemplate.core.model.Sum
 
 object JsonSettings {
 
     val mapper: Moshi = Moshi.Builder()
+        .add(InstantAdapter())
+        .add(
+            PolymorphicJsonAdapterFactory.of(Expr::class.java, "exp")
+                .withSubtype(Const::class.java, "const")
+                .withSubtype(Sum::class.java, "sum")
+                .withSubtype(NotANumber::class.java, "notanumber")
+        )
         .addLast(KotlinJsonAdapterFactory())
         .build()
 

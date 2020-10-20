@@ -22,6 +22,7 @@ apply plugin: 'application'
 apply plugin: 'koin'
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
+apply plugin: 'kotlin-kapt'
 
 repositories {
     mavenCentral()
@@ -50,6 +51,8 @@ dependencies {
 
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "com.squareup.moshi:moshi-kotlin:1.11.0"
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.11.0")
+    implementation "com.squareup.moshi:moshi-adapters:1.8.0"
     implementation "io.ktor:ktor-auth:$ktor_version"
 
     implementation "org.koin:koin-core:$koin_version"
