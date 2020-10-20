@@ -1,5 +1,6 @@
 package test.ktortemplate.core.service
 
+import org.jetbrains.exposed.sql.transactions.transactionManager
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.conf.database.DatabaseConnection
@@ -26,6 +27,8 @@ class CarServiceImpl : KoinComponent, CarService {
     override suspend fun registerPartReplacement(replacedParts: RegisterPartReplacementCommand): Car {
         // this runs the operation as a single transaction
         return dbc.suspendedQuery {
+            println("Root manager: ${db.transactionManager}")
+            println("Root transaction: $id")
             val car = carRepository.getById(replacedParts.carId)
             requireNotNull(car) { "Car must exist" }
             for (part: Part in replacedParts.parts) {

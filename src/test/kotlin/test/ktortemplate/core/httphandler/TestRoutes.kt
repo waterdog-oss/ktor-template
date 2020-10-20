@@ -10,7 +10,6 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be greater than`
 import org.junit.jupiter.api.AfterEach
@@ -321,7 +320,7 @@ class TestRoutes : KoinTest {
 
     private fun <R> testAppWithConfig(test: suspend TestApplicationEngine.() -> R) {
         testApp(dbContainer.configInfo()) {
-            runBlockingTest { test() }
+            runBlocking { test() }
         }
     }
 }

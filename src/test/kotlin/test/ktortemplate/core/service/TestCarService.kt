@@ -2,7 +2,6 @@ package test.ktortemplate.core.service
 
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -67,7 +66,7 @@ class TestCarService : KoinTest {
     }
 
     @Test
-    fun `Parts can be added to a car`() = runBlockingTest {
+    fun `Parts can be added to a car`(): Unit = runBlocking {
         // Given: a car
         val car = carRepository.save(CarSaveCommand("Mercedes-Benz", "A 180"))
         val oldPartsCount = partRepository.count()
@@ -89,7 +88,7 @@ class TestCarService : KoinTest {
     }
 
     @Test
-    fun `Test that nested transactions rollback as expected`() = runBlockingTest {
+    fun `Test that nested transactions rollback as expected`(): Unit = runBlocking {
         // Given: a car
         val car = carRepository.save(CarSaveCommand("Mercedes-Benz", "A 180"))
         val oldPartsCount = partRepository.count()
@@ -105,9 +104,11 @@ class TestCarService : KoinTest {
         )
 
         // When: a parts replacement is registered it fails
+        println(".............")
         assertThrows<Exception> {
             carService.registerPartReplacement(partReplacement)
         }
+        println(".............")
 
         // Expect: no parts have been associated with the car
         partRepository.count() `should be equal to` oldPartsCount

@@ -19,7 +19,7 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
     private val dbc: DatabaseConnection by inject()
 
     override suspend fun getById(id: Long): Car? {
-        return dbc.query {
+        return dbc.suspendedQuery {
             val rst = CarMappingsTable.select { CarMappingsTable.id eq id }.singleOrNull()
             if (rst != null) {
                 resultToModel(rst)
@@ -30,7 +30,7 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
     }
 
     override suspend fun save(car: CarSaveCommand): Car {
-        return dbc.query {
+        return dbc.suspendedQuery {
             val newCarId = CarMappingsTable.insert {
                 it[brand] = car.brand
                 it[model] = car.model
@@ -41,19 +41,19 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
     }
 
     override suspend fun count(pageRequest: PageRequest): Int {
-        return dbc.query {
+        return dbc.suspendedQuery {
             CarMappingsTable.fromFilters(pageRequest.filter).count().toInt()
         }
     }
 
     override suspend fun delete(id: Long) {
-        dbc.query {
+        dbc.suspendedQuery {
             CarMappingsTable.deleteWhere { CarMappingsTable.id eq id }
         }
     }
 
     override suspend fun list(pageRequest: PageRequest): List<Car> {
-        return dbc.query {
+        return dbc.suspendedQuery {
             CarMappingsTable
                 .fromFilters(pageRequest.filter)
                 .limit(pageRequest.limit, pageRequest.offset.toLong())

@@ -62,7 +62,7 @@ class EnvironmentConfigurator(baseConfig: ApplicationConfig, configOverrides: Ap
                 this.username = username
                 this.password = password
                 this.maximumPoolSize = maxPoolSize
-                this.isAutoCommit = true
+                this.isAutoCommit = false
                 this.transactionIsolation = isolation
                 this.leakDetectionThreshold = 10000
                 this.poolName = "hikari-cp"
