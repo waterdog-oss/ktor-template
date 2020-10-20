@@ -4,7 +4,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.conf.database.DatabaseConnection
 
-internal class ProbesInjector : KoinComponent {
+internal class HealthCheckInjector : KoinComponent {
     val dbc: DatabaseConnection by inject()
 }
 
@@ -13,6 +13,6 @@ fun Health.Configuration.liveness() {
 }
 
 fun Health.Configuration.readiness() {
-    readyCheck("database") { ProbesInjector().dbc.ping() }
+    readyCheck("database") { HealthCheckInjector().dbc.ping() }
     readyCheck("algorithm") { true }
 }
