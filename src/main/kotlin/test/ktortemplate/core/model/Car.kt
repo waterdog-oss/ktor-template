@@ -20,5 +20,3 @@ data class Car(val id: Long, val brand: String, val model: String, val wheels: L
 }
 
 data class CarSaveCommand(val brand: String, val model: String)
-
-data class CarSaveCommandV1(val brand: String)
