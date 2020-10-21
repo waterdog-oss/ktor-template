@@ -9,11 +9,3 @@ enum class ApiVersion(val version: String) {
 
     override fun toString(): String = this.version
 }
-
-/**
- * Enum that holds application formats
- */
-enum class ApiFormat {
-    json,
-    xml
-}
