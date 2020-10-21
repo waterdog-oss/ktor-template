@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.sql.Connection
 import javax.sql.DataSource
 
 class DatabaseConnection(private val dataSource: DataSource) {
@@ -16,10 +17,10 @@ class DatabaseConnection(private val dataSource: DataSource) {
         block()
     }
 
-    suspend fun <T> suspendedQuery(block: suspend Transaction.() -> T): T = newSuspendedTransaction(Dispatchers.Default, database) {
-        println("    parent: ${outerTransaction?.id}")
-        println("    tx: $id")
-
+    suspend fun <T> suspendedQuery(
+        txIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ,
+        block: suspend Transaction.() -> T
+    ): T = newSuspendedTransaction(Dispatchers.IO, database, txIsolation) {
         block()
     }
 }
