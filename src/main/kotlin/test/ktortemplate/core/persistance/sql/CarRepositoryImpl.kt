@@ -5,9 +5,6 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
-import org.koin.core.KoinComponent
-import org.koin.core.inject
-import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
@@ -15,68 +12,52 @@ import test.ktortemplate.core.utils.pagination.PageRequest
 import test.ktortemplate.core.utils.pagination.createSorts
 import test.ktortemplate.core.utils.pagination.fromFilters
 
-class CarRepositoryImpl : CarRepository, KoinComponent {
-
-    private val dbc: DatabaseConnection by inject()
+class CarRepositoryImpl : CarRepository {
 
     override fun exists(id: Long): Boolean {
-        return dbc.query {
-            CarMappingsTable.select { CarMappingsTable.id eq id }.count() == 1L
-        }
+        return CarMappingsTable.select { CarMappingsTable.id eq id }.count() == 1L
     }
 
     override fun getById(id: Long): Car? {
-        return dbc.query {
-            val rst = CarMappingsTable.select { CarMappingsTable.id eq id }.singleOrNull()
-            if (rst != null) {
-                resultToModel(rst)
-            } else {
-                null
-            }
+        val rst = CarMappingsTable.select { CarMappingsTable.id eq id }.singleOrNull()
+        return if (rst != null) {
+            resultToModel(rst)
+        } else {
+            null
         }
     }
 
     override fun save(car: CarSaveCommand): Car {
-        return dbc.query {
-            val newCarId = CarMappingsTable.insert {
-                it[brand] = car.brand
-                it[model] = car.model
-            } get CarMappingsTable.id
+        val newCarId = CarMappingsTable.insert {
+            it[brand] = car.brand
+            it[model] = car.model
+        } get CarMappingsTable.id
 
-            Car(newCarId.value, car.brand, car.model)
-        }
+        return Car(newCarId.value, car.brand, car.model)
     }
 
     override fun update(car: Car): Car {
-        return dbc.query {
-            CarMappingsTable.update({ CarMappingsTable.id eq car.id }) {
-                it[brand] = car.brand
-                it[model] = car.model
-            }
-            getById(car.id)!!
+        CarMappingsTable.update({ CarMappingsTable.id eq car.id }) {
+            it[brand] = car.brand
+            it[model] = car.model
         }
+        return getById(car.id)!!
     }
 
     override fun count(pageRequest: PageRequest): Int {
-        return dbc.query {
-            CarMappingsTable.fromFilters(pageRequest.filter).count().toInt()
-        }
+        return CarMappingsTable.fromFilters(pageRequest.filter).count().toInt()
     }
 
     override fun delete(id: Long) {
-        dbc.query {
-            CarMappingsTable.deleteWhere { CarMappingsTable.id eq id }
-        }
+        CarMappingsTable.deleteWhere { CarMappingsTable.id eq id }
     }
 
     override fun list(pageRequest: PageRequest): List<Car> {
-        return dbc.query {
-            CarMappingsTable
-                .fromFilters(pageRequest.filter)
-                .limit(pageRequest.limit, pageRequest.offset.toLong())
-                .orderBy(*CarMappingsTable.createSorts(pageRequest.sort).toTypedArray())
-                .map { resultToModel(it) }
-        }
+        return CarMappingsTable
+            .fromFilters(pageRequest.filter)
+            .limit(pageRequest.limit, pageRequest.offset.toLong())
+            .orderBy(*CarMappingsTable.createSorts(pageRequest.sort).toTypedArray())
+            .map { resultToModel(it) }
     }
 
     private fun resultToModel(rstRow: ResultRow): Car {
