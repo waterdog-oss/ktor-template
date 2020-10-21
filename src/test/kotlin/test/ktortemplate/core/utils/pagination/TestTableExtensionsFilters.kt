@@ -1,6 +1,7 @@
 package test.ktortemplate.core.utils.pagination
 
 import io.ktor.util.KtorExperimentalAPI
+import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.`should be equal to`
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
@@ -69,13 +70,13 @@ class TestTableExtensionsFilters : KoinTest {
     @Nested
     inner class TestFilterId {
         @Test
-        fun `String primary key type should be supported`() {
+        fun `String primary key type should be supported`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.id.name, testId) `should be equal to` 1
         }
 
         @Test
-        fun `No results should be returned with no matched entry`() {
+        fun `No results should be returned with no matched entry`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.id.name, "otherId") `should be equal to` 0
         }
@@ -84,13 +85,13 @@ class TestTableExtensionsFilters : KoinTest {
     @Nested
     inner class TestFilterLong {
         @Test
-        fun `Long type should be supported`() {
+        fun `Long type should be supported`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.long.name, testLong.toString()) `should be equal to` 1
         }
 
         @Test
-        fun `No results should be returned with no matched entry`() {
+        fun `No results should be returned with no matched entry`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.long.name, "2") `should be equal to` 0
         }
@@ -99,13 +100,13 @@ class TestTableExtensionsFilters : KoinTest {
     @Nested
     inner class TestFilterInt {
         @Test
-        fun `Int type should be supported`() {
+        fun `Int type should be supported`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.int.name, testInt.toString()) `should be equal to` 1
         }
 
         @Test
-        fun `No results should be returned with no matched entry`() {
+        fun `No results should be returned with no matched entry`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.int.name, "2") `should be equal to` 0
         }
@@ -114,13 +115,13 @@ class TestTableExtensionsFilters : KoinTest {
     @Nested
     inner class TestFilterString {
         @Test
-        fun `String type should be supported`() {
+        fun `String type should be supported`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.string.name, testString) `should be equal to` 1
         }
 
         @Test
-        fun `No results should be returned with no matched entry`() {
+        fun `No results should be returned with no matched entry`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.string.name, "otherString") `should be equal to` 0
         }
@@ -129,13 +130,13 @@ class TestTableExtensionsFilters : KoinTest {
     @Nested
     inner class TestFilterBoolean {
         @Test
-        fun `Boolean type should be supported`() {
+        fun `Boolean type should be supported`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.boolean.name, testBoolean.toString()) `should be equal to` 1
         }
 
         @Test
-        fun `No results should be returned with no matched entry`() {
+        fun `No results should be returned with no matched entry`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.boolean.name, false.toString()) `should be equal to` 0
         }
@@ -144,13 +145,13 @@ class TestTableExtensionsFilters : KoinTest {
     @Nested
     inner class TestFilterUUID {
         @Test
-        fun `UUID type should be supported`() {
+        fun `UUID type should be supported`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.uuid.name, testUUID.toString()) `should be equal to` 1
         }
 
         @Test
-        fun `No results should be returned with no matched entry`() {
+        fun `No results should be returned with no matched entry`(): Unit = runBlocking {
             insertTestEntry()
             countColumnEntries(TestTable.uuid.name, UUID.randomUUID().toString()) `should be equal to` 0
         }
@@ -159,8 +160,8 @@ class TestTableExtensionsFilters : KoinTest {
     /**
      * Helpers
      */
-    private fun countColumnEntries(columnName: String, columnValue: String): Long {
-        return dbc.query {
+    private suspend fun countColumnEntries(columnName: String, columnValue: String): Long {
+        return dbc.suspendedQuery {
             TestTable.fromFilters(
                 listOf(
                     FilterField(
@@ -172,8 +173,8 @@ class TestTableExtensionsFilters : KoinTest {
         }
     }
 
-    private fun insertTestEntry() {
-        dbc.query {
+    private suspend fun insertTestEntry() {
+        dbc.suspendedQuery {
             TestTable.insert {
                 it[id] = testId
                 it[long] = testLong

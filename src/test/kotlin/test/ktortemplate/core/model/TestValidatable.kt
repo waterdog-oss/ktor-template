@@ -8,6 +8,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
+import io.ktor.util.KtorExperimentalAPI
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain any`
 import org.amshove.kluent.shouldNotBeEqualTo
@@ -24,6 +25,7 @@ import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.JsonSettings
 import test.ktortemplate.core.utils.versioning.ApiVersion
 
+@KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
 class TestValidatable : KoinTest {
@@ -76,8 +78,9 @@ class TestValidatable : KoinTest {
             }
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.mapper.readValue(response.content!!)
-            car.id shouldNotBeEqualTo 0
+            println(response.content!!)
+            val newCar: Car = JsonSettings.mapper.readValue(response.content!!)
+            newCar.id shouldNotBeEqualTo 0
         }
     }
 
