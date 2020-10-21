@@ -11,8 +11,8 @@ import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.utils.pagination.PageRequest
-import test.ktortemplate.core.utils.pagination.createFromFilters
 import test.ktortemplate.core.utils.pagination.createSorts
+import test.ktortemplate.core.utils.pagination.fromFilters
 
 class CarRepositoryImpl : CarRepository, KoinComponent {
 
@@ -36,13 +36,13 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
                 it[model] = car.model
             } get CarMappingsTable.id
 
-            Car(newCarId, car.brand, car.model)
+            Car(newCarId.value, car.brand, car.model)
         }
     }
 
     override fun count(pageRequest: PageRequest): Int {
         return dbc.query {
-            CarMappingsTable.createFromFilters(pageRequest.filter).count()
+            CarMappingsTable.fromFilters(pageRequest.filter).count().toInt()
         }
     }
 
@@ -55,8 +55,8 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
     override fun list(pageRequest: PageRequest): List<Car> {
         return dbc.query {
             CarMappingsTable
-                .createFromFilters(pageRequest.filter)
-                .limit(pageRequest.limit, pageRequest.offset)
+                .fromFilters(pageRequest.filter)
+                .limit(pageRequest.limit, pageRequest.offset.toLong())
                 .orderBy(*CarMappingsTable.createSorts(pageRequest.sort).toTypedArray())
                 .map { resultToModel(it) }
         }
@@ -64,7 +64,7 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
 
     private fun resultToModel(rstRow: ResultRow): Car {
         return Car(
-            rstRow[CarMappingsTable.id],
+            rstRow[CarMappingsTable.id].value,
             rstRow[CarMappingsTable.brand],
             rstRow[CarMappingsTable.model]
         )

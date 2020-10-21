@@ -1,9 +1,8 @@
 package test.ktortemplate.core.persistance.sql
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.dao.id.LongIdTable
 
-internal object CarMappingsTable : Table("car") {
-    val id = long("id").primaryKey().autoIncrement()
-    val brand = text("brand")
-    val model = text("model")
+internal object CarMappingsTable : LongIdTable("cars") {
+    val brand = varchar("brand", length = 255)
+    val model = varchar("model", length = 255)
 }

@@ -5,21 +5,22 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
+import io.ktor.util.KtorExperimentalAPI
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be greater than`
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import test.ktortemplate.core.initDbCore
-import test.ktortemplate.core.initServicesAndRepos
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
@@ -30,19 +31,17 @@ import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.PaginationUtils
 import java.util.UUID
 
+@KtorExperimentalAPI
+@Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestRoutes : KoinTest {
 
-    private val carRepository: CarRepository by inject()
-
-    @BeforeAll
-    fun setup() {
-        val appModules = listOf(
-            initDbCore(),
-            initServicesAndRepos()
-        )
-        startKoin { modules(appModules) }
+    companion object {
+        @Container
+        private val dbContainer = PgSQLContainerFactory.newInstance()
     }
+
+    private val carRepository: CarRepository by inject()
 
     @AfterEach
     fun cleanDatabase() {
@@ -53,20 +52,15 @@ class TestRoutes : KoinTest {
         carRepository.count() `should be equal to` 0
     }
 
-    @AfterAll
-    fun close() {
-        stopKoin()
-    }
-
     @Test
-    fun `Fetching a car that does not exists returns a 404 Not Found`() = testApp<Unit> {
+    fun `Fetching a car that does not exists returns a 404 Not Found`() = testAppWithConfig {
         with(handleRequest(HttpMethod.Get, "/cars/12345")) {
             response.status() `should be equal to` HttpStatusCode.NotFound
         }
     }
 
     @Test
-    fun `Fetching a car that exists returns correctly`() = testApp<Unit> {
+    fun `Fetching a car that exists returns correctly`() = testAppWithConfig {
         val newCar = insertCar()
 
         with(handleRequest(HttpMethod.Get, "/cars/${newCar.id}")) {
@@ -79,8 +73,8 @@ class TestRoutes : KoinTest {
     }
 
     @Test
-    fun `Creating a new car returns correctly`() = testApp<Unit> {
-        val cmd = CarSaveCommand("brand", "model")
+    fun `Creating a new car returns correctly`() = testAppWithConfig {
+        val cmd = CarSaveCommand("porsche", "spyder")
 
         with(
             handleRequest(HttpMethod.Post, "/cars") {
@@ -97,168 +91,219 @@ class TestRoutes : KoinTest {
         }
     }
 
-    @Test
-    fun `Listing cars should returns a list of cars with correct pagination and sort`() = testApp<Unit> {
-        val savedCars = listOf(
-            insertCar(brand = "brand10", model = "model91"),
-            insertCar(brand = "brand72", model = "model12"),
-            insertCar(brand = "brand43", model = "model33"),
-            insertCar(brand = "brand34", model = "model24"),
-            insertCar(brand = "brand34", model = "model95")
-        )
+    @Nested
+    @DisplayName("Test car listing: filtering and ordering")
+    inner class TestCarList {
 
-        // Get all
-        with(handleRequest(HttpMethod.Get, "/cars")) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
-            res.data.size `should be equal to` savedCars.size
-            res.data `should be equal to` savedCars
+        @Test
+        fun `The list endpoint works without any extra parameters`() = testAppWithConfig {
+            val expectedCars = generateCars(5)
+            with(handleRequest(HttpMethod.Get, "/cars")) {
+                response.status() `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                res.data.size `should be equal to` expectedCars.size
+                res.data `should be equal to` expectedCars
+            }
         }
 
-        // Get first page
-        with(handleRequest(HttpMethod.Get, "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3")) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
-            res.data.size `should be equal to` 3
-            res.data `should be equal to` savedCars.subList(0, 3)
+        @Test
+        fun `Test that the first page of the list has the appropriate parameters`() = testAppWithConfig {
+            val expectedCars = generateCars(5)
+            with(
+                handleRequest(
+                    HttpMethod.Get,
+                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
+                )
+            ) {
+                response.status() `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                res.data.size `should be equal to` 3
+                res.data `should be equal to` expectedCars.subList(0, 3)
 
-            // Verify pagination info
-            res.meta.page `should be equal to` 0
-            res.meta.size `should be equal to` 3
-            res.meta.totalElements `should be equal to` savedCars.size
-            res.meta.totalPages `should be equal to` 2
-            res.meta.first `should be equal to` true
-            res.meta.last `should be equal to` false
-            res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
-            res.links.first `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
-            res.links.prev `should be equal to` null
-            res.links.next `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
-            res.links.last `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+                // Verify pagination info
+                res.meta.page `should be equal to` 0
+                res.meta.size `should be equal to` 3
+                res.meta.totalElements `should be equal to` expectedCars.size
+                res.meta.totalPages `should be equal to` 2
+                res.meta.first `should be equal to` true
+                res.meta.last `should be equal to` false
+                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.first `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.prev `should be equal to` null
+                res.links.next `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.last `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+            }
         }
 
-        // Get second page
-        with(handleRequest(HttpMethod.Get, "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3")) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
-            res.data.size `should be equal to` 2
-            res.data `should be equal to` savedCars.subList(3, 5)
+        @Test
+        fun `Test that the second page of the list has the appropriate parameters`() = testAppWithConfig {
+            val expectedCars = generateCars(5)
+            with(
+                handleRequest(
+                    HttpMethod.Get,
+                    "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+                )
+            ) {
+                response.status() `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                res.data.size `should be equal to` 2
+                res.data `should be equal to` expectedCars.subList(3, 5)
 
-            // Verify pagination info
-            res.meta.page `should be equal to` 1
-            res.meta.size `should be equal to` 3
-            res.meta.totalElements `should be equal to` savedCars.size
-            res.meta.totalPages `should be equal to` 2
-            res.meta.first `should be equal to` false
-            res.meta.last `should be equal to` true
-            res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
-            res.links.first `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
-            res.links.prev `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
-            res.links.next `should be equal to` null
-            res.links.last `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+                // Verify pagination info
+                res.meta.page `should be equal to` 1
+                res.meta.size `should be equal to` 3
+                res.meta.totalElements `should be equal to` expectedCars.size
+                res.meta.totalPages `should be equal to` 2
+                res.meta.first `should be equal to` false
+                res.meta.last `should be equal to` true
+                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.first `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.prev `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.next `should be equal to` null
+                res.links.last `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+            }
         }
 
-        // Get not existing page
-        with(handleRequest(HttpMethod.Get, "/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5")) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
-            res.data.size `should be equal to` 0
+        @Test
+        fun `Requesting a non-existing page is  handled gracefully`() = testAppWithConfig {
+            generateCars(5)
+            with(
+                handleRequest(
+                    HttpMethod.Get,
+                    "/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5"
+                )
+            ) {
+                response.status() `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                res.data.size `should be equal to` 0
 
-            // Verify pagination info
-            res.meta.first `should be equal to` false
-            res.meta.last `should be equal to` false
-            res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5"
-            res.links.first `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=5"
-            res.links.prev `should be equal to` null
-            res.links.next `should be equal to` null
-            res.links.last `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=5"
+                // Verify pagination info
+                res.meta.first `should be equal to` false
+                res.meta.last `should be equal to` false
+                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5"
+                res.links.first `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=5"
+                res.links.prev `should be equal to` null
+                res.links.next `should be equal to` null
+                res.links.last `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=5"
+            }
         }
 
-        // Get ascending order
-        with(
-            handleRequest(
-                HttpMethod.Get,
-                "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=asc"
-            )
-        ) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
-            res.data `should be equal to` savedCars.sortedBy { it.id }
+        @Test
+        fun `Results are correctly sorted in ascending order`() = testAppWithConfig {
+            val expectedCars = generateCars(5)
+            with(
+                handleRequest(
+                    HttpMethod.Get,
+                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=asc"
+                )
+            ) {
+                response.status() `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                res.data `should be equal to` expectedCars.sortedBy { it.id }
 
-            // Verify pagination info
-            res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=asc"
+                // Verify pagination info
+                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=asc"
+            }
         }
 
-        // Get descending order
-        with(
-            handleRequest(
-                HttpMethod.Get,
-                "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=desc"
-            )
-        ) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
-            res.data `should be equal to` savedCars.sortedByDescending { it.id }
+        @Test
+        fun `Results are correctly sorted in descending order`() = testAppWithConfig {
+            val expectedCars = generateCars(5)
+            with(
+                handleRequest(
+                    HttpMethod.Get,
+                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=desc"
+                )
+            ) {
+                response.status() `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                res.data `should be equal to` expectedCars.sortedByDescending { it.id }
 
-            // Verify pagination info
-            res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=desc"
+                // Verify pagination info
+                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=desc"
+            }
         }
 
-        // Get multiple sorts
-        with(
-            handleRequest(
-                HttpMethod.Get,
-                "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[brand]=asc&${PaginationUtils.PAGE_SORT}[model]=desc"
-            )
-        ) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
-            res.data `should be equal to` savedCars.sortedWith(compareBy<Car> { it.brand }.thenByDescending { it.model })
+        @Test
+        fun `Results are correctly sorted by multiple parameters`() = testAppWithConfig {
+            val expectedCars = generateCars(5)
+            with(
+                handleRequest(
+                    HttpMethod.Get,
+                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[brand]=asc&${PaginationUtils.PAGE_SORT}[model]=desc"
+                )
+            ) {
+                response.status() `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                res.data `should be equal to` expectedCars.sortedWith(compareBy<Car> { it.brand }.thenByDescending { it.model })
 
-            // Verify pagination info
-            res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[brand]=asc&${PaginationUtils.PAGE_SORT}[model]=desc"
+                // Verify pagination info
+                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[brand]=asc&${PaginationUtils.PAGE_SORT}[model]=desc"
+            }
         }
 
-        // Get multiple filters
-        with(
-            handleRequest(
-                HttpMethod.Get,
-                "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=brand10&${PaginationUtils.PAGE_FILTER}[model]=model91"
-            )
-        ) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
-            res.data `should be equal to` savedCars.filter { it.brand == "brand10" && it.model == "model91" }
+        @Test
+        fun `Results can be filtered`() = testAppWithConfig {
+            val expectedCars = generateCars(5)
+            val targetCar = expectedCars.random()
+            with(
+                handleRequest(
+                    HttpMethod.Get,
+                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=${targetCar.brand}&${PaginationUtils.PAGE_FILTER}[model]=${targetCar.model}"
+                )
+            ) {
+                response.status() `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                res.data `should be equal to` expectedCars.filter { it.brand == targetCar.brand && it.model == targetCar.model }
 
-            // Verify pagination info
-            res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=brand10&${PaginationUtils.PAGE_FILTER}[model]=model91"
+                // Verify pagination info
+                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=${targetCar.brand}&${PaginationUtils.PAGE_FILTER}[model]=${targetCar.model}"
+            }
         }
 
-        // No results found based on filters
-        with(
-            handleRequest(
-                HttpMethod.Get,
-                "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=brand000"
-            )
-        ) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
-            res.data `should be equal to` listOf()
+        @Test
+        fun `Individual filters may reference more than one value`() = testAppWithConfig {
+            val expectedCars = generateCars(5)
+            val ids = listOf(expectedCars.first().id, expectedCars.last().id)
+            val queryParams = ids.joinToString(",")
+            with(
+                handleRequest(
+                    HttpMethod.Get,
+                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[id]=$queryParams"
+                )
+            ) {
+                response.status() `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                res.data `should be equal to` expectedCars.filter { it.id in ids }
+
+                // Verify pagination info
+                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[id]=$queryParams"
+            }
         }
 
-        // Get multiple filters values
-        with(
-            handleRequest(
-                HttpMethod.Get,
-                "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[id]=1,2"
-            )
-        ) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
-            res.data `should be equal to` savedCars.filter { it.id == 1L || it.id == 2L }
-
-            // Verify pagination info
-            res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[id]=1,2"
+        @Test
+        fun `Results are empty when the filters do not match the data`() = testAppWithConfig {
+            generateCars(5)
+            with(
+                handleRequest(
+                    HttpMethod.Get,
+                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=brand000"
+                )
+            ) {
+                response.status() `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                res.data `should be equal to` listOf()
+            }
         }
+    }
+
+    private fun generateCars(n: Int): List<Car> {
+        val result: MutableList<Car> = mutableListOf()
+        repeat(n) {
+            val id = UUID.randomUUID()
+            result.add(insertCar(brand = "BRAND: $id", model = "MODEL: $id"))
+        }
+        return result
     }
 
     private fun insertCar(
@@ -267,5 +312,9 @@ class TestRoutes : KoinTest {
     ): Car {
         val newCar = CarSaveCommand(brand, model)
         return this.carRepository.save(newCar)
+    }
+
+    private fun <R> testAppWithConfig(test: TestApplicationEngine.() -> R) {
+        testApp(dbContainer.configInfo(), test)
     }
 }

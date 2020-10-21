@@ -10,8 +10,6 @@ class DatabaseConnection(private val dataSource: DataSource) {
     }
 
     fun <T> query(block: () -> T): T = transaction(database) {
-        val blockReturn = block()
-        commit()
-        blockReturn
+        block()
     }
 }
