@@ -22,6 +22,7 @@ import test.ktortemplate.core.exception.AppException
 import test.ktortemplate.core.exception.ErrorDTO
 import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.versioning.ApiVersion
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
@@ -31,6 +32,8 @@ class TestValidatable : KoinTest {
         @Container
         private val dbContainer = PgSQLContainerFactory.newInstance()
     }
+
+    private val apiVersion = ApiVersion.Latest
 
     @Test
     fun `Validating a car with an invalid brand`() {
@@ -67,7 +70,7 @@ class TestValidatable : KoinTest {
         )
 
         with(
-            handleRequest(HttpMethod.Post, "/cars") {
+            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.mapper.writeValueAsString(car))
             }
@@ -83,7 +86,7 @@ class TestValidatable : KoinTest {
         val car = Car(0, "brand", "model", wheels = listOf(Wheel(0, 225)))
 
         with(
-            handleRequest(HttpMethod.Post, "/cars") {
+            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.mapper.writeValueAsString(car))
             }

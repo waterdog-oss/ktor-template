@@ -15,16 +15,18 @@ import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.service.CarService
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.parsePageRequest
+import test.ktortemplate.core.utils.versioning.ApiVersion
 
 internal class DefaultRoutesInjector : KoinComponent {
     val carService: CarService by inject()
 }
 
 fun Route.defaultRoutes() {
+    val apiVersion = ApiVersion.Latest
     val injector = DefaultRoutesInjector()
     val carService = injector.carService
 
-    get("/cars") {
+    get("/$apiVersion/cars") {
         val pageRequest = call.parsePageRequest()
         val totalElements = carService.count(pageRequest)
         val data = carService.list(pageRequest)
@@ -38,7 +40,7 @@ fun Route.defaultRoutes() {
         )
     }
 
-    get("/cars/{id}") {
+    get("/$apiVersion/cars/{id}") {
         val carId = call.parameters["id"]?.toLong() ?: -1
         when (val car = carService.getCarById(carId)) {
             null -> call.respond(HttpStatusCode.NotFound)
@@ -46,7 +48,7 @@ fun Route.defaultRoutes() {
         }
     }
 
-    post("/cars") {
+    post("/$apiVersion/cars") {
         val newCar = call.receive<Car>()
         newCar.validate()
 
