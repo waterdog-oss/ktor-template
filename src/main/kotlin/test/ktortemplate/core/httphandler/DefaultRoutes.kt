@@ -11,7 +11,6 @@ import io.ktor.routing.post
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.core.service.CarService
-import test.ktortemplate.core.utils.json.JsonSettings
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.parsePageRequest
 
@@ -28,13 +27,11 @@ fun Route.defaultRoutes() {
         val totalElements = carService.count(pageRequest)
         val data = carService.list(pageRequest)
         call.respond(
-            JsonSettings.toJson(
-                PageResponse.from(
-                    pageRequest = pageRequest,
-                    totalElements = totalElements,
-                    data = data,
-                    path = call.request.path()
-                )
+            PageResponse.from(
+                pageRequest = pageRequest,
+                totalElements = totalElements,
+                data = data,
+                path = call.request.path()
             )
         )
     }
