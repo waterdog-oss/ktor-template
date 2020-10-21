@@ -1,6 +1,5 @@
 /**
- * Original code created by https://github.com/zensum and cloned from
- * https://github.com/zensum/ktor-health-check
+ * Adapted from https://github.com/zensum/ktor-health-check
  */
 package test.ktortemplate.core.utils.healthcheck
 
@@ -14,7 +13,16 @@ import io.ktor.util.AttributeKey
 
 // A check is a nullary function returning
 // a boolean indicating the success of the check.
-typealias Check = suspend () -> Boolean
+private typealias Check = suspend () -> Boolean
+
+// A checkmap is simply a map of names to Check functions.
+private typealias CheckMap = MutableMap<String, Check>
+
+// A CheckMap can be converted to a function returning
+// results for each of the checks.
+private fun CheckMap.toFunction(): suspend () -> Map<String, Boolean> = {
+    mapValues { it.value() }
+}
 
 // We use a version of Kubernetes recommendations: liveness and readiness
 private const val LIVE_CHECK_URL = "liveness"
@@ -27,7 +35,7 @@ private fun normalizeURL(url: String) = url.trim('/').also {
     }
 }
 
-class Health private constructor(val cfg: Configuration) {
+class Health private constructor(private val cfg: Configuration) {
     fun addInterceptor(pipeline: ApplicationCallPipeline) {
         val checks = cfg.getChecksWithFunctions()
         if (checks.isEmpty()) return
@@ -45,8 +53,9 @@ class Health private constructor(val cfg: Configuration) {
             finish()
         }
     }
+
     class Configuration internal constructor() {
-        private var checks: Map<String, CheckMapBuilder> = emptyMap()
+        private val checks: MutableMap<String, CheckMap> = mutableMapOf()
         private var noLive = false
         private var noReady = false
 
@@ -55,7 +64,7 @@ class Health private constructor(val cfg: Configuration) {
 
         private fun ensureDisableUnambiguous(url: String) {
             checks[url]?.let {
-                if (it.notEmpty()) {
+                if (it.isNotEmpty()) {
                     throw AssertionError(
                         "Cannot disable a check which " +
                             "has been assigned functions"
@@ -80,39 +89,34 @@ class Health private constructor(val cfg: Configuration) {
             ensureDisableUnambiguous(READY_CHECK_URL)
         }
 
-        private fun getCheck(url: String) = checks.getOrElse(url) {
-            CheckMapBuilder().also {
-                checks += url to it
-            }
-        }
-
         /**
          * Adds a check function to a custom check living at the specified URL
          */
-        fun customCheck(url: String, name: String, check: Check) {
-            getCheck(normalizeURL(url)).add(name, check)
+        private fun addCheckToUrl(url: String, name: String, check: Check) {
+            val urlCheck: CheckMap = checks.getOrPut(normalizeURL(url), { mutableMapOf() })
+            urlCheck[name] = check
         }
 
         /**
          * Add a health check giving it a name
          */
         fun liveCheck(name: String, check: Check) {
-            customCheck(LIVE_CHECK_URL, name, check)
+            addCheckToUrl(LIVE_CHECK_URL, name, check)
         }
 
         /**
          * Add a ready check giving it a name
          */
         fun readyCheck(name: String, check: Check) {
-            customCheck(READY_CHECK_URL, name, check)
+            addCheckToUrl(READY_CHECK_URL, name, check)
         }
 
         internal fun ensureWellKnown() {
             if (!noLive) {
-                getCheck(READY_CHECK_URL)
+                checks[READY_CHECK_URL]
             }
             if (!noReady) {
-                getCheck(LIVE_CHECK_URL)
+                checks[LIVE_CHECK_URL]
             }
         }
     }
