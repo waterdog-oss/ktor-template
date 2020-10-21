@@ -2,40 +2,40 @@ package test.ktortemplate.core.utils.versioning
 
 import io.ktor.features.BadRequestException
 import io.ktor.http.BadContentTypeFormatException
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.parseAndSortContentTypeHeader
 import io.ktor.routing.Route
 import io.ktor.routing.RouteSelector
 import io.ktor.routing.RouteSelectorEvaluation
 import io.ktor.routing.RoutingResolveContext
 
-fun Route.acceptVersion(version: ApiContentType, build: Route.() -> Unit): Route {
-    val selector = HttpAcceptSameRouteSelector(version.contentType)
+/**
+ * Route extension to accept methods depending on the specified format.
+ *
+ * acceptFormat(ApiFormat.json) {
+ *   get("/resource") {
+ *       ...
+ *   }
+ * }
+ */
+fun Route.acceptFormat(format: ApiFormat, build: Route.() -> Unit): Route {
+    val selector = HttpAcceptFormatSelector(format)
     return createChild(selector).apply(build)
 }
 
-data class HttpAcceptSameRouteSelector(val contentType: ContentType) :
+internal data class HttpAcceptFormatSelector(val format: ApiFormat) :
     RouteSelector(RouteSelectorEvaluation.qualityConstant) {
     override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
-        val acceptHeaderContent = context.call.request.headers[HttpHeaders.Accept]
+        val acceptFormatContent = context.call.parameters["format"] ?: return RouteSelectorEvaluation.Missing
+
         try {
-            val parsedHeaders = parseAndSortContentTypeHeader(acceptHeaderContent)
-            if (parsedHeaders.isEmpty()) {
-                return RouteSelectorEvaluation.Missing
+            if (ApiFormat.valueOf(acceptFormatContent) !== format) {
+                return RouteSelectorEvaluation.Failed
             }
 
-            // Checking if contentType is exactly the same
-            val header = parsedHeaders.firstOrNull { contentType.toString() == it.value }
-            if (header != null) {
-                return RouteSelectorEvaluation(true, header.quality)
-            }
-
-            return RouteSelectorEvaluation.Failed
+            return RouteSelectorEvaluation.Constant
         } catch (failedToParse: BadContentTypeFormatException) {
-            throw BadRequestException("Illegal Accept header format: $acceptHeaderContent", failedToParse)
+            throw BadRequestException("Illegal Accept format: $acceptFormatContent", failedToParse)
         }
     }
 
-    override fun toString(): String = "(contentType:$contentType)"
+    override fun toString(): String = "(format:$format)"
 }

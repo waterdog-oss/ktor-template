@@ -1,21 +1,19 @@
 package test.ktortemplate.core.utils.versioning
 
-import io.ktor.http.ContentType
+/**
+ * Enum that holds application versions
+ */
+enum class ApiVersion(val version: String) {
+    V1("v1"),
+    Latest(V1.version);
 
-interface ApiContentType {
-    val contentType: ContentType
+    override fun toString(): String = this.version
 }
 
 /**
- * Class that holds application versions.
- * To support another format, e.g. XML, add another enum.
+ * Enum that holds application formats
  */
-object ApiVersion {
-    private const val prefix = "vnd.ktortemplate"
-
-    enum class Json(override val contentType: ContentType) : ApiContentType {
-        V1(ContentType("application", "$prefix.v1+json")),
-        V2(ContentType("application", "$prefix.v2+json")),
-        Latest(V2.contentType)
-    }
+enum class ApiFormat {
+    json,
+    xml
 }

@@ -21,7 +21,6 @@ import test.ktortemplate.conf.DevEnvironmentConfigurator
 import test.ktortemplate.conf.ProdEnvironmentConfigurator
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
-import test.ktortemplate.core.utils.versioning.ApiVersion
 
 @KtorExperimentalAPI
 fun Application.module() {
@@ -50,7 +49,6 @@ fun Application.module() {
     }
     install(ContentNegotiation) {
         register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
-        ApiVersion.Json.values().forEach { register(it.contentType, JacksonConverter(JsonSettings.mapper)) }
     }
 
     install(CORS) {
