@@ -91,6 +91,41 @@ class TestRoutes : KoinTest {
         }
     }
 
+    @Test
+    fun `Updating a car correctly`() = testAppWithConfig {
+        val cmd = CarSaveCommand("porsche", "spyder")
+
+        val newCar = with(
+            handleRequest(HttpMethod.Post, "/cars") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(JsonSettings.mapper.writeValueAsString(cmd))
+            }
+        ) {
+            response.status() `should be equal to` HttpStatusCode.OK
+            val car: Car = JsonSettings.mapper.readValue(response.content!!)
+            car.id `should be greater than` 0
+            car.brand `should be equal to` cmd.brand
+            car.model `should be equal to` cmd.model
+            carRepository.count() `should be equal to` 1
+            car
+        }
+
+        val updatedCar = Car(newCar.id, newCar.brand, newCar.model + "_2")
+        with(
+            handleRequest(HttpMethod.Put, "/cars/${newCar.id}") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(JsonSettings.mapper.writeValueAsString(updatedCar))
+            }
+        ) {
+            response.status() `should be equal to` HttpStatusCode.OK
+            val car: Car = JsonSettings.mapper.readValue(response.content!!)
+            car.id `should be equal to` updatedCar.id
+            car.brand `should be equal to` updatedCar.brand
+            car.model `should be equal to` updatedCar.model
+            carRepository.count() `should be equal to` 1
+        }
+    }
+
     @Nested
     @DisplayName("Test car listing: filtering and ordering")
     inner class TestCarList {

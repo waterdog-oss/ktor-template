@@ -6,9 +6,11 @@ import test.ktortemplate.core.model.RegisterPartReplacementCommand
 import test.ktortemplate.core.utils.pagination.PageRequest
 
 interface CarService {
+    fun exists(carId: Long): Boolean
     fun count(pageRequest: PageRequest): Int
     fun getCarById(carId: Long): Car?
     fun insertNewCar(newCar: CarSaveCommand): Car
+    fun updateCar(car: Car): Car
     fun registerPartReplacement(replacedParts: RegisterPartReplacementCommand): Car
     fun list(pageRequest: PageRequest): List<Car>
 }

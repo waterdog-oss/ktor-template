@@ -4,6 +4,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.conf.database.DatabaseConnection
@@ -17,6 +18,12 @@ import test.ktortemplate.core.utils.pagination.fromFilters
 class CarRepositoryImpl : CarRepository, KoinComponent {
 
     private val dbc: DatabaseConnection by inject()
+
+    override fun exists(id: Long): Boolean {
+        return dbc.query {
+            CarMappingsTable.select { CarMappingsTable.id eq id }.count() == 1L
+        }
+    }
 
     override fun getById(id: Long): Car? {
         return dbc.query {
@@ -37,6 +44,16 @@ class CarRepositoryImpl : CarRepository, KoinComponent {
             } get CarMappingsTable.id
 
             Car(newCarId.value, car.brand, car.model)
+        }
+    }
+
+    override fun update(car: Car): Car {
+        return dbc.query {
+            CarMappingsTable.update({ CarMappingsTable.id eq car.id }) {
+                it[brand] = car.brand
+                it[model] = car.model
+            }
+            getById(car.id)!!
         }
     }
 
