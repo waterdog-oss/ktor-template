@@ -9,7 +9,6 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
-import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be greater than`
@@ -33,6 +32,7 @@ import test.ktortemplate.core.utils.pagination.PageRequest
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.PaginationUtils
 import test.ktortemplate.core.utils.versioning.ApiVersion
+import java.util.UUID
 
 @KtorExperimentalAPI
 @Testcontainers
