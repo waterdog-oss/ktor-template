@@ -3,6 +3,8 @@ package test.ktortemplate.core.service
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.conf.database.DatabaseConnection
+import test.ktortemplate.core.exception.AppException
+import test.ktortemplate.core.exception.ErrorCode
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.model.Part
@@ -31,7 +33,12 @@ class CarServiceImpl : KoinComponent, CarService {
     }
 
     override suspend fun updateCar(car: Car): Car {
-        return dbc.suspendedQuery { carRepository.update(car) }
+        return dbc.suspendedQuery {
+            if (!exists(car.id)) {
+                throw AppException(ErrorCode.NotFound, "Could not find car with id '${car.id}'.")
+            }
+            carRepository.update(car)
+        }
     }
 
     override suspend fun registerPartReplacement(replacedParts: RegisterPartReplacementCommand): Car {

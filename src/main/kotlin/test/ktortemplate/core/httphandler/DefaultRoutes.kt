@@ -64,10 +64,6 @@ fun Route.defaultRoutes() {
         val carId = call.parameters["id"]?.toLong() ?: -1
         if (carId != car.id) throw AppException(ErrorCode.InvalidUserInput, "Received ids doesn't match.")
 
-        if (!carService.exists(carId)) {
-            throw AppException(ErrorCode.NotFound, "Could not find car with id '${car.id}'.")
-        }
-
         val updatedCar = carService.updateCar(car)
         call.respond(updatedCar)
     }
