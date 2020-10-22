@@ -11,10 +11,14 @@ import org.koin.dsl.module
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.persistance.PartRepository
+import test.ktortemplate.core.persistance.PersonRepository
 import test.ktortemplate.core.persistance.sql.CarRepositoryImpl
 import test.ktortemplate.core.persistance.sql.PartRepositoryImpl
+import test.ktortemplate.core.persistance.sql.PersonRepositoryImpl
 import test.ktortemplate.core.service.CarService
 import test.ktortemplate.core.service.CarServiceImpl
+import test.ktortemplate.core.service.PersonService
+import test.ktortemplate.core.service.PersonServiceImpl
 import javax.sql.DataSource
 
 @KtorExperimentalAPI
@@ -45,7 +49,9 @@ class EnvironmentConfigurator(baseConfig: ApplicationConfig, configOverrides: Ap
     private fun initServicesAndRepos() = module {
         single<PartRepository> { PartRepositoryImpl() }
         single<CarRepository> { CarRepositoryImpl() }
+        single<PersonRepository> { PersonRepositoryImpl() }
         single<CarService> { CarServiceImpl() }
+        single<PersonService> { PersonServiceImpl() }
     }
 
     private fun initDbCore() = module {

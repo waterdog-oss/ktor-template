@@ -16,16 +16,19 @@ import test.ktortemplate.core.exception.ErrorCode
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.service.CarService
+import test.ktortemplate.core.service.PersonService
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.parsePageRequest
 
 internal class DefaultRoutesInjector : KoinComponent {
     val carService: CarService by inject()
+    val personService: PersonService by inject()
 }
 
 fun Route.defaultRoutes() {
     val injector = DefaultRoutesInjector()
     val carService = injector.carService
+    val personService = injector.personService
 
     get("/cars") {
         val pageRequest = call.parsePageRequest()
@@ -66,5 +69,19 @@ fun Route.defaultRoutes() {
 
         val updatedCar = carService.updateCar(car)
         call.respond(updatedCar)
+    }
+
+    get("/persons") {
+        val pageRequest = call.parsePageRequest()
+        val totalElements = personService.count(pageRequest)
+        val data = personService.list(pageRequest)
+        call.respond(
+            PageResponse.from(
+                pageRequest = pageRequest,
+                totalElements = totalElements,
+                data = data,
+                path = call.request.path()
+            )
+        )
     }
 }
