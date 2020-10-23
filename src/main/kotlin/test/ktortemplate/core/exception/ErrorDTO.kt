@@ -10,6 +10,7 @@ data class ErrorDTO(
     val httpStatusCode: Int,
     val messageCode: String? = null,
     val title: String? = null,
+    val requestId: String? = null,
     val errors: List<ErrorDefinition> = listOf()
 ) {
     val id: UUID = UUID.randomUUID()

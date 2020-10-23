@@ -9,6 +9,7 @@ import test.ktortemplate.core.model.Part
 import test.ktortemplate.core.model.RegisterPartReplacementCommand
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.persistance.PartRepository
+import test.ktortemplate.core.utils.log.LogHelper
 import test.ktortemplate.core.utils.pagination.PageRequest
 
 class CarServiceImpl : KoinComponent, CarService {
@@ -18,6 +19,7 @@ class CarServiceImpl : KoinComponent, CarService {
     private val dbc: DatabaseConnection by inject()
 
     override suspend fun count(pageRequest: PageRequest): Int {
+        LogHelper.info("Counting results")
         return dbc.suspendedQuery { carRepository.count(pageRequest) }
     }
 
@@ -43,6 +45,7 @@ class CarServiceImpl : KoinComponent, CarService {
     }
 
     override suspend fun list(pageRequest: PageRequest): List<Car> {
+        LogHelper.info("Listing results")
         return dbc.suspendedQuery {
             carRepository.list(pageRequest)
         }
