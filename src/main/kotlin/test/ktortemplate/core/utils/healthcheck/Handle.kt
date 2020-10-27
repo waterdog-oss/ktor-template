@@ -4,29 +4,11 @@
 package test.ktortemplate.core.utils.healthcheck
 
 import io.ktor.http.HttpStatusCode
-
-// bool value = ~5. name = 10, four quotes and a comma
-private const val EST_JSON_PER_KEY = 5 + 10 + 4
-
-private fun checksResultsToJSON(res: Map<String, Boolean>) =
-    StringBuilder(res.size * EST_JSON_PER_KEY)
-        .apply {
-            append('{')
-            // We use a prefix to add a comma before all but the first element
-            var prefix = "\""
-            res.forEach { (k, v) ->
-                append(prefix)
-                prefix = ",\""
-                append(k)
-                append("\":")
-                append(v)
-            }
-            append("}")
-        }.toString()
+import test.ktortemplate.core.utils.JsonSettings
 
 internal suspend fun healthCheck(fn: suspend () -> Map<String, Boolean>) = fn().let {
     val success = it.values.all { it }
-    val json = checksResultsToJSON(it)
+    val json = JsonSettings.mapper.writeValueAsString(it)
     val status = if (success) {
         HttpStatusCode.OK
     } else {

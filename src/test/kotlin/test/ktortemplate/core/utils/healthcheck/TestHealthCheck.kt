@@ -43,6 +43,23 @@ class TestHealthCheck : KoinTest {
         }
     }
 
+    @Test
+    fun `Checking readiness with 500 Internal Server Error`() = testAppWithConfig {
+        with(handleRequest(HttpMethod.Get, "/readiness")) {
+            response.status() `should be equal to` io.ktor.http.HttpStatusCode.OK
+            val result: Map<String, String> = JsonSettings.mapper.readValue(response.content!!)
+            result["database"].toBoolean() `should be equal to` true
+        }
+
+        dbContainer.stop()
+        with(handleRequest(HttpMethod.Get, "/readiness")) {
+            response.status() `should be equal to` io.ktor.http.HttpStatusCode.InternalServerError
+            val result: Map<String, String> = JsonSettings.mapper.readValue(response.content!!)
+            result["database"].toBoolean() `should be equal to` false
+        }
+        dbContainer.start()
+    }
+
     private fun <R> testAppWithConfig(test: TestApplicationEngine.() -> R) {
         testApp(dbContainer.configInfo(), test)
     }
