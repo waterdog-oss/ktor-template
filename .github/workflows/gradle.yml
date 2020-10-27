@@ -23,6 +23,7 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/dependencies.gradle') }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
-
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Build the latest Docker image
+      run: docker build .
