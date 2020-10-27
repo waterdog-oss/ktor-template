@@ -11,11 +11,12 @@ fun StatusPages.Configuration.appException() {
 
     exception<AppException> {
         val errorData = ErrorDTO(it.code.httpStatusCode.value, it.code.messageCode, it.title, it.errors)
-        log.error("Returning AppException data to client:\n$errorData")
+        log.error("Returning AppException data to client:\n$errorData", it)
         call.respond(it.code.httpStatusCode, errorData)
     }
 
     exception<Throwable> {
+        log.error("Unexpected exception.", it)
         call.respond(
             ErrorDTO(
                 httpStatusCode = HttpStatusCode.InternalServerError.value,

@@ -6,7 +6,6 @@ import org.valiktor.functions.isIn
 import org.valiktor.functions.validateForEach
 
 data class Car(val id: Long, val brand: String, val model: String, val wheels: List<Wheel>? = null) : Validatable<Car>() {
-
     override fun rules(validator: Validator<Car>) {
         validator
             .validate(Car::brand)
