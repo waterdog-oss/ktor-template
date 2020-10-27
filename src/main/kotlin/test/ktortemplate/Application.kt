@@ -24,6 +24,7 @@ import test.ktortemplate.core.exception.appException
 import test.ktortemplate.core.exception.defaultStatusCodes
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.log.RequestIdFeature
 
 @KtorExperimentalAPI
 fun Application.module(configOverrides: ApplicationConfig? = null) {
@@ -46,6 +47,11 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
     install(CallLogging) {
         level = org.slf4j.event.Level.INFO
     }
+
+    install(RequestIdFeature) {
+        headerName = "X-Request-Id"
+    }
+
     install(ContentNegotiation) {
         register(ContentType.Application.Json, JacksonConverter(JsonSettings.mapper))
     }
