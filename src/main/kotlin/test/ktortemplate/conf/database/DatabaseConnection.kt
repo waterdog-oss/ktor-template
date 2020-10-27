@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.lang.Exception
 import java.sql.Connection
 import javax.sql.DataSource
 
@@ -22,5 +23,12 @@ class DatabaseConnection(private val dataSource: DataSource) {
         block: suspend Transaction.() -> T
     ): T = newSuspendedTransaction(Dispatchers.IO, database, txIsolation) {
         block()
+    }
+
+    fun ping(): Boolean = try {
+        transaction(database) { exec("SELECT 1") }
+        true
+    } catch (e: Exception) {
+        false
     }
 }

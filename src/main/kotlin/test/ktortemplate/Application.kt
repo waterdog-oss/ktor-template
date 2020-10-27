@@ -24,6 +24,9 @@ import test.ktortemplate.core.exception.appException
 import test.ktortemplate.core.exception.defaultStatusCodes
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.healthcheck.Health
+import test.ktortemplate.core.utils.healthcheck.liveness
+import test.ktortemplate.core.utils.healthcheck.readiness
 
 @KtorExperimentalAPI
 fun Application.module(configOverrides: ApplicationConfig? = null) {
@@ -70,6 +73,11 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
     install(StatusPages) {
         appException()
         defaultStatusCodes()
+    }
+
+    install(Health) {
+        liveness()
+        readiness()
     }
 
     log.info("Ktor server started...")
