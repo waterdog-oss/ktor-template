@@ -1,8 +1,12 @@
 package test.ktortemplate.conf.database
 
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.Transaction
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
+import java.sql.Connection
 import javax.sql.DataSource
 
 class DatabaseConnection(private val dataSource: DataSource) {
@@ -10,7 +14,14 @@ class DatabaseConnection(private val dataSource: DataSource) {
         Database.connect(dataSource)
     }
 
-    fun <T> query(block: () -> T): T = transaction(database) {
+    fun <T> query(block: Transaction.() -> T): T = transaction(database) {
+        block()
+    }
+
+    suspend fun <T> suspendedQuery(
+        txIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ,
+        block: suspend Transaction.() -> T
+    ): T = newSuspendedTransaction(Dispatchers.IO, database, txIsolation) {
         block()
     }
 

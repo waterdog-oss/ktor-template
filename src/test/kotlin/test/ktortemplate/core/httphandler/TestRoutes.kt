@@ -9,6 +9,7 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
+import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be greater than`
 import org.junit.jupiter.api.AfterEach
@@ -20,6 +21,7 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
@@ -42,14 +44,18 @@ class TestRoutes : KoinTest {
     }
 
     private val carRepository: CarRepository by inject()
+    private val dbc: DatabaseConnection by inject()
 
     @AfterEach
     fun cleanDatabase() {
-        val cars = carRepository.list(PageRequest(page = 0, size = Int.MAX_VALUE, sort = listOf(), filter = listOf()))
-        cars.forEach {
-            carRepository.delete(it.id)
+        dbc.query {
+            val cars =
+                carRepository.list(PageRequest(page = 0, size = Int.MAX_VALUE, sort = listOf(), filter = listOf()))
+            cars.forEach {
+                carRepository.delete(it.id)
+            }
+            carRepository.count() `should be equal to` 0
         }
-        carRepository.count() `should be equal to` 0
     }
 
     @Test
@@ -87,7 +93,7 @@ class TestRoutes : KoinTest {
             car.id `should be greater than` 0
             car.brand `should be equal to` cmd.brand
             car.model `should be equal to` cmd.model
-            carRepository.count() `should be equal to` 1
+            countCars() `should be equal to` 1
         }
     }
 
@@ -310,11 +316,19 @@ class TestRoutes : KoinTest {
         brand: String = UUID.randomUUID().toString(),
         model: String = UUID.randomUUID().toString()
     ): Car {
-        val newCar = CarSaveCommand(brand, model)
-        return this.carRepository.save(newCar)
+        return dbc.query {
+            val newCar = CarSaveCommand(brand, model)
+            carRepository.save(newCar)
+        }
     }
 
-    private fun <R> testAppWithConfig(test: TestApplicationEngine.() -> R) {
-        testApp(dbContainer.configInfo(), test)
+    private fun countCars(): Int {
+        return dbc.query { carRepository.count() }
+    }
+
+    private fun <R> testAppWithConfig(test: suspend TestApplicationEngine.() -> R) {
+        testApp(dbContainer.configInfo()) {
+            runBlocking { test() }
+        }
     }
 }
