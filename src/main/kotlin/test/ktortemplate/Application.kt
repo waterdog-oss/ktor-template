@@ -47,7 +47,7 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
     }
 
     // Installs call logging and request tracing
-    val callIdHeader = environment.config.property("ktor.callLogging.callIdHeader").getString()
+    val callIdHeader = environment.config.propertyOrNull("ktor.callLogging.callIdHeader")?.getString() ?: "X-Request-Id"
     install(CallLogging) {
         level = org.slf4j.event.Level.INFO
         callIdMdc(callIdHeader)
