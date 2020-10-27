@@ -1,6 +1,5 @@
 /**
- * Code created by https://github.com/zensum and cloned from
- * https://github.com/zensum/ktor-health-check
+ * Adapted from https://github.com/zensum/ktor-health-check
  */
 package test.ktortemplate.core.utils.healthcheck
 
