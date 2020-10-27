@@ -5,11 +5,13 @@ import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.config.ApplicationConfig
 import io.ktor.features.CORS
+import io.ktor.features.CallId
 import io.ktor.features.CallLogging
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
+import io.ktor.features.callIdMdc
 import io.ktor.features.deflate
 import io.ktor.features.gzip
 import io.ktor.features.identity
@@ -24,7 +26,7 @@ import test.ktortemplate.core.exception.appException
 import test.ktortemplate.core.exception.defaultStatusCodes
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
-import test.ktortemplate.core.utils.log.RequestIdFeature
+import java.util.UUID
 
 @KtorExperimentalAPI
 fun Application.module(configOverrides: ApplicationConfig? = null) {
@@ -44,12 +46,13 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
         }
     }
 
+    val callIdHeader = environment.config.property("ktor.logging.callIdHeader").getString()
     install(CallLogging) {
         level = org.slf4j.event.Level.INFO
+        callIdMdc(callIdHeader)
     }
-
-    install(RequestIdFeature) {
-        headerName = "X-Request-Id"
+    install(CallId) {
+        generate { it.request.headers[callIdHeader] ?: UUID.randomUUID().toString() }
     }
 
     install(ContentNegotiation) {
