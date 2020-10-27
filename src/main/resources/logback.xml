@@ -4,7 +4,7 @@
             <includeCallerData>true</includeCallerData>
             <prefix class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
                 <layout class="ch.qos.logback.classic.PatternLayout">
-                    <pattern>%-125(%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %-5level %X{X-Request-Id} %msg) %ex</pattern>
+                    <pattern>%-125(%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %X{X-Request-Id} %-5level %msg) %ex</pattern>
                 </layout>
             </prefix>
         </encoder>

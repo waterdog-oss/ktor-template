@@ -7,7 +7,7 @@ import io.ktor.response.respond
 import org.slf4j.LoggerFactory
 
 fun StatusPages.Configuration.appException() {
-    val log = LoggerFactory.getLogger(StatusPages.Configuration::class.java)
+    val log = LoggerFactory.getLogger(this::class.java)
 
     exception<AppException> {
         val errorData = ErrorDTO(it.code.httpStatusCode.value, it.code.messageCode, it.title, it.errors)

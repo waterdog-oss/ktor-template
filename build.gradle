@@ -54,7 +54,8 @@ dependencies {
     implementation deps.kotlin.jdk
 
     implementation deps.logs.logback
-    implementation deps.logs.jsonEncoder
+    implementation deps.logs.logbackJsonEncoder
+    implementation deps.logs.coroutinesSlf4j
 
     implementation deps.ktor.serverNetty
     implementation deps.ktor.jackson

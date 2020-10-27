@@ -1,5 +1,6 @@
 package test.ktortemplate.core.service
 
+import kotlinx.coroutines.slf4j.MDCContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.conf.database.DatabaseConnection
@@ -18,7 +19,7 @@ class CarServiceImpl : KoinComponent, CarService {
     private val dbc: DatabaseConnection by inject()
 
     override suspend fun count(pageRequest: PageRequest): Int {
-        return dbc.suspendedQuery { carRepository.count(pageRequest) }
+        return dbc.suspendedQueryContext(MDCContext()) { carRepository.count(pageRequest) }
     }
 
     override suspend fun getCarById(carId: Long): Car? {
