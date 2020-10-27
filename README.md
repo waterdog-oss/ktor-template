@@ -46,4 +46,4 @@ When running the image there are a number of environment variables that can be a
 
 - __KTOR_PORT:__ The port the server is listening on. Defaults to `8080`
 - __KTOR_ENV:__ The environment that the application is running on. Can be `dev`, `staging` or `prod`. Defaults to `dev`
-- __JAVA_OPTS:__ Runtime set of java opts used by the JVM.
+- __JAVA_OPTS:__ Runtime set of java opts used by the JVM (optional).
