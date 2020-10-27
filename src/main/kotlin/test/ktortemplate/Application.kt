@@ -53,6 +53,7 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
     }
     install(CallId) {
         generate { it.request.headers[callIdHeader] ?: UUID.randomUUID().toString() }
+        replyToHeader(callIdHeader)
     }
 
     install(ContentNegotiation) {

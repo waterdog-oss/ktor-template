@@ -1,17 +1,13 @@
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- encoders are assigned the type
-             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] [%X{X-Request-Id}] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
+    <appender name="jsonConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
     <logger name="Exposed" level="debug">
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="jsonConsoleAppender"/>
     </logger>
 
     <root level="info">
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="jsonConsoleAppender"/>
     </root>
 </configuration>

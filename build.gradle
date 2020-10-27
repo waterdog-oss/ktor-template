@@ -53,7 +53,8 @@ sourceSets {
 dependencies {
     implementation deps.kotlin.jdk
 
-    implementation deps.logback
+    implementation deps.logs.logback
+    implementation deps.logs.jsonEncoder
 
     implementation deps.ktor.serverNetty
     implementation deps.ktor.jackson

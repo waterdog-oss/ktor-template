@@ -2,7 +2,6 @@ package test.ktortemplate.core.service
 
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import org.slf4j.LoggerFactory
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
@@ -13,16 +12,11 @@ import test.ktortemplate.core.persistance.PartRepository
 import test.ktortemplate.core.utils.pagination.PageRequest
 
 class CarServiceImpl : KoinComponent, CarService {
-    companion object {
-        private val log = LoggerFactory.getLogger(this::class.java)
-    }
-
     private val carRepository: CarRepository by inject()
     private val partRepository: PartRepository by inject()
     private val dbc: DatabaseConnection by inject()
 
     override suspend fun count(pageRequest: PageRequest): Int {
-        log.info("Counting results")
         return dbc.suspendedQuery { carRepository.count(pageRequest) }
     }
 
@@ -48,7 +42,6 @@ class CarServiceImpl : KoinComponent, CarService {
     }
 
     override suspend fun list(pageRequest: PageRequest): List<Car> {
-        log.info("Listing results")
         return dbc.suspendedQuery {
             carRepository.list(pageRequest)
         }
