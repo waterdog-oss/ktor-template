@@ -32,5 +32,3 @@ fun StatusPages.Configuration.defaultStatusCodes() {
     }
     // TODO customize response for some status codes if necessary
 }
-
-
