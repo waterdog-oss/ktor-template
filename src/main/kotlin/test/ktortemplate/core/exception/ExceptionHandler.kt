@@ -18,6 +18,7 @@ fun StatusPages.Configuration.appException() {
     exception<Throwable> {
         log.error("Returning Throwable", it)
         call.respond(
+            HttpStatusCode.InternalServerError,
             ErrorDTO(
                 httpStatusCode = HttpStatusCode.InternalServerError.value,
                 title = it.localizedMessage
