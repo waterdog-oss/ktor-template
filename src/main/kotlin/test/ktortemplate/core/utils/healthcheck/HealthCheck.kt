@@ -20,10 +20,19 @@ fun Health.Configuration.readiness(timeoutMs: Long) {
 
 private suspend fun checkDatabase(timeout: Long): Boolean =
     try {
-        withTimeout(timeout) {
-            HealthCheckInjector().dbc.ping()
+        val result = withTimeout(timeout) {
+            try {
+                HealthCheckInjector().dbc.ping()
+                true
+            } catch (ex: Exception) {
+                println("Exception in query: ${ex.javaClass.name}")
+                false
+            }
         }
-        true
-    } catch (e: Exception) {
+
+        println("Returning result: $result")
+        result
+    } catch (ex: Exception) {
+        println("Caught ${ex.javaClass.name}. Returning false")
         false
     }
