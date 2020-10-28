@@ -30,7 +30,6 @@ class DatabaseConnection(private val dataSource: DataSource) {
             exec("SELECT 1")
             true
         } catch (e: Exception) {
-            println("ERROR IN CONNECTION: ${e.javaClass.name}")
             false
         }
     }
