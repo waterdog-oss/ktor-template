@@ -60,6 +60,10 @@ class TestHealthCheck : KoinTest {
             }
 
             dbContainer.stop()
+            // The wait here is important to avoid timing issues
+            waitFor(Duration.ofSeconds(3)) {
+                !dbContainer.isRunning
+            }
             with(handleRequest(HttpMethod.Get, "/readiness")) {
                 response.status() `should be equal to` HttpStatusCode.InternalServerError
                 val result: Map<String, Boolean> = JsonSettings.mapper.readValue(response.content!!)
