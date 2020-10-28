@@ -9,6 +9,7 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
+import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be greater than`
 import org.junit.jupiter.api.AfterEach
@@ -20,6 +21,7 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
@@ -42,14 +44,18 @@ class TestRoutes : KoinTest {
     }
 
     private val carRepository: CarRepository by inject()
+    private val dbc: DatabaseConnection by inject()
 
     @AfterEach
     fun cleanDatabase() {
-        val cars = carRepository.list(PageRequest(page = 0, size = Int.MAX_VALUE, sort = listOf(), filter = listOf()))
-        cars.forEach {
-            carRepository.delete(it.id)
+        dbc.query {
+            val cars =
+                carRepository.list(PageRequest(page = 0, size = Int.MAX_VALUE, sort = listOf(), filter = listOf()))
+            cars.forEach {
+                carRepository.delete(it.id)
+            }
+            carRepository.count() `should be equal to` 0
         }
-        carRepository.count() `should be equal to` 0
     }
 
     @Test
@@ -87,7 +93,42 @@ class TestRoutes : KoinTest {
             car.id `should be greater than` 0
             car.brand `should be equal to` cmd.brand
             car.model `should be equal to` cmd.model
-            carRepository.count() `should be equal to` 1
+            countCars() `should be equal to` 1
+        }
+    }
+
+    @Test
+    fun `Updating a car correctly`() = testAppWithConfig {
+        val cmd = CarSaveCommand("porsche", "spyder")
+
+        val newCar = with(
+            handleRequest(HttpMethod.Post, "/cars") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(JsonSettings.mapper.writeValueAsString(cmd))
+            }
+        ) {
+            response.status() `should be equal to` HttpStatusCode.OK
+            val car: Car = JsonSettings.mapper.readValue(response.content!!)
+            car.id `should be greater than` 0
+            car.brand `should be equal to` cmd.brand
+            car.model `should be equal to` cmd.model
+            countCars() `should be equal to` 1
+            car
+        }
+
+        val updatedCar = Car(newCar.id, newCar.brand, newCar.model + "_2")
+        with(
+            handleRequest(HttpMethod.Put, "/cars/${newCar.id}") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(JsonSettings.mapper.writeValueAsString(updatedCar))
+            }
+        ) {
+            response.status() `should be equal to` HttpStatusCode.OK
+            val car: Car = JsonSettings.mapper.readValue(response.content!!)
+            car.id `should be equal to` updatedCar.id
+            car.brand `should be equal to` updatedCar.brand
+            car.model `should be equal to` updatedCar.model
+            countCars() `should be equal to` 1
         }
     }
 
@@ -310,11 +351,19 @@ class TestRoutes : KoinTest {
         brand: String = UUID.randomUUID().toString(),
         model: String = UUID.randomUUID().toString()
     ): Car {
-        val newCar = CarSaveCommand(brand, model)
-        return this.carRepository.save(newCar)
+        return dbc.query {
+            val newCar = CarSaveCommand(brand, model)
+            carRepository.save(newCar)
+        }
     }
 
-    private fun <R> testAppWithConfig(test: TestApplicationEngine.() -> R) {
-        testApp(dbContainer.configInfo(), test)
+    private fun countCars(): Int {
+        return dbc.query { carRepository.count() }
+    }
+
+    private fun <R> testAppWithConfig(test: suspend TestApplicationEngine.() -> R) {
+        testApp(dbContainer.configInfo()) {
+            runBlocking { test() }
+        }
     }
 }

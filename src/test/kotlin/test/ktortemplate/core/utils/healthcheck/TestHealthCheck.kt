@@ -10,6 +10,7 @@ import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.koin.test.KoinTest
+import org.slf4j.LoggerFactory
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import test.ktortemplate.containers.PgSQLContainerFactory
@@ -25,6 +26,7 @@ class TestHealthCheck : KoinTest {
     companion object {
         @Container
         private val dbContainer = PgSQLContainerFactory.newInstance()
+        private val log = LoggerFactory.getLogger(this::class.java)
     }
 
     @Test
@@ -61,9 +63,11 @@ class TestHealthCheck : KoinTest {
 
             dbContainer.stop()
             // The wait here is important to avoid timing issues
+            log.info("Stopping container")
             waitFor(Duration.ofSeconds(3)) {
                 !dbContainer.isRunning
             }
+            log.info("Testing readiness. It should fail...")
             with(handleRequest(HttpMethod.Get, "/readiness")) {
                 response.status() `should be equal to` HttpStatusCode.InternalServerError
                 val result: Map<String, Boolean> = JsonSettings.mapper.readValue(response.content!!)

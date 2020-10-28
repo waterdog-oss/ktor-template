@@ -3,6 +3,8 @@ package test.ktortemplate.core.service
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.conf.database.DatabaseConnection
+import test.ktortemplate.core.exception.AppException
+import test.ktortemplate.core.exception.ErrorCode
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.model.Part
@@ -17,15 +19,31 @@ class CarServiceImpl : KoinComponent, CarService {
     private val partRepository: PartRepository by inject()
     private val dbc: DatabaseConnection by inject()
 
-    override fun count(pageRequest: PageRequest): Int = this.carRepository.count(pageRequest)
+    override suspend fun count(pageRequest: PageRequest): Int {
+        return dbc.suspendedQuery { carRepository.count(pageRequest) }
+    }
+    override suspend fun exists(carId: Long): Boolean = dbc.suspendedQuery { carRepository.exists(carId) }
 
-    override fun getCarById(carId: Long): Car? = this.carRepository.getById(carId)
+    override suspend fun getCarById(carId: Long): Car? {
+        return dbc.suspendedQuery { carRepository.getById(carId) }
+    }
 
-    override fun insertNewCar(newCar: CarSaveCommand): Car = this.carRepository.save(newCar)
+    override suspend fun insertNewCar(newCar: CarSaveCommand): Car {
+        return dbc.suspendedQuery { carRepository.save(newCar) }
+    }
 
-    override fun registerPartReplacement(replacedParts: RegisterPartReplacementCommand): Car {
+    override suspend fun updateCar(car: Car): Car {
+        return dbc.suspendedQuery {
+            if (!exists(car.id)) {
+                throw AppException(ErrorCode.NotFound, "Could not find car with id '${car.id}'.")
+            }
+            carRepository.update(car)
+        }
+    }
+
+    override suspend fun registerPartReplacement(replacedParts: RegisterPartReplacementCommand): Car {
         // this runs the operation as a single transaction
-        return dbc.query {
+        return dbc.suspendedQuery {
             val car = carRepository.getById(replacedParts.carId)
             requireNotNull(car) { "Car must exist" }
             for (part: Part in replacedParts.parts) {
@@ -36,6 +54,9 @@ class CarServiceImpl : KoinComponent, CarService {
         }
     }
 
-    override fun list(pageRequest: PageRequest): List<Car> =
-        this.carRepository.list(pageRequest)
+    override suspend fun list(pageRequest: PageRequest): List<Car> {
+        return dbc.suspendedQuery {
+            carRepository.list(pageRequest)
+        }
+    }
 }
