@@ -4,6 +4,7 @@ import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.config.ApplicationConfig
+import io.ktor.config.ApplicationConfigValue
 import io.ktor.features.CORS
 import io.ktor.features.CallLogging
 import io.ktor.features.Compression
@@ -76,8 +77,10 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
     }
 
     install(Health) {
+        val readinessDbTimeout: ApplicationConfigValue? = environment.config
+            .propertyOrNull("healthcheck.readiness.database.timeoutMillis")
         liveness()
-        readiness()
+        readiness(readinessDbTimeout?.getString()?.toLong() ?: 3000L)
     }
 
     log.info("Ktor server started...")

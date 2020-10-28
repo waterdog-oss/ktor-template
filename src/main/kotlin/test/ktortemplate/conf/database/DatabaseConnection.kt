@@ -1,6 +1,8 @@
 package test.ktortemplate.conf.database
 
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
 import javax.sql.DataSource
@@ -14,10 +16,12 @@ class DatabaseConnection(private val dataSource: DataSource) {
         block()
     }
 
-    fun ping(): Boolean = try {
-        transaction(database) { exec("SELECT 1") }
-        true
-    } catch (e: Exception) {
-        false
+    suspend fun ping(): Boolean = newSuspendedTransaction(Dispatchers.IO, database) {
+        try {
+            exec("SELECT 1")
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }
