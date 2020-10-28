@@ -1,6 +1,5 @@
 package test.ktortemplate.core.utils.healthcheck
 
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.koin.core.KoinComponent
 import org.koin.core.inject
