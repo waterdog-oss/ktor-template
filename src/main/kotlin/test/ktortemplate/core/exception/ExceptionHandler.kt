@@ -16,7 +16,7 @@ fun StatusPages.Configuration.appException() {
     }
 
     exception<Throwable> {
-        log.error("Returning Throwable", it)
+        log.error("Unexpected exception.", it)
         call.respond(
             HttpStatusCode.InternalServerError,
             ErrorDTO(

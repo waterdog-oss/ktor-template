@@ -23,6 +23,7 @@ import test.ktortemplate.core.exception.AppException
 import test.ktortemplate.core.exception.ErrorDTO
 import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.versioning.ApiVersion
 
 @KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -33,6 +34,8 @@ class TestValidatable : KoinTest {
         @Container
         private val dbContainer = PgSQLContainerFactory.newInstance()
     }
+
+    private val apiVersion = ApiVersion.Latest
 
     @Test
     fun `Validating a car with an invalid brand`() {
@@ -53,10 +56,9 @@ class TestValidatable : KoinTest {
             Wheel(17, 255),
             Wheel(3, 225) // <-- invalid diameter
         )
-        val exception = assertThrows<AppException> {
+        assertThrows<AppException> {
             Car(1, "porsche", "911", wheels).validate()
         }
-        println(exception)
     }
 
     @Test
@@ -69,13 +71,12 @@ class TestValidatable : KoinTest {
         )
 
         with(
-            handleRequest(HttpMethod.Post, "/cars") {
+            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.mapper.writeValueAsString(car))
             }
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            println(response.content!!)
             val newCar: Car = JsonSettings.mapper.readValue(response.content!!)
             newCar.id shouldNotBeEqualTo 0
         }
@@ -86,7 +87,7 @@ class TestValidatable : KoinTest {
         val car = Car(0, "brand", "model", wheels = listOf(Wheel(0, 225)))
 
         with(
-            handleRequest(HttpMethod.Post, "/cars") {
+            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.mapper.writeValueAsString(car))
             }
@@ -98,7 +99,6 @@ class TestValidatable : KoinTest {
             error.errors.`should contain any` { it.errorCode.contains("in") }
             error.errors.`should contain any` { it.errorCode.contains("size") }
             error.errors.`should contain any` { it.errorCode.contains("wheels[0]") }
-            println(error)
         }
     }
 

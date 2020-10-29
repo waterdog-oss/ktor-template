@@ -4,6 +4,8 @@ import kotlinx.coroutines.slf4j.MDCContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.conf.database.DatabaseConnection
+import test.ktortemplate.core.exception.AppException
+import test.ktortemplate.core.exception.ErrorCode
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.model.Part
@@ -21,6 +23,7 @@ class CarServiceImpl : KoinComponent, CarService {
     override suspend fun count(pageRequest: PageRequest): Int {
         return dbc.suspendedQueryContext(MDCContext()) { carRepository.count(pageRequest) }
     }
+    override suspend fun exists(carId: Long): Boolean = dbc.suspendedQuery { carRepository.exists(carId) }
 
     override suspend fun getCarById(carId: Long): Car? {
         return dbc.suspendedQuery { carRepository.getById(carId) }
@@ -28,6 +31,15 @@ class CarServiceImpl : KoinComponent, CarService {
 
     override suspend fun insertNewCar(newCar: CarSaveCommand): Car {
         return dbc.suspendedQuery { carRepository.save(newCar) }
+    }
+
+    override suspend fun updateCar(car: Car): Car {
+        return dbc.suspendedQuery {
+            if (!exists(car.id)) {
+                throw AppException(ErrorCode.NotFound, "Could not find car with id '${car.id}'.")
+            }
+            carRepository.update(car)
+        }
     }
 
     override suspend fun registerPartReplacement(replacedParts: RegisterPartReplacementCommand): Car {

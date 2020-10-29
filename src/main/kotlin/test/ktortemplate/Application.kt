@@ -26,6 +26,9 @@ import test.ktortemplate.core.exception.appException
 import test.ktortemplate.core.exception.defaultStatusCodes
 import test.ktortemplate.core.httphandler.defaultRoutes
 import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.healthcheck.Health
+import test.ktortemplate.core.utils.healthcheck.liveness
+import test.ktortemplate.core.utils.healthcheck.readiness
 import java.util.UUID
 
 @KtorExperimentalAPI
@@ -81,6 +84,14 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
     install(StatusPages) {
         appException()
         defaultStatusCodes()
+    }
+
+    install(Health) {
+        val dbTimeout = environment.config
+            .propertyOrNull("healthcheck.readiness.database.timeoutMillis")?.getString()?.toLong()
+            ?: 3000L
+        liveness(dbTimeout)
+        readiness(dbTimeout)
     }
 
     log.info("Ktor server started...")
