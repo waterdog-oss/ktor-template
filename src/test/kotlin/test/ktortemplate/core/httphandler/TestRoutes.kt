@@ -31,6 +31,7 @@ import test.ktortemplate.core.utils.JsonSettings
 import test.ktortemplate.core.utils.pagination.PageRequest
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.PaginationUtils
+import test.ktortemplate.core.utils.versioning.ApiVersion
 import java.util.UUID
 
 @KtorExperimentalAPI
@@ -43,6 +44,7 @@ class TestRoutes : KoinTest {
         private val dbContainer = PgSQLContainerFactory.newInstance()
     }
 
+    private val apiVersion = ApiVersion.Latest
     private val carRepository: CarRepository by inject()
     private val dbc: DatabaseConnection by inject()
 
@@ -60,7 +62,7 @@ class TestRoutes : KoinTest {
 
     @Test
     fun `Fetching a car that does not exists returns a 404 Not Found`() = testAppWithConfig {
-        with(handleRequest(HttpMethod.Get, "/cars/12345")) {
+        with(handleRequest(HttpMethod.Get, "/$apiVersion/cars/12345")) {
             response.status() `should be equal to` HttpStatusCode.NotFound
         }
     }
@@ -69,7 +71,7 @@ class TestRoutes : KoinTest {
     fun `Fetching a car that exists returns correctly`() = testAppWithConfig {
         val newCar = insertCar()
 
-        with(handleRequest(HttpMethod.Get, "/cars/${newCar.id}")) {
+        with(handleRequest(HttpMethod.Get, "/$apiVersion/cars/${newCar.id}")) {
             response.status() `should be equal to` HttpStatusCode.OK
             val car: Car = JsonSettings.mapper.readValue(response.content!!)
             car.id `should be equal to` newCar.id
@@ -83,7 +85,7 @@ class TestRoutes : KoinTest {
         val cmd = CarSaveCommand("porsche", "spyder")
 
         with(
-            handleRequest(HttpMethod.Post, "/cars") {
+            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.mapper.writeValueAsString(cmd))
             }
@@ -139,7 +141,7 @@ class TestRoutes : KoinTest {
         @Test
         fun `The list endpoint works without any extra parameters`() = testAppWithConfig {
             val expectedCars = generateCars(5)
-            with(handleRequest(HttpMethod.Get, "/cars")) {
+            with(handleRequest(HttpMethod.Get, "/$apiVersion/cars")) {
                 response.status() `should be equal to` HttpStatusCode.OK
                 val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
                 res.data.size `should be equal to` expectedCars.size
@@ -153,7 +155,7 @@ class TestRoutes : KoinTest {
             with(
                 handleRequest(
                     HttpMethod.Get,
-                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
+                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
@@ -168,11 +170,11 @@ class TestRoutes : KoinTest {
                 res.meta.totalPages `should be equal to` 2
                 res.meta.first `should be equal to` true
                 res.meta.last `should be equal to` false
-                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
-                res.links.first `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.self `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.first `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
                 res.links.prev `should be equal to` null
-                res.links.next `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
-                res.links.last `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.next `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.last `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
             }
         }
 
@@ -182,7 +184,7 @@ class TestRoutes : KoinTest {
             with(
                 handleRequest(
                     HttpMethod.Get,
-                    "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
@@ -197,11 +199,11 @@ class TestRoutes : KoinTest {
                 res.meta.totalPages `should be equal to` 2
                 res.meta.first `should be equal to` false
                 res.meta.last `should be equal to` true
-                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
-                res.links.first `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
-                res.links.prev `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.self `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.first `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.prev `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
                 res.links.next `should be equal to` null
-                res.links.last `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
+                res.links.last `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
             }
         }
 
@@ -211,7 +213,7 @@ class TestRoutes : KoinTest {
             with(
                 handleRequest(
                     HttpMethod.Get,
-                    "/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5"
+                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5"
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
@@ -221,11 +223,11 @@ class TestRoutes : KoinTest {
                 // Verify pagination info
                 res.meta.first `should be equal to` false
                 res.meta.last `should be equal to` false
-                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5"
-                res.links.first `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=5"
+                res.links.self `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5"
+                res.links.first `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=5"
                 res.links.prev `should be equal to` null
                 res.links.next `should be equal to` null
-                res.links.last `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=5"
+                res.links.last `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=5"
             }
         }
 
@@ -235,7 +237,7 @@ class TestRoutes : KoinTest {
             with(
                 handleRequest(
                     HttpMethod.Get,
-                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=asc"
+                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=asc"
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
@@ -243,7 +245,7 @@ class TestRoutes : KoinTest {
                 res.data `should be equal to` expectedCars.sortedBy { it.id }
 
                 // Verify pagination info
-                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=asc"
+                res.links.self `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=asc"
             }
         }
 
@@ -253,7 +255,7 @@ class TestRoutes : KoinTest {
             with(
                 handleRequest(
                     HttpMethod.Get,
-                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=desc"
+                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=desc"
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
@@ -261,7 +263,7 @@ class TestRoutes : KoinTest {
                 res.data `should be equal to` expectedCars.sortedByDescending { it.id }
 
                 // Verify pagination info
-                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=desc"
+                res.links.self `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=desc"
             }
         }
 
@@ -271,7 +273,7 @@ class TestRoutes : KoinTest {
             with(
                 handleRequest(
                     HttpMethod.Get,
-                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[brand]=asc&${PaginationUtils.PAGE_SORT}[model]=desc"
+                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[brand]=asc&${PaginationUtils.PAGE_SORT}[model]=desc"
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
@@ -279,7 +281,7 @@ class TestRoutes : KoinTest {
                 res.data `should be equal to` expectedCars.sortedWith(compareBy<Car> { it.brand }.thenByDescending { it.model })
 
                 // Verify pagination info
-                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[brand]=asc&${PaginationUtils.PAGE_SORT}[model]=desc"
+                res.links.self `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[brand]=asc&${PaginationUtils.PAGE_SORT}[model]=desc"
             }
         }
 
@@ -290,7 +292,7 @@ class TestRoutes : KoinTest {
             with(
                 handleRequest(
                     HttpMethod.Get,
-                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=${targetCar.brand}&${PaginationUtils.PAGE_FILTER}[model]=${targetCar.model}"
+                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=${targetCar.brand}&${PaginationUtils.PAGE_FILTER}[model]=${targetCar.model}"
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
@@ -298,7 +300,7 @@ class TestRoutes : KoinTest {
                 res.data `should be equal to` expectedCars.filter { it.brand == targetCar.brand && it.model == targetCar.model }
 
                 // Verify pagination info
-                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=${targetCar.brand}&${PaginationUtils.PAGE_FILTER}[model]=${targetCar.model}"
+                res.links.self `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=${targetCar.brand}&${PaginationUtils.PAGE_FILTER}[model]=${targetCar.model}"
             }
         }
 
@@ -310,7 +312,7 @@ class TestRoutes : KoinTest {
             with(
                 handleRequest(
                     HttpMethod.Get,
-                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[id]=$queryParams"
+                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[id]=$queryParams"
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
@@ -318,7 +320,7 @@ class TestRoutes : KoinTest {
                 res.data `should be equal to` expectedCars.filter { it.id in ids }
 
                 // Verify pagination info
-                res.links.self `should be equal to` "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[id]=$queryParams"
+                res.links.self `should be equal to` "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[id]=$queryParams"
             }
         }
 
@@ -328,7 +330,7 @@ class TestRoutes : KoinTest {
             with(
                 handleRequest(
                     HttpMethod.Get,
-                    "/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=brand000"
+                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=brand000"
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
