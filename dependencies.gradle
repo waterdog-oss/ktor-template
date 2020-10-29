@@ -42,7 +42,7 @@ ext.deps = [
     valiktor: "org.valiktor:valiktor-core:0.12.0",
     logs: [
         logback: "ch.qos.logback:logback-classic:1.2.3",
-        logbackJsonEncoder: "net.logstash.logback:logstash-logback-encoder:6.4",
+        logbackJson: "ch.qos.logback.contrib:logback-json-classic:0.1.5",
         coroutinesSlf4j: "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.4.0-M1"
     ],
     postgresql: "org.postgresql:postgresql:42.2.17",
