@@ -11,14 +11,13 @@ import io.ktor.routing.post
 import io.ktor.routing.put
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import test.ktortemplate.core.exception.AppException
-import test.ktortemplate.core.exception.ErrorCode
 import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.service.CarService
 import test.ktortemplate.core.service.PersonService
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.parsePageRequest
+import test.ktortemplate.core.utils.pagination.respondPaged
 import test.ktortemplate.core.utils.versioning.ApiVersion
 
 internal class DefaultRoutesInjector : KoinComponent {
@@ -36,7 +35,7 @@ fun Route.defaultRoutes() {
         val pageRequest = call.parsePageRequest()
         val totalElements = carService.count(pageRequest)
         val data = carService.list(pageRequest)
-        call.respond(
+        call.respondPaged(
             PageResponse.from(
                 pageRequest = pageRequest,
                 totalElements = totalElements,
@@ -55,7 +54,7 @@ fun Route.defaultRoutes() {
     }
 
     post("/$apiVersion/cars") {
-        val newCar = call.receive<Car>()
+        val newCar = call.receive<CarSaveCommand>()
         newCar.validate()
 
         val insertedCar = carService.insertNewCar(CarSaveCommand(newCar.brand, newCar.model))
@@ -63,13 +62,12 @@ fun Route.defaultRoutes() {
     }
 
     put("/$apiVersion/cars/{id}") {
-        val car = call.receive<Car>()
+        val car = call.receive<CarSaveCommand>()
         car.validate()
-
         val carId = call.parameters["id"]?.toLong() ?: -1
-        if (carId != car.id) throw AppException(ErrorCode.InvalidUserInput, "Received ids doesn't match.")
+        val carToUpdate = Car(carId, car.brand, car.model, car.wheels)
 
-        val updatedCar = carService.updateCar(car)
+        val updatedCar = carService.updateCar(carToUpdate)
         call.respond(updatedCar)
     }
 
