@@ -20,7 +20,8 @@ The Ktor template follows a simple structure with two source sets (main and test
 ### Building and running the project locally
 The project comes with the gradle wrapper, so in order to build the project you can easily use the `gradlew` command.
 
-* `gradlew run` - run the project
+* `gradlew run` - run the project (note that the project may have dependencies to other systems like RDMSs). Check the 
+required environment variables on `/src/main/resources/application.conf`.
 * `gradlew test` - run the tests
 * `gradlew clean build` - do a local build (this will run the compilation and verification tasks, i.e., linter and tests)
 * `gradlew shadowJar` - Build the uber jar that will be used in production
@@ -45,4 +46,4 @@ When running the image there are a number of environment variables that can be a
 
 - __KTOR_PORT:__ The port the server is listening on. Defaults to `8080`
 - __KTOR_ENV:__ The environment that the application is running on. Can be `dev`, `staging` or `prod`. Defaults to `dev`
-- __JAVA_OPTS:__ Runtime set of java opts used by the JVM.
+- __JAVA_OPTS:__ Runtime set of java opts used by the JVM (optional).

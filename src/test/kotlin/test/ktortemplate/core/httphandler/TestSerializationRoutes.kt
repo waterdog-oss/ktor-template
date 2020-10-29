@@ -1,18 +1,26 @@
 package test.ktortemplate.core.httphandler
 
+import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.features.Compression
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.DefaultHeaders
+import io.ktor.features.deflate
+import io.ktor.features.gzip
+import io.ktor.features.identity
+import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.routing.Routing
+import io.ktor.serialization.json
+import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.withTestApplication
 import org.amshove.kluent.`should be after`
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.shouldContain
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.koin.core.context.startKoin
-import org.koin.test.KoinTest
-import test.ktortemplate.core.initDbCore
-import test.ktortemplate.core.initServicesAndRepos
 import test.ktortemplate.core.model.Const
 import test.ktortemplate.core.model.Expr
 import test.ktortemplate.core.model.NotANumber
@@ -20,25 +28,14 @@ import test.ktortemplate.core.model.Sum
 import test.ktortemplate.core.model.TestInstantLongSerialization
 import test.ktortemplate.core.model.TestInstantStringSerialization
 import test.ktortemplate.core.model.TestSealedClass
-import test.ktortemplate.core.testApp
 import test.ktortemplate.core.utils.json.JsonSettings
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TestSerializationRoutes : KoinTest {
-
-    @BeforeAll
-    fun setup() {
-        val appModules = listOf(
-            initDbCore(),
-            initServicesAndRepos()
-        )
-        startKoin { modules(appModules) }
-    }
-
+class TestSerializationRoutes {
     @Test
-    fun `Testing serialization of sealed classes`() = testApp<Unit> {
+    fun `Testing serialization of sealed classes`() = testAppDefault<Unit> {
         fun eval(expr: Expr): Double = when (expr) {
             is Const -> expr.number
             is Sum -> eval(expr.e1) + eval(expr.e2)
@@ -85,7 +82,7 @@ class TestSerializationRoutes : KoinTest {
     }
 
     @Test
-    fun `Testing instant class serialization`() = testApp<Unit> {
+    fun `Testing instant class serialization`() = testAppDefault<Unit> {
         val now = Instant.now()
 
         // String Serialization Test
@@ -113,5 +110,41 @@ class TestSerializationRoutes : KoinTest {
             Instant.now() `should be after` res.date
             now.toEpochMilli() `should be equal to` res.date.toEpochMilli()
         }
+    }
+}
+
+private fun <R> testAppDefault(test: TestApplicationEngine.() -> R) {
+    withTestApplication(
+        {
+            module()
+        },
+        test
+    )
+}
+
+fun Application.module() {
+    install(DefaultHeaders)
+
+    install(Compression) {
+        gzip {
+            priority = 100.0
+        }
+        identity {
+            priority = 10.0
+        }
+        deflate {
+            priority = 1.0
+        }
+    }
+
+    install(ContentNegotiation) {
+        json(
+            contentType = ContentType.Application.Json,
+            json = JsonSettings.mapper
+        )
+    }
+
+    install(Routing) {
+        testSerializationRoutes()
     }
 }
