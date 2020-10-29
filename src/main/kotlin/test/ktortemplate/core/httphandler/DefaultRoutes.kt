@@ -11,9 +11,9 @@ import io.ktor.routing.post
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import test.ktortemplate.core.service.CarService
-import test.ktortemplate.core.utils.json.JsonSettings
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.parsePageRequest
+import test.ktortemplate.core.utils.pagination.respondPaged
 
 internal class DefaultRoutesInjector : KoinComponent {
     val carService: CarService by inject()
@@ -27,14 +27,12 @@ fun Route.defaultRoutes() {
         val pageRequest = call.parsePageRequest()
         val totalElements = carService.count(pageRequest)
         val data = carService.list(pageRequest)
-        call.respond(
-            JsonSettings.toJson(
-                PageResponse.from(
-                    pageRequest = pageRequest,
-                    totalElements = totalElements,
-                    data = data,
-                    path = call.request.path()
-                )
+        call.respondPaged(
+            PageResponse.from(
+                pageRequest = pageRequest,
+                totalElements = totalElements,
+                data = data,
+                path = call.request.path()
             )
         )
     }
