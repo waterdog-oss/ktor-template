@@ -25,10 +25,12 @@ class DatabaseConnection(private val dataSource: DataSource) {
         block()
     }
 
-    fun ping(): Boolean = try {
-        transaction(database) { exec("SELECT 1") }
-        true
-    } catch (e: Exception) {
-        false
+    suspend fun ping(): Boolean = newSuspendedTransaction(Dispatchers.IO, database) {
+        try {
+            exec("SELECT 1")
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }

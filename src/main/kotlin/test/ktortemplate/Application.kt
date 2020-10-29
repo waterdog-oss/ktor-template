@@ -76,8 +76,11 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
     }
 
     install(Health) {
-        liveness()
-        readiness()
+        val dbTimeout = environment.config
+            .propertyOrNull("healthcheck.readiness.database.timeoutMillis")?.getString()?.toLong()
+            ?: 3000L
+        liveness(dbTimeout)
+        readiness(dbTimeout)
     }
 
     log.info("Ktor server started...")
