@@ -1,6 +1,5 @@
 package test.ktortemplate.core.httphandler
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -27,7 +26,7 @@ import test.ktortemplate.core.model.Car
 import test.ktortemplate.core.model.CarSaveCommand
 import test.ktortemplate.core.persistance.CarRepository
 import test.ktortemplate.core.testApp
-import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.json.JsonSettings
 import test.ktortemplate.core.utils.pagination.PageRequest
 import test.ktortemplate.core.utils.pagination.PageResponse
 import test.ktortemplate.core.utils.pagination.PaginationUtils
@@ -38,7 +37,6 @@ import java.util.UUID
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestRoutes : KoinTest {
-
     companion object {
         @Container
         private val dbContainer = PgSQLContainerFactory.newInstance()
@@ -73,7 +71,7 @@ class TestRoutes : KoinTest {
 
         with(handleRequest(HttpMethod.Get, "/$apiVersion/cars/${newCar.id}")) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.mapper.readValue(response.content!!)
+            val car: Car = JsonSettings.fromJson(response.content)
             car.id `should be equal to` newCar.id
             car.brand `should be equal to` newCar.brand
             car.model `should be equal to` newCar.model
@@ -87,11 +85,11 @@ class TestRoutes : KoinTest {
         with(
             handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(JsonSettings.mapper.writeValueAsString(cmd))
+                setBody(JsonSettings.toJson(cmd))
             }
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.mapper.readValue(response.content!!)
+            val car: Car = JsonSettings.fromJson(response.content)
             car.id `should be greater than` 0
             car.brand `should be equal to` cmd.brand
             car.model `should be equal to` cmd.model
@@ -104,13 +102,13 @@ class TestRoutes : KoinTest {
         val cmd = CarSaveCommand("porsche", "spyder")
 
         val newCar = with(
-            handleRequest(HttpMethod.Post, "/cars") {
+            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(JsonSettings.mapper.writeValueAsString(cmd))
+                setBody(JsonSettings.toJson(cmd))
             }
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.mapper.readValue(response.content!!)
+            val car: Car = JsonSettings.fromJson(response.content)
             car.id `should be greater than` 0
             car.brand `should be equal to` cmd.brand
             car.model `should be equal to` cmd.model
@@ -118,16 +116,16 @@ class TestRoutes : KoinTest {
             car
         }
 
-        val updatedCar = Car(newCar.id, newCar.brand, newCar.model + "_2")
+        val updatedCar = CarSaveCommand(newCar.brand, newCar.model + "_2")
         with(
-            handleRequest(HttpMethod.Put, "/cars/${newCar.id}") {
+            handleRequest(HttpMethod.Put, "/$apiVersion/cars/${newCar.id}") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(JsonSettings.mapper.writeValueAsString(updatedCar))
+                setBody(JsonSettings.toJson(updatedCar))
             }
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.mapper.readValue(response.content!!)
-            car.id `should be equal to` updatedCar.id
+            val car: Car = JsonSettings.fromJson(response.content)
+            car.id `should be equal to` newCar.id
             car.brand `should be equal to` updatedCar.brand
             car.model `should be equal to` updatedCar.model
             countCars() `should be equal to` 1
@@ -143,7 +141,7 @@ class TestRoutes : KoinTest {
             val expectedCars = generateCars(5)
             with(handleRequest(HttpMethod.Get, "/$apiVersion/cars")) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
                 res.data.size `should be equal to` expectedCars.size
                 res.data `should be equal to` expectedCars
             }
@@ -159,7 +157,7 @@ class TestRoutes : KoinTest {
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
                 res.data.size `should be equal to` 3
                 res.data `should be equal to` expectedCars.subList(0, 3)
 
@@ -188,7 +186,7 @@ class TestRoutes : KoinTest {
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
                 res.data.size `should be equal to` 2
                 res.data `should be equal to` expectedCars.subList(3, 5)
 
@@ -208,7 +206,7 @@ class TestRoutes : KoinTest {
         }
 
         @Test
-        fun `Requesting a non-existing page is  handled gracefully`() = testAppWithConfig {
+        fun `Requesting a non-existing page is handled gracefully`() = testAppWithConfig {
             generateCars(5)
             with(
                 handleRequest(
@@ -217,7 +215,7 @@ class TestRoutes : KoinTest {
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
                 res.data.size `should be equal to` 0
 
                 // Verify pagination info
@@ -241,7 +239,7 @@ class TestRoutes : KoinTest {
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
                 res.data `should be equal to` expectedCars.sortedBy { it.id }
 
                 // Verify pagination info
@@ -259,7 +257,7 @@ class TestRoutes : KoinTest {
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
                 res.data `should be equal to` expectedCars.sortedByDescending { it.id }
 
                 // Verify pagination info
@@ -277,7 +275,7 @@ class TestRoutes : KoinTest {
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
                 res.data `should be equal to` expectedCars.sortedWith(compareBy<Car> { it.brand }.thenByDescending { it.model })
 
                 // Verify pagination info
@@ -296,7 +294,7 @@ class TestRoutes : KoinTest {
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
                 res.data `should be equal to` expectedCars.filter { it.brand == targetCar.brand && it.model == targetCar.model }
 
                 // Verify pagination info
@@ -316,7 +314,7 @@ class TestRoutes : KoinTest {
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
                 res.data `should be equal to` expectedCars.filter { it.id in ids }
 
                 // Verify pagination info
@@ -334,7 +332,7 @@ class TestRoutes : KoinTest {
                 )
             ) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.mapper.readValue(response.content!!)
+                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
                 res.data `should be equal to` listOf()
             }
         }

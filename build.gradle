@@ -15,6 +15,7 @@ buildscript {
         classpath deps.plugins.koin
         classpath deps.plugins.shadow
         classpath deps.plugins.ktlint
+        classpath deps.plugins.serialization
     }
 }
 
@@ -23,6 +24,7 @@ apply plugin: 'application'
 apply plugin: 'koin'
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
+apply plugin: 'kotlinx-serialization'
 
 apply from: "$rootDir/dependencies.gradle"
 
@@ -56,7 +58,7 @@ dependencies {
     implementation deps.logback
 
     implementation deps.ktor.serverNetty
-    implementation deps.ktor.jackson
+    implementation deps.ktor.serialization
     implementation deps.ktor.auth
 
     implementation deps.koin.core

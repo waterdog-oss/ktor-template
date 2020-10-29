@@ -1,6 +1,5 @@
 package test.ktortemplate.core.model
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -22,7 +21,7 @@ import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.exception.AppException
 import test.ktortemplate.core.exception.ErrorDTO
 import test.ktortemplate.core.testApp
-import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.json.JsonSettings
 import test.ktortemplate.core.utils.versioning.ApiVersion
 
 @KtorExperimentalAPI
@@ -63,8 +62,7 @@ class TestValidatable : KoinTest {
 
     @Test
     fun `Posting a car with success`() = testAppWithConfig {
-        val car = Car(
-            0,
+        val car = CarSaveCommand(
             "porsche",
             "911",
             listOf(Wheel(15, 195), Wheel(15, 195), Wheel(15, 195))
@@ -73,27 +71,27 @@ class TestValidatable : KoinTest {
         with(
             handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(JsonSettings.mapper.writeValueAsString(car))
+                setBody(JsonSettings.toJson(car))
             }
         ) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val newCar: Car = JsonSettings.mapper.readValue(response.content!!)
+            val newCar: Car = JsonSettings.fromJson(response.content)
             newCar.id shouldNotBeEqualTo 0
         }
     }
 
     @Test
     fun `Posting a car with invalid wheels definition`() = testAppWithConfig {
-        val car = Car(0, "brand", "model", wheels = listOf(Wheel(0, 225)))
+        val car = CarSaveCommand("brand", "model", wheels = listOf(Wheel(0, 225)))
 
         with(
             handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                setBody(JsonSettings.mapper.writeValueAsString(car))
+                setBody(JsonSettings.toJson(car))
             }
         ) {
             response.status() `should be equal to` HttpStatusCode.BadRequest
-            val error: ErrorDTO = JsonSettings.mapper.readValue(response.content!!)
+            val error: ErrorDTO = JsonSettings.fromJson(response.content)
             error.httpStatusCode `should be equal to` HttpStatusCode.BadRequest.value
             error.messageCode `should be equal to` "client_error.invalid_parameters"
             error.errors.`should contain any` { it.errorCode.contains("in") }

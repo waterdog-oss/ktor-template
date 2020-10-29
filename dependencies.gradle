@@ -13,13 +13,14 @@ ext.deps = [
         koin: "org.koin:koin-gradle-plugin:${versions.koin}",
         shadow: "com.github.jengelman.gradle.plugins:shadow:6.1.0",
         ktlint: "org.jlleitschuh.gradle:ktlint-gradle:9.4.1",
+        serialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
     ],
     kotlin: [
         jdk: "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
     ],
     ktor: [
         serverNetty: "io.ktor:ktor-server-netty:${versions.ktor}",
-        jackson: "io.ktor:ktor-jackson:${versions.ktor}",
+        serialization: "io.ktor:ktor-serialization:${versions.ktor}",
         auth: "io.ktor:ktor-auth:${versions.ktor}",
         test: "io.ktor:ktor-server-test-host:${versions.ktor}"
     ],

@@ -1,17 +1,25 @@
 package test.ktortemplate.core.exception
 
-import com.fasterxml.jackson.annotation.JsonInclude
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import java.util.UUID
 
 /**
  * Intended to be the result of an erroneous http call.
  */
+@Serializable
 data class ErrorDTO(
     val httpStatusCode: Int,
     val messageCode: String? = null,
     val title: String? = null,
     val errors: List<ErrorDefinition> = listOf()
 ) {
+    @Serializable(with = UUIDSerializer::class)
     val id: UUID = UUID.randomUUID()
 
     override fun toString(): String {
@@ -19,7 +27,20 @@ data class ErrorDTO(
     }
 }
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+object UUIDSerializer : KSerializer<UUID> {
+    override val descriptor: SerialDescriptor
+        get() = PrimitiveSerialDescriptor("UUID", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: UUID) {
+        encoder.encodeString(value.toString())
+    }
+
+    override fun deserialize(decoder: Decoder): UUID {
+        return UUID.fromString(decoder.decodeString())
+    }
+}
+
+@Serializable
 data class ErrorDefinition(val errorCode: String, val field: String?, val args: Map<String, String>) {
     override fun toString(): String {
         return "ErrorDefinition(errorCode='$errorCode', field=$field, args=$args)"

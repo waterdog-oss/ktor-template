@@ -1,6 +1,5 @@
 package test.ktortemplate.core.utils.healthcheck
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
@@ -15,7 +14,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import test.ktortemplate.containers.PgSQLContainerFactory
 import test.ktortemplate.core.testApp
-import test.ktortemplate.core.utils.JsonSettings
+import test.ktortemplate.core.utils.json.JsonSettings
 import java.time.Duration
 
 @KtorExperimentalAPI
@@ -33,7 +32,7 @@ class TestHealthCheck : KoinTest {
     fun `Checking liveness with 200OK`() = testAppWithConfig {
         with(handleRequest(HttpMethod.Get, "/liveness")) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val result: Map<String, Boolean> = JsonSettings.mapper.readValue(response.content!!)
+            val result: Map<String, Boolean> = JsonSettings.fromJson(response.content)
             result["alive"] `should be equal to` true
         }
     }
@@ -42,7 +41,7 @@ class TestHealthCheck : KoinTest {
     fun `Checking database readiness with 200OK`() = testAppWithConfig {
         with(handleRequest(HttpMethod.Get, "/readiness")) {
             response.status() `should be equal to` HttpStatusCode.OK
-            val result: Map<String, Boolean> = JsonSettings.mapper.readValue(response.content!!)
+            val result: Map<String, Boolean> = JsonSettings.fromJson(response.content)
             result["database"] `should be equal to` true
         }
     }
@@ -57,8 +56,8 @@ class TestHealthCheck : KoinTest {
         testApp(dbContainer.configInfo()) {
             with(handleRequest(HttpMethod.Get, "/readiness")) {
                 response.status() `should be equal to` HttpStatusCode.OK
-                val result: Map<String, String> = JsonSettings.mapper.readValue(response.content!!)
-                result["database"].toBoolean() `should be equal to` true
+                val result: Map<String, Boolean> = JsonSettings.fromJson(response.content)
+                result["database"] `should be equal to` true
             }
 
             dbContainer.stop()
@@ -70,7 +69,7 @@ class TestHealthCheck : KoinTest {
             log.info("Testing readiness. It should fail...")
             with(handleRequest(HttpMethod.Get, "/readiness")) {
                 response.status() `should be equal to` HttpStatusCode.InternalServerError
-                val result: Map<String, Boolean> = JsonSettings.mapper.readValue(response.content!!)
+                val result: Map<String, Boolean> = JsonSettings.fromJson(response.content)
                 result["database"] `should be equal to` false
             }
         }
