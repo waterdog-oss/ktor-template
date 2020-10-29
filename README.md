@@ -1,6 +1,6 @@
 # ktor-template
 
-![Build and Test](https://github.com/aanciaes/ktor-template/workflows/Build%20and%20Test/badge.svg)
+![Build and Test](https://github.com/waterdog-oss/ktor-template/workflows/Build%20and%20Test/badge.svg)
 [![GitHub release](https://img.shields.io/github/release/aanciaes/ktor-template.svg)](https://github.com/aanciaes/ktor-template/releases/latest)
 [![GitHub issues](https://img.shields.io/github/issues/aanciaes/ktor-template.svg)](https://github.com/aanciaes/ktor-template/issues/)
 
