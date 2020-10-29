@@ -62,7 +62,7 @@ fun Route.defaultRoutes() {
         call.respond(insertedCar)
     }
 
-    put("/cars/{id}") {
+    put("/$apiVersion/cars/{id}") {
         val car = call.receive<Car>()
         car.validate()
 
@@ -73,7 +73,7 @@ fun Route.defaultRoutes() {
         call.respond(updatedCar)
     }
 
-    get("/persons") {
+    get("/$apiVersion/persons") {
         val pageRequest = call.parsePageRequest()
         val totalElements = personService.count(pageRequest)
         val data = personService.list(pageRequest)

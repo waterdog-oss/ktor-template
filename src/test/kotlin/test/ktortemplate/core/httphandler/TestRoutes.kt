@@ -104,7 +104,7 @@ class TestRoutes : KoinTest {
         val cmd = CarSaveCommand("porsche", "spyder")
 
         val newCar = with(
-            handleRequest(HttpMethod.Post, "/cars") {
+            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.mapper.writeValueAsString(cmd))
             }
@@ -120,7 +120,7 @@ class TestRoutes : KoinTest {
 
         val updatedCar = Car(newCar.id, newCar.brand, newCar.model + "_2")
         with(
-            handleRequest(HttpMethod.Put, "/cars/${newCar.id}") {
+            handleRequest(HttpMethod.Put, "/$apiVersion/cars/${newCar.id}") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.mapper.writeValueAsString(updatedCar))
             }
