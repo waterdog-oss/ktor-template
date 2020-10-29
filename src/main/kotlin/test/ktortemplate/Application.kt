@@ -29,6 +29,7 @@ import test.ktortemplate.core.utils.JsonSettings
 import test.ktortemplate.core.utils.healthcheck.Health
 import test.ktortemplate.core.utils.healthcheck.liveness
 import test.ktortemplate.core.utils.healthcheck.readiness
+import test.ktortemplate.core.utils.log.SemiStructuredLogFormatter
 import java.util.UUID
 
 @KtorExperimentalAPI
@@ -50,7 +51,7 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
     }
 
     // Installs call logging and request tracing
-    val callIdHeader = environment.config.propertyOrNull("ktor.callLogging.callIdHeader")?.getString() ?: "X-Request-Id"
+    val callIdHeader = SemiStructuredLogFormatter.REQUEST_ID_HEADER
     install(CallLogging) {
         level = org.slf4j.event.Level.INFO
         callIdMdc(callIdHeader)
