@@ -2,9 +2,8 @@ package test.ktortemplate.core.utils.log
 
 import ch.qos.logback.contrib.json.JsonFormatter
 import ch.qos.logback.contrib.json.classic.JsonLayout
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import kotlinx.serialization.Serializable
+import test.ktortemplate.core.utils.json.JsonSettings
 
 /**
  * Semi-structured formatter for logs:
@@ -15,11 +14,7 @@ class SemiStructuredLogFormatter : JsonFormatter {
         const val REQUEST_ID_HEADER = "X-Request-Id"
     }
 
-    // TODO: Replace by kotlinx-serialization
-    private val mapper = jacksonObjectMapper()
-        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        .disable(SerializationFeature.INDENT_OUTPUT)
-
+    @Serializable
     internal data class LogResponse(
         val timestamp: String,
         val level: String,
@@ -55,7 +50,7 @@ class SemiStructuredLogFormatter : JsonFormatter {
         str += "${json.message} "
         str = str.padEnd(125) // add padding to the first fields for better readability
         str += if (json.exception != null && json.exception.isNotEmpty()) "${json.exception} " else ""
-        str += mapper.writeValueAsString(json)
+        str += JsonSettings.toJson(json)
         str += "\n"
 
         return str
