@@ -1,4 +1,4 @@
-package mobi.waterdog.rest.template.core.exception
+package mobi.waterdog.rest.template.core.utils.exception
 
 import io.ktor.http.HttpStatusCode
 

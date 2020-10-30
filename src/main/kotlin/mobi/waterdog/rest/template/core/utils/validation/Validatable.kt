@@ -1,8 +1,8 @@
-package mobi.waterdog.rest.template.core.model
+package mobi.waterdog.rest.template.core.utils.validation
 
-import mobi.waterdog.rest.template.core.exception.AppException
-import mobi.waterdog.rest.template.core.exception.ErrorCode
-import mobi.waterdog.rest.template.core.exception.ErrorDefinition
+import mobi.waterdog.rest.template.core.utils.exception.AppException
+import mobi.waterdog.rest.template.core.utils.exception.ErrorCode
+import mobi.waterdog.rest.template.core.utils.exception.ErrorDefinition
 import org.valiktor.Constraint
 import org.valiktor.ConstraintViolationException
 import org.valiktor.Validator
