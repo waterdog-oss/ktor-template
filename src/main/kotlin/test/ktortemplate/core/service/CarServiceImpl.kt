@@ -1,6 +1,5 @@
 package test.ktortemplate.core.service
 
-import kotlinx.coroutines.slf4j.MDCContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import org.slf4j.LoggerFactory
@@ -21,16 +20,17 @@ class CarServiceImpl : KoinComponent, CarService {
     private val partRepository: PartRepository by inject()
     private val dbc: DatabaseConnection by inject()
 
-    companion object{
+    companion object {
         private val log = LoggerFactory.getLogger(this::class.java)
     }
 
     override suspend fun count(pageRequest: PageRequest): Int {
-        return dbc.suspendedQuery{
+        return dbc.suspendedQuery {
             log.info("Counting cars from the repository")
             carRepository.count(pageRequest)
         }
     }
+
     override suspend fun exists(carId: Long): Boolean = dbc.suspendedQuery { carRepository.exists(carId) }
 
     override suspend fun getCarById(carId: Long): Car? {
