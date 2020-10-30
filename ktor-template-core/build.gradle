@@ -1,0 +1,12 @@
+apply plugin: 'kotlinx-serialization'
+
+dependencies {
+    api deps.ktor.serialization
+    api deps.ktor.auth
+
+    api deps.valiktor
+
+    api deps.logs.logback
+    api deps.logs.logbackJson
+    api deps.logs.coroutinesSlf4j
+}

@@ -1,0 +1,20 @@
+apply plugin: 'kotlinx-serialization'
+
+dependencies {
+    api project(":ktor-template-core")
+
+    api deps.exposed.core
+    api deps.exposed.dao
+    api deps.exposed.jdbc
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+    }
+}
