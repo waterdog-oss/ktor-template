@@ -3,6 +3,7 @@ package test.ktortemplate.core.service
 import kotlinx.coroutines.slf4j.MDCContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import org.slf4j.LoggerFactory
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.exception.AppException
 import test.ktortemplate.core.exception.ErrorCode
@@ -20,8 +21,15 @@ class CarServiceImpl : KoinComponent, CarService {
     private val partRepository: PartRepository by inject()
     private val dbc: DatabaseConnection by inject()
 
+    companion object{
+        private val log = LoggerFactory.getLogger(this::class.java)
+    }
+
     override suspend fun count(pageRequest: PageRequest): Int {
-        return dbc.suspendedQueryContext(MDCContext()) { carRepository.count(pageRequest) }
+        return dbc.suspendedQuery{
+            log.info("Counting cars from the repository")
+            carRepository.count(pageRequest)
+        }
     }
     override suspend fun exists(carId: Long): Boolean = dbc.suspendedQuery { carRepository.exists(carId) }
 

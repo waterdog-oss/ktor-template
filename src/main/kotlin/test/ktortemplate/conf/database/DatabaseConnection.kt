@@ -1,6 +1,7 @@
 package test.ktortemplate.conf.database
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Transaction
@@ -21,17 +22,10 @@ class DatabaseConnection(private val dataSource: DataSource) {
     }
 
     suspend fun <T> suspendedQuery(
+        context: CoroutineContext = MDCContext(),
         txIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ,
         block: suspend Transaction.() -> T
     ): T = newSuspendedTransaction(Dispatchers.IO, database, txIsolation) {
-        block()
-    }
-
-    suspend fun <T> suspendedQueryContext(
-        context: CoroutineContext,
-        txIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ,
-        block: suspend Transaction.() -> T
-    ): T = suspendedQuery(txIsolation = txIsolation) {
         val newContext = coroutineContext + context
         withContext(newContext) {
             block()
