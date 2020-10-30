@@ -55,7 +55,9 @@ sourceSets {
 dependencies {
     implementation deps.kotlin.jdk
 
-    implementation deps.logback
+    implementation deps.logs.logback
+    implementation deps.logs.logbackJson
+    implementation deps.logs.coroutinesSlf4j
 
     implementation deps.ktor.serverNetty
     implementation deps.ktor.serialization

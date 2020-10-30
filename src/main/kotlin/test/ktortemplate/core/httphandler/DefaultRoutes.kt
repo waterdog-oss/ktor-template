@@ -64,7 +64,6 @@ fun Route.defaultRoutes() {
     put("/$apiVersion/cars/{id}") {
         val car = call.receive<CarSaveCommand>()
         car.validate()
-
         val carId = call.parameters["id"]?.toLong() ?: -1
         val carToUpdate = Car(carId, car.brand, car.model, car.wheels)
 
@@ -72,7 +71,7 @@ fun Route.defaultRoutes() {
         call.respond(updatedCar)
     }
 
-    get("/persons") {
+    get("/$apiVersion/persons") {
         val pageRequest = call.parsePageRequest()
         val totalElements = personService.count(pageRequest)
         val data = personService.list(pageRequest)

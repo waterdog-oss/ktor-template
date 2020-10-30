@@ -2,6 +2,7 @@ package test.ktortemplate.core.service
 
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import org.slf4j.LoggerFactory
 import test.ktortemplate.conf.database.DatabaseConnection
 import test.ktortemplate.core.exception.AppException
 import test.ktortemplate.core.exception.ErrorCode
@@ -19,9 +20,17 @@ class CarServiceImpl : KoinComponent, CarService {
     private val partRepository: PartRepository by inject()
     private val dbc: DatabaseConnection by inject()
 
-    override suspend fun count(pageRequest: PageRequest): Int {
-        return dbc.suspendedQuery { carRepository.count(pageRequest) }
+    companion object {
+        private val log = LoggerFactory.getLogger(this::class.java)
     }
+
+    override suspend fun count(pageRequest: PageRequest): Int {
+        return dbc.suspendedQuery {
+            log.info("Counting cars from the repository")
+            carRepository.count(pageRequest)
+        }
+    }
+
     override suspend fun exists(carId: Long): Boolean = dbc.suspendedQuery { carRepository.exists(carId) }
 
     override suspend fun getCarById(carId: Long): Car? {

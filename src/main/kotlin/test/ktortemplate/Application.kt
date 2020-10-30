@@ -5,11 +5,13 @@ import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.config.ApplicationConfig
 import io.ktor.features.CORS
+import io.ktor.features.CallId
 import io.ktor.features.CallLogging
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
+import io.ktor.features.callIdMdc
 import io.ktor.features.deflate
 import io.ktor.features.gzip
 import io.ktor.features.identity
@@ -27,6 +29,8 @@ import test.ktortemplate.core.utils.healthcheck.Health
 import test.ktortemplate.core.utils.healthcheck.liveness
 import test.ktortemplate.core.utils.healthcheck.readiness
 import test.ktortemplate.core.utils.json.JsonSettings
+import test.ktortemplate.core.utils.log.SemiStructuredLogFormatter
+import java.util.UUID
 
 @KtorExperimentalAPI
 fun Application.module(configOverrides: ApplicationConfig? = null) {
@@ -46,9 +50,17 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
         }
     }
 
+    // Installs call logging and request tracing
+    val callIdHeader = SemiStructuredLogFormatter.REQUEST_ID_HEADER
     install(CallLogging) {
         level = org.slf4j.event.Level.INFO
+        callIdMdc(callIdHeader)
     }
+    install(CallId) {
+        generate { it.request.headers[callIdHeader] ?: UUID.randomUUID().toString() }
+        replyToHeader(callIdHeader)
+    }
+
     install(ContentNegotiation) {
         json(
             contentType = ContentType.Application.Json,
