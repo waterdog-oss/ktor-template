@@ -8,6 +8,12 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
+import mobi.waterdog.rest.template.containers.PgSQLContainerFactory
+import mobi.waterdog.rest.template.core.exception.AppException
+import mobi.waterdog.rest.template.core.exception.ErrorDTO
+import mobi.waterdog.rest.template.core.testApp
+import mobi.waterdog.rest.template.core.utils.json.JsonSettings
+import mobi.waterdog.rest.template.core.utils.versioning.ApiVersion
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain any`
 import org.amshove.kluent.shouldNotBeEqualTo
@@ -17,15 +23,6 @@ import org.junit.jupiter.api.assertThrows
 import org.koin.test.KoinTest
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import mobi.waterdog.rest.template.containers.PgSQLContainerFactory
-import mobi.waterdog.rest.template.core.exception.AppException
-import mobi.waterdog.rest.template.core.exception.ErrorDTO
-import mobi.waterdog.rest.template.core.model.Car
-import mobi.waterdog.rest.template.core.model.CarSaveCommand
-import mobi.waterdog.rest.template.core.model.Wheel
-import mobi.waterdog.rest.template.core.testApp
-import mobi.waterdog.rest.template.core.utils.json.JsonSettings
-import mobi.waterdog.rest.template.core.utils.versioning.ApiVersion
 
 @KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

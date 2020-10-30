@@ -5,9 +5,6 @@ import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.MapApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
-import org.flywaydb.core.Flyway
-import org.koin.core.module.Module
-import org.koin.dsl.module
 import mobi.waterdog.rest.template.conf.database.DatabaseConnection
 import mobi.waterdog.rest.template.core.persistance.CarRepository
 import mobi.waterdog.rest.template.core.persistance.PartRepository
@@ -19,6 +16,9 @@ import mobi.waterdog.rest.template.core.service.CarService
 import mobi.waterdog.rest.template.core.service.CarServiceImpl
 import mobi.waterdog.rest.template.core.service.PersonService
 import mobi.waterdog.rest.template.core.service.PersonServiceImpl
+import org.flywaydb.core.Flyway
+import org.koin.core.module.Module
+import org.koin.dsl.module
 import javax.sql.DataSource
 
 @KtorExperimentalAPI

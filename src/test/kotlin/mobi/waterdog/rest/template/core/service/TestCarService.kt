@@ -2,6 +2,15 @@ package mobi.waterdog.rest.template.core.service
 
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
+import mobi.waterdog.rest.template.conf.EnvironmentConfigurator
+import mobi.waterdog.rest.template.conf.database.DatabaseConnection
+import mobi.waterdog.rest.template.containers.PgSQLContainerFactory
+import mobi.waterdog.rest.template.core.model.Car
+import mobi.waterdog.rest.template.core.model.CarSaveCommand
+import mobi.waterdog.rest.template.core.model.Part
+import mobi.waterdog.rest.template.core.model.RegisterPartReplacementCommand
+import mobi.waterdog.rest.template.core.persistance.CarRepository
+import mobi.waterdog.rest.template.core.persistance.PartRepository
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -15,16 +24,6 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import mobi.waterdog.rest.template.conf.EnvironmentConfigurator
-import mobi.waterdog.rest.template.conf.database.DatabaseConnection
-import mobi.waterdog.rest.template.containers.PgSQLContainerFactory
-import mobi.waterdog.rest.template.core.model.Car
-import mobi.waterdog.rest.template.core.model.CarSaveCommand
-import mobi.waterdog.rest.template.core.model.Part
-import mobi.waterdog.rest.template.core.model.RegisterPartReplacementCommand
-import mobi.waterdog.rest.template.core.persistance.CarRepository
-import mobi.waterdog.rest.template.core.persistance.PartRepository
-import mobi.waterdog.rest.template.core.service.CarService
 
 @Testcontainers
 @KtorExperimentalAPI

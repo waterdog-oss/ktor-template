@@ -1,11 +1,11 @@
 package mobi.waterdog.rest.template.core.service
 
-import org.koin.core.KoinComponent
-import org.koin.core.inject
 import mobi.waterdog.rest.template.conf.database.DatabaseConnection
 import mobi.waterdog.rest.template.core.model.Person
 import mobi.waterdog.rest.template.core.persistance.PersonRepository
 import mobi.waterdog.rest.template.core.utils.pagination.PageRequest
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
 class PersonServiceImpl : KoinComponent, PersonService {
 

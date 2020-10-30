@@ -1,7 +1,5 @@
 package mobi.waterdog.rest.template.core.persistance.sql
 
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.SortOrder
 import mobi.waterdog.rest.template.core.exception.AppException
 import mobi.waterdog.rest.template.core.exception.ErrorCode
 import mobi.waterdog.rest.template.core.model.Person
@@ -9,6 +7,8 @@ import mobi.waterdog.rest.template.core.model.Persons
 import mobi.waterdog.rest.template.core.persistance.PersonRepository
 import mobi.waterdog.rest.template.core.utils.pagination.PageRequest
 import mobi.waterdog.rest.template.core.utils.pagination.SortField
+import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.SortOrder
 
 class PersonRepositoryImpl : PersonRepository {
 

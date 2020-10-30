@@ -5,6 +5,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.util.KtorExperimentalAPI
+import mobi.waterdog.rest.template.containers.PgSQLContainerFactory
+import mobi.waterdog.rest.template.core.testApp
+import mobi.waterdog.rest.template.core.utils.json.JsonSettings
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -12,9 +15,6 @@ import org.koin.test.KoinTest
 import org.slf4j.LoggerFactory
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import mobi.waterdog.rest.template.containers.PgSQLContainerFactory
-import mobi.waterdog.rest.template.core.testApp
-import mobi.waterdog.rest.template.core.utils.json.JsonSettings
 import java.time.Duration
 
 @KtorExperimentalAPI

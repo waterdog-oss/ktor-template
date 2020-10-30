@@ -20,7 +20,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.routing.Routing
 import io.ktor.serialization.json
 import io.ktor.util.KtorExperimentalAPI
-import org.koin.ktor.ext.Koin
 import mobi.waterdog.rest.template.conf.EnvironmentConfigurator
 import mobi.waterdog.rest.template.core.exception.appException
 import mobi.waterdog.rest.template.core.exception.defaultStatusCodes
@@ -30,6 +29,7 @@ import mobi.waterdog.rest.template.core.utils.healthcheck.liveness
 import mobi.waterdog.rest.template.core.utils.healthcheck.readiness
 import mobi.waterdog.rest.template.core.utils.json.JsonSettings
 import mobi.waterdog.rest.template.core.utils.log.SemiStructuredLogFormatter
+import org.koin.ktor.ext.Koin
 import java.util.UUID
 
 @KtorExperimentalAPI

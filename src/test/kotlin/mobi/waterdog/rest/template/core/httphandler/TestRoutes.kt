@@ -9,17 +9,6 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be greater than`
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.koin.test.KoinTest
-import org.koin.test.inject
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import mobi.waterdog.rest.template.conf.database.DatabaseConnection
 import mobi.waterdog.rest.template.containers.PgSQLContainerFactory
 import mobi.waterdog.rest.template.core.model.Car
@@ -31,6 +20,17 @@ import mobi.waterdog.rest.template.core.utils.pagination.PageRequest
 import mobi.waterdog.rest.template.core.utils.pagination.PageResponse
 import mobi.waterdog.rest.template.core.utils.pagination.PaginationUtils
 import mobi.waterdog.rest.template.core.utils.versioning.ApiVersion
+import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.`should be greater than`
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.UUID
 
 @KtorExperimentalAPI

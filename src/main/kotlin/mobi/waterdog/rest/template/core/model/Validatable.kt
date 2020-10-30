@@ -1,5 +1,8 @@
 package mobi.waterdog.rest.template.core.model
 
+import mobi.waterdog.rest.template.core.exception.AppException
+import mobi.waterdog.rest.template.core.exception.ErrorCode
+import mobi.waterdog.rest.template.core.exception.ErrorDefinition
 import org.valiktor.Constraint
 import org.valiktor.ConstraintViolationException
 import org.valiktor.Validator
@@ -15,9 +18,6 @@ import org.valiktor.constraints.NotEquals
 import org.valiktor.constraints.NotIn
 import org.valiktor.constraints.Size
 import org.valiktor.validate
-import mobi.waterdog.rest.template.core.exception.AppException
-import mobi.waterdog.rest.template.core.exception.ErrorCode
-import mobi.waterdog.rest.template.core.exception.ErrorDefinition
 
 abstract class Validatable<T> {
 

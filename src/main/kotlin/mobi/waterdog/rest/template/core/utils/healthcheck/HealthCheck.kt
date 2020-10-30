@@ -1,9 +1,9 @@
 package mobi.waterdog.rest.template.core.utils.healthcheck
 
 import kotlinx.coroutines.withTimeout
+import mobi.waterdog.rest.template.conf.database.DatabaseConnection
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import mobi.waterdog.rest.template.conf.database.DatabaseConnection
 
 internal class HealthCheckInjector : KoinComponent {
     val dbc: DatabaseConnection by inject()

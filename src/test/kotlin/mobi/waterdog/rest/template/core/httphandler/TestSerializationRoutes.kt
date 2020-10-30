@@ -16,11 +16,6 @@ import io.ktor.serialization.json
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
-import org.amshove.kluent.`should be after`
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.shouldContain
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import mobi.waterdog.rest.template.core.model.Const
 import mobi.waterdog.rest.template.core.model.Expr
 import mobi.waterdog.rest.template.core.model.NotANumber
@@ -29,6 +24,11 @@ import mobi.waterdog.rest.template.core.model.TestInstantLongSerialization
 import mobi.waterdog.rest.template.core.model.TestInstantStringSerialization
 import mobi.waterdog.rest.template.core.model.TestSealedClass
 import mobi.waterdog.rest.template.core.utils.json.JsonSettings
+import org.amshove.kluent.`should be after`
+import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.shouldContain
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 

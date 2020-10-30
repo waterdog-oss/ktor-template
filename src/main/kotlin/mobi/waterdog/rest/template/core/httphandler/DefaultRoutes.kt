@@ -9,8 +9,6 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.put
-import org.koin.core.KoinComponent
-import org.koin.core.inject
 import mobi.waterdog.rest.template.core.model.Car
 import mobi.waterdog.rest.template.core.model.CarSaveCommand
 import mobi.waterdog.rest.template.core.service.CarService
@@ -19,6 +17,8 @@ import mobi.waterdog.rest.template.core.utils.pagination.PageResponse
 import mobi.waterdog.rest.template.core.utils.pagination.parsePageRequest
 import mobi.waterdog.rest.template.core.utils.pagination.respondPaged
 import mobi.waterdog.rest.template.core.utils.versioning.ApiVersion
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
 internal class DefaultRoutesInjector : KoinComponent {
     val carService: CarService by inject()
