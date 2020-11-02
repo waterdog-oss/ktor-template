@@ -78,11 +78,6 @@ dependencies {
     api deps.exposed.dao
     api deps.exposed.jdbc
 
-    // To remove (import on project)
-    api deps.postgresql
-    api deps.hikari
-    api deps.flyaway
-
     // Tests
     testImplementation deps.ktor.test
     testImplementation deps.koin.test
