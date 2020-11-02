@@ -1,4 +1,4 @@
-package mobi.waterdog.rest.template.conf.database
+package mobi.waterdog.rest.template.core.utils.database
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.slf4j.MDCContext
@@ -29,15 +29,6 @@ class DatabaseConnection(private val dataSource: DataSource) {
         val newContext = coroutineContext + context
         withContext(newContext) {
             block()
-        }
-    }
-
-    suspend fun ping(): Boolean = newSuspendedTransaction(Dispatchers.IO, database) {
-        try {
-            exec("SELECT 1")
-            true
-        } catch (e: Exception) {
-            false
         }
     }
 }

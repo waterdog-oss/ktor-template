@@ -1,4 +1,4 @@
-package mobi.waterdog.rest.template.core.exception
+package mobi.waterdog.rest.template.core.utils.exception
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
