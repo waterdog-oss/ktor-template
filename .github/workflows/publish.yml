@@ -26,8 +26,7 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/dependencies.gradle') }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
         restore-keys: |
     - name: Publish Library
-        env:
-          bintrayUser: ${{ secrets.BINTRAY_USER }}
-          bintrayApiKey: ${{ secrets.BINTRAY_API_KEY }}
         run: ./gradlew bintrayUpload
-
+        env:
+          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
