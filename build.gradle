@@ -1,5 +1,5 @@
-group 'com.ktor-template'
-version '0.1'
+group 'mobi.waterdog'
+version '0.0.1'
 
 buildscript {
     apply from: "$rootDir/dependencies.gradle"
@@ -57,38 +57,39 @@ sourceSets {
 }
 
 dependencies {
-    implementation deps.kotlin.jdk
+    api deps.kotlin.jdk
 
-    implementation deps.logs.logback
-    implementation deps.logs.logbackJson
-    implementation deps.logs.coroutinesSlf4j
+    api deps.logs.logback
+    api deps.logs.logbackJson
+    api deps.logs.coroutinesSlf4j
 
-    implementation deps.ktor.serverNetty
-    implementation deps.ktor.serialization
-    implementation deps.ktor.auth
+    api deps.ktor.serverNetty
+    api deps.ktor.serialization
+    api deps.ktor.auth
 
-    implementation deps.koin.core
-    implementation deps.koin.coreExt
-    implementation deps.koin.ktor
+    api deps.koin.core
+    api deps.koin.coreExt
+    api deps.koin.ktor
 
-    implementation deps.valiktor
+    api deps.valiktor
+
     // Database stuff
-    implementation deps.postgresql
-    implementation deps.hikari
-    implementation deps.exposed.core
-    implementation deps.exposed.dao
-    implementation deps.exposed.jdbc
-    implementation deps.flyaway
+    api deps.exposed.core
+    api deps.exposed.dao
+    api deps.exposed.jdbc
 
+    // To remove
+    api deps.postgresql
+    api deps.hikari
+    api deps.flyaway
+
+    // Tests
     testImplementation deps.ktor.test
     testImplementation deps.koin.test
     testImplementation deps.junit.api
     testImplementation deps.junit.params
     testRuntimeOnly deps.junit.engine
     testImplementation deps.kluent
-    testImplementation deps.testContainers.core
-    testImplementation deps.testContainers.junit
-    testImplementation deps.testContainers.postgres
 }
 
 test {
@@ -105,14 +106,14 @@ tasks.withType(Test) {
 applicationDefaultJvmArgs = ["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,address=5005,suspend=n"]
 mainClassName = "io.ktor.server.netty.DevelopmentEngine"
 
-// Publishing configuration
+// Artifact publication configuration
 publishing {
     publications {
-        MyPublication(MavenPublication) {
+        ArtifactPublication(MavenPublication) {
             from components.java
-            groupId "test.ktortemplate"
-            artifactId "teste-template"
-            version "1.0"
+            groupId project.group
+            artifactId "ktor-template-core"
+            version project.version
         }
     }
 }
@@ -120,15 +121,17 @@ publishing {
 bintray {
     user = project.properties["bintrayUser"]?.toString() ?: System.getenv("BINTRAY_USER")
     key = project.properties["bintrayApiKey"]?.toString() ?: System.getenv("BINTRAY_API_KEY")
-    publications = ["MyPublication"]
+    publications = ["ArtifactPublication"]
+    publish = true
+    override = true // remove this
     pkg {
-        repo = "teste-template"
-        name = "ktor-template"
+        repo = "ktor-template"
+        name = "ktor-template-core"
+        licenses = ["MIT"]
         vcsUrl = "https://github.com/waterdog-oss/ktor-template"
         userOrg = "waterdog"
-        licenses = ["MIT"]
         version {
-            name = "1.0"
+            name = project.version
             released = new Date()
         }
     }
