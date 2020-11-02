@@ -3,7 +3,7 @@ name: Publish Bintray
 on:
   push:
     branches:
-      - test-publish-branch
+      - master
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/dependencies.gradle') }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
         restore-keys: |
-    - name: Build the latest Docker image
+    - name: Publish artifact
       run: ./gradlew bintrayUpload
       env:
         BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
