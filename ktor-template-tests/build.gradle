@@ -23,3 +23,14 @@ dependencies {
     testImplementation deps.testContainers.junit
     testImplementation deps.testContainers.postgres
 }
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+    }
+}

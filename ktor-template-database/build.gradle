@@ -7,14 +7,3 @@ dependencies {
     api deps.exposed.dao
     api deps.exposed.jdbc
 }
-
-test {
-    useJUnitPlatform()
-}
-
-tasks.withType(Test) {
-    useJUnitPlatform()
-    testLogging {
-        events "PASSED", "FAILED", "SKIPPED"
-    }
-}
