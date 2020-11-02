@@ -13,7 +13,8 @@ ext.deps = [
         koin: "org.koin:koin-gradle-plugin:${versions.koin}",
         shadow: "com.github.jengelman.gradle.plugins:shadow:6.1.0",
         ktlint: "org.jlleitschuh.gradle:ktlint-gradle:9.4.1",
-        serialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
+        serialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
+        bintray: "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+"
     ],
     kotlin: [
         jdk: "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
