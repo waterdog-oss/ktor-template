@@ -25,8 +25,8 @@ jobs:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/dependencies.gradle') }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
         restore-keys: |
-    - name: Publish Library
-        run: ./gradlew bintrayUpload
-        env:
-          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+    - name: Build the latest Docker image
+      run: ./gradlew bintrayUpload
+      env:
+        BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+        BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
