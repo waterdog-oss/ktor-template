@@ -50,8 +50,8 @@ class EnvironmentConfigurator(baseConfig: ApplicationConfig, configOverrides: Ap
         single<PartRepository> { PartRepositoryImpl() }
         single<CarRepository> { CarRepositoryImpl() }
         single<PersonRepository> { PersonRepositoryImpl() }
-        single<CarService> { CarServiceImpl() }
-        single<PersonService> { PersonServiceImpl() }
+        single<CarService> { CarServiceImpl(get(), get(), get()) }
+        single<PersonService> { PersonServiceImpl(get(), get()) }
     }
 
     private fun initDbCore() = module {

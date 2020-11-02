@@ -1,6 +1,6 @@
 @file:UseSerializers(InstantAsStringSerializer::class)
 
-package mobi.waterdog.rest.template.core.model
+package mobi.waterdog.rest.template.tests.core.model
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable

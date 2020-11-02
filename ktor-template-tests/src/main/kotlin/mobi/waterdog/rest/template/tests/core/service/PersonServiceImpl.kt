@@ -7,11 +7,8 @@ import mobi.waterdog.rest.template.pagination.PageRequest
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-class PersonServiceImpl : KoinComponent, PersonService {
-
-    private val personRepository: PersonRepository by inject()
-    private val dbc: DatabaseConnection by inject()
-
+class PersonServiceImpl(private val personRepository: PersonRepository,
+                        private val dbc: DatabaseConnection): PersonService {
     override suspend fun add(person: Person): Person {
         return dbc.suspendedQuery { personRepository.save(person) }
     }

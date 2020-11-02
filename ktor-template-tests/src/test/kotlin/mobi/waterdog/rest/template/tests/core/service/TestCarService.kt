@@ -11,7 +11,6 @@ import mobi.waterdog.rest.template.tests.core.model.Part
 import mobi.waterdog.rest.template.tests.core.model.RegisterPartReplacementCommand
 import mobi.waterdog.rest.template.tests.core.persistance.CarRepository
 import mobi.waterdog.rest.template.tests.core.persistance.PartRepository
-import mobi.waterdog.rest.template.tests.core.service.CarService
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -30,7 +29,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestCarService : KoinTest {
-
     companion object {
         @Container
         private val dbContainer = PgSQLContainerFactory.newInstance()

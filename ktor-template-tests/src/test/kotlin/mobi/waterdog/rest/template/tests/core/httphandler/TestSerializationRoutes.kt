@@ -1,4 +1,4 @@
-package mobi.waterdog.rest.template.core.httphandler
+package mobi.waterdog.rest.template.tests.core.httphandler
 
 import io.ktor.application.Application
 import io.ktor.application.install
@@ -16,13 +16,13 @@ import io.ktor.serialization.json
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
-import mobi.waterdog.rest.template.core.model.Const
-import mobi.waterdog.rest.template.core.model.Expr
-import mobi.waterdog.rest.template.core.model.NotANumber
-import mobi.waterdog.rest.template.core.model.Sum
-import mobi.waterdog.rest.template.core.model.TestInstantLongSerialization
-import mobi.waterdog.rest.template.core.model.TestInstantStringSerialization
-import mobi.waterdog.rest.template.core.model.TestSealedClass
+import mobi.waterdog.rest.template.tests.core.model.Const
+import mobi.waterdog.rest.template.tests.core.model.Expr
+import mobi.waterdog.rest.template.tests.core.model.NotANumber
+import mobi.waterdog.rest.template.tests.core.model.Sum
+import mobi.waterdog.rest.template.tests.core.model.TestInstantLongSerialization
+import mobi.waterdog.rest.template.tests.core.model.TestInstantStringSerialization
+import mobi.waterdog.rest.template.tests.core.model.TestSealedClass
 import mobi.waterdog.rest.template.tests.core.httphandler.testSerializationRoutes
 import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings
 import org.amshove.kluent.`should be after`

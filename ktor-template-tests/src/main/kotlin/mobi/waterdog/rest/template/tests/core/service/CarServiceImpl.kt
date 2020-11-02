@@ -10,15 +10,12 @@ import mobi.waterdog.rest.template.tests.core.model.RegisterPartReplacementComma
 import mobi.waterdog.rest.template.tests.core.persistance.CarRepository
 import mobi.waterdog.rest.template.tests.core.persistance.PartRepository
 import mobi.waterdog.rest.template.pagination.PageRequest
-import org.koin.core.KoinComponent
-import org.koin.core.inject
 import org.slf4j.LoggerFactory
 
-class CarServiceImpl : KoinComponent, CarService {
-
-    private val carRepository: CarRepository by inject()
-    private val partRepository: PartRepository by inject()
-    private val dbc: DatabaseConnection by inject()
+class CarServiceImpl(private val carRepository: CarRepository,
+                     private val partRepository: PartRepository,
+                     private val dbc: DatabaseConnection)
+    : CarService {
 
     companion object {
         private val log = LoggerFactory.getLogger(this::class.java)

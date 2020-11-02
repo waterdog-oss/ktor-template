@@ -4,13 +4,13 @@ import io.ktor.application.call
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
-import mobi.waterdog.rest.template.core.model.Const
-import mobi.waterdog.rest.template.core.model.Expr
-import mobi.waterdog.rest.template.core.model.NotANumber
-import mobi.waterdog.rest.template.core.model.Sum
-import mobi.waterdog.rest.template.core.model.TestInstantLongSerialization
-import mobi.waterdog.rest.template.core.model.TestInstantStringSerialization
-import mobi.waterdog.rest.template.core.model.TestSealedClass
+import mobi.waterdog.rest.template.tests.core.model.Const
+import mobi.waterdog.rest.template.tests.core.model.Expr
+import mobi.waterdog.rest.template.tests.core.model.NotANumber
+import mobi.waterdog.rest.template.tests.core.model.Sum
+import mobi.waterdog.rest.template.tests.core.model.TestInstantLongSerialization
+import mobi.waterdog.rest.template.tests.core.model.TestInstantStringSerialization
+import mobi.waterdog.rest.template.tests.core.model.TestSealedClass
 import java.time.Instant
 
 fun Route.testSerializationRoutes() {

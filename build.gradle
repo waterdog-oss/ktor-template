@@ -13,19 +13,10 @@ buildscript {
         classpath deps.plugins.serialization
     }
 }
-/*
-apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: 'org.jlleitschuh.gradle.ktlint'
-apply plugin: 'kotlinx-serialization'*/
 
 repositories {
     jcenter()
 }
-
-/*
-test {
-    useJUnitPlatform()
-}*/
 
 subprojects {
     apply from: "$rootDir/dependencies.gradle"
@@ -44,68 +35,3 @@ subprojects {
     compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11
     compileTestKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11
 }
-
-// Required so that Kotlin generates java 11 bytecode
-// compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11
-// compileTestKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11
-
-/*
-sourceSets {
-    main {
-        kotlin.srcDir "src/main/kotlin"
-        resources.srcDir "src/main/resources"
-    }
-    test {
-        kotlin.srcDir "src/test/kotlin"
-        resources.srcDir "src/test/resources"
-    }
-}
-
-dependencies {
-    implementation deps.kotlin.jdk
-
-    implementation deps.logs.logback
-    implementation deps.logs.logbackJson
-    implementation deps.logs.coroutinesSlf4j
-
-    implementation deps.ktor.serverNetty
-    implementation deps.ktor.serialization
-    implementation deps.ktor.auth
-
-    implementation deps.koin.core
-    implementation deps.koin.coreExt
-    implementation deps.koin.ktor
-
-    implementation deps.valiktor
-    // Database stuff
-    implementation deps.postgresql
-    implementation deps.hikari
-    implementation deps.exposed.core
-    implementation deps.exposed.dao
-    implementation deps.exposed.jdbc
-    implementation deps.flyaway
-
-    testImplementation deps.ktor.test
-    testImplementation deps.koin.test
-    testImplementation deps.junit.api
-    testImplementation deps.junit.params
-    testRuntimeOnly deps.junit.engine
-    testImplementation deps.kluent
-    testImplementation deps.testContainers.core
-    testImplementation deps.testContainers.junit
-    testImplementation deps.testContainers.postgres
-}
-
-test {
-    forkEvery = 1
-}
-
-tasks.withType(Test) {
-    useJUnitPlatform()
-    testLogging {
-        events "PASSED", "FAILED", "SKIPPED"
-    }
-}
-
-applicationDefaultJvmArgs = ["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,address=5005,suspend=n"]
-mainClassName = "io.ktor.server.netty.DevelopmentEngine"*/
