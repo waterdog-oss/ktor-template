@@ -73,12 +73,12 @@ dependencies {
 
     api deps.valiktor
 
-    // Database stuff
+    // Database
     api deps.exposed.core
     api deps.exposed.dao
     api deps.exposed.jdbc
 
-    // To remove
+    // To remove (import on project)
     api deps.postgresql
     api deps.hikari
     api deps.flyaway
@@ -123,7 +123,6 @@ bintray {
     key = project.properties["bintrayApiKey"]?.toString() ?: System.getenv("BINTRAY_API_KEY")
     publications = ["ArtifactPublication"]
     publish = true
-    override = true // remove this
     pkg {
         repo = "ktor-template"
         name = "ktor-template-core"
