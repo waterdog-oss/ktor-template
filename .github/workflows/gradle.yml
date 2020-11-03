@@ -20,7 +20,7 @@ jobs:
       uses: actions/cache@v2.1.0
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/dependencies.gradle') }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('dependencies.gradle') }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
     - name: Build with Gradle
@@ -31,5 +31,3 @@ jobs:
         name: test-report
         path: /home/runner/work/ktor-template/ktor-template/build/reports/tests/
         retention-days: 1
-    - name: Build the latest Docker image
-      run: docker build .
