@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
+import java.sql.ResultSet
 import javax.sql.DataSource
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
@@ -32,12 +33,19 @@ class DatabaseConnection(private val dataSource: DataSource) {
         }
     }
 
-    suspend fun ping(): Boolean = newSuspendedTransaction(Dispatchers.IO, database) {
+    suspend fun <T: Any> executeRaw(
+            rawSql: String,
+            transform: (ResultSet) -> T
+    ): T? = newSuspendedTransaction(Dispatchers.IO, database) {
+        exec(rawSql, emptyList(), transform)
+    }
+
+    suspend fun ping(): Boolean =
         try {
-            exec("SELECT 1")
-            true
+            executeRaw("SELECT 1") {
+                it.next()
+            } ?: false
         } catch (e: Exception) {
             false
         }
-    }
 }
