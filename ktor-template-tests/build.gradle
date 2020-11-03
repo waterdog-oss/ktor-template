@@ -1,5 +1,6 @@
 apply plugin: 'koin'
 apply plugin: 'kotlinx-serialization'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
     implementation project(":ktor-template-core")

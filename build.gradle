@@ -10,6 +10,7 @@ buildscript {
         classpath deps.plugins.kotlin
         classpath deps.plugins.ktlint
         classpath deps.plugins.koin
+        classpath deps.plugins.shadow
         classpath deps.plugins.serialization
     }
 }
