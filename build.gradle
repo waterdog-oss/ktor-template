@@ -1,5 +1,5 @@
-group 'com.ktor-template'
-version '0.1'
+group 'mobi.waterdog'
+version '0.0.1'
 
 buildscript {
     apply from: "$rootDir/dependencies.gradle"
@@ -16,6 +16,7 @@ buildscript {
         classpath deps.plugins.shadow
         classpath deps.plugins.ktlint
         classpath deps.plugins.serialization
+        classpath deps.plugins.bintray
     }
 }
 
@@ -25,6 +26,8 @@ apply plugin: 'koin'
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
 apply plugin: 'kotlinx-serialization'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 
 apply from: "$rootDir/dependencies.gradle"
 
@@ -36,6 +39,7 @@ repositories {
 test {
     useJUnitPlatform()
 }
+
 
 // Required so that Kotlin generates java 11 bytecode
 compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11
@@ -53,38 +57,34 @@ sourceSets {
 }
 
 dependencies {
-    implementation deps.kotlin.jdk
+    api deps.kotlin.jdk
 
-    implementation deps.logs.logback
-    implementation deps.logs.logbackJson
-    implementation deps.logs.coroutinesSlf4j
+    api deps.logs.logback
+    api deps.logs.logbackJson
+    api deps.logs.coroutinesSlf4j
 
-    implementation deps.ktor.serverNetty
-    implementation deps.ktor.serialization
-    implementation deps.ktor.auth
+    api deps.ktor.serverNetty
+    api deps.ktor.serialization
+    api deps.ktor.auth
 
-    implementation deps.koin.core
-    implementation deps.koin.coreExt
-    implementation deps.koin.ktor
+    api deps.koin.core
+    api deps.koin.coreExt
+    api deps.koin.ktor
 
-    implementation deps.valiktor
-    // Database stuff
-    implementation deps.postgresql
-    implementation deps.hikari
-    implementation deps.exposed.core
-    implementation deps.exposed.dao
-    implementation deps.exposed.jdbc
-    implementation deps.flyaway
+    api deps.valiktor
 
+    // Database
+    api deps.exposed.core
+    api deps.exposed.dao
+    api deps.exposed.jdbc
+
+    // Tests
     testImplementation deps.ktor.test
     testImplementation deps.koin.test
     testImplementation deps.junit.api
     testImplementation deps.junit.params
     testRuntimeOnly deps.junit.engine
     testImplementation deps.kluent
-    testImplementation deps.testContainers.core
-    testImplementation deps.testContainers.junit
-    testImplementation deps.testContainers.postgres
 }
 
 test {
@@ -100,3 +100,33 @@ tasks.withType(Test) {
 
 applicationDefaultJvmArgs = ["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,address=5005,suspend=n"]
 mainClassName = "io.ktor.server.netty.DevelopmentEngine"
+
+// Artifact publication configuration
+publishing {
+    publications {
+        ArtifactPublication(MavenPublication) {
+            from components.java
+            groupId project.group
+            artifactId "ktor-template-core"
+            version project.version
+        }
+    }
+}
+
+bintray {
+    user = project.properties["bintrayUser"]?.toString() ?: System.getenv("BINTRAY_USER")
+    key = project.properties["bintrayApiKey"]?.toString() ?: System.getenv("BINTRAY_API_KEY")
+    publications = ["ArtifactPublication"]
+    publish = true
+    pkg {
+        repo = "ktor-template"
+        name = "ktor-template-core"
+        licenses = ["MIT"]
+        vcsUrl = "https://github.com/waterdog-oss/ktor-template"
+        userOrg = "waterdog"
+        version {
+            name = project.version
+            released = new Date()
+        }
+    }
+}

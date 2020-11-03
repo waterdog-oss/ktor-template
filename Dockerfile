@@ -12,7 +12,7 @@ FROM openjdk:11-jre-slim-buster
 ARG APP_NAME="ktor-template"
 ENV JAR_NAME=${APP_NAME}
 
-ARG APP_VERSION="0.1"
+ARG APP_VERSION="0.0.1"
 ENV JAR_VERSION=${APP_VERSION}
 
 # Setup jattach so that we have some of the tooling from the JDK in the JRE

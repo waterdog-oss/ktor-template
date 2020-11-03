@@ -13,7 +13,8 @@ ext.deps = [
         koin: "org.koin:koin-gradle-plugin:${versions.koin}",
         shadow: "com.github.jengelman.gradle.plugins:shadow:6.1.0",
         ktlint: "org.jlleitschuh.gradle:ktlint-gradle:9.4.1",
-        serialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
+        serialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
+        bintray: "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+"
     ],
     kotlin: [
         jdk: "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
@@ -35,20 +36,12 @@ ext.deps = [
         dao: "org.jetbrains.exposed:exposed-dao:${versions.exposed}",
         jdbc: "org.jetbrains.exposed:exposed-jdbc:${versions.exposed}",
     ],
-    testContainers: [
-        core: "org.testcontainers:testcontainers:${versions.testContainers}",
-        junit: "org.testcontainers:junit-jupiter:${versions.testContainers}",
-        postgres: "org.testcontainers:postgresql:${versions.testContainers}"
-    ],
     valiktor: "org.valiktor:valiktor-core:0.12.0",
     logs: [
         logback: "ch.qos.logback:logback-classic:1.2.3",
         logbackJson: "ch.qos.logback.contrib:logback-json-classic:0.1.5",
         coroutinesSlf4j: "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.4.0"
     ],
-    postgresql: "org.postgresql:postgresql:42.2.17",
-    hikari: "com.zaxxer:HikariCP:3.4.5",
-    flyaway: "org.flywaydb:flyway-core:7.0.2",
     kluent: "org.amshove.kluent:kluent:1.61",
     junit: [
         api: "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
