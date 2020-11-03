@@ -9,12 +9,12 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.put
+import mobi.waterdog.rest.template.pagination.PageResponse
+import mobi.waterdog.rest.template.pagination.parsePageRequest
 import mobi.waterdog.rest.template.tests.core.model.Car
 import mobi.waterdog.rest.template.tests.core.model.CarSaveCommand
 import mobi.waterdog.rest.template.tests.core.service.CarService
 import mobi.waterdog.rest.template.tests.core.service.PersonService
-import mobi.waterdog.rest.template.pagination.PageResponse
-import mobi.waterdog.rest.template.pagination.parsePageRequest
 import mobi.waterdog.rest.template.tests.core.utils.pagination.respondPaged
 import mobi.waterdog.rest.template.tests.core.utils.versioning.ApiVersion
 import org.koin.core.KoinComponent

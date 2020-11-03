@@ -33,9 +33,9 @@ class DatabaseConnection(private val dataSource: DataSource) {
         }
     }
 
-    suspend fun <T: Any> executeRaw(
-            rawSql: String,
-            transform: (ResultSet) -> T
+    suspend fun <T : Any> executeRaw(
+        rawSql: String,
+        transform: (ResultSet) -> T
     ): T? = newSuspendedTransaction(Dispatchers.IO, database) {
         exec(rawSql, emptyList(), transform)
     }

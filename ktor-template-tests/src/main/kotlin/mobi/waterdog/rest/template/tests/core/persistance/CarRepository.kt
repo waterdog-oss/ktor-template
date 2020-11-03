@@ -1,8 +1,8 @@
 package mobi.waterdog.rest.template.tests.core.persistance
 
+import mobi.waterdog.rest.template.pagination.PageRequest
 import mobi.waterdog.rest.template.tests.core.model.Car
 import mobi.waterdog.rest.template.tests.core.model.CarSaveCommand
-import mobi.waterdog.rest.template.pagination.PageRequest
 
 interface CarRepository {
     fun exists(id: Long): Boolean

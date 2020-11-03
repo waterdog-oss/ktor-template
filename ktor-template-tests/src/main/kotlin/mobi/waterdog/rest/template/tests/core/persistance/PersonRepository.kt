@@ -1,7 +1,7 @@
 package mobi.waterdog.rest.template.tests.core.persistance
 
-import mobi.waterdog.rest.template.tests.core.model.Person
 import mobi.waterdog.rest.template.pagination.PageRequest
+import mobi.waterdog.rest.template.tests.core.model.Person
 
 interface PersonRepository {
     fun save(person: Person): Person

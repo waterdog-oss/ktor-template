@@ -20,12 +20,12 @@ import io.ktor.http.HttpMethod
 import io.ktor.routing.Routing
 import io.ktor.serialization.json
 import io.ktor.util.KtorExperimentalAPI
-import mobi.waterdog.rest.template.tests.conf.EnvironmentConfigurator
 import mobi.waterdog.rest.template.exception.appException
 import mobi.waterdog.rest.template.exception.defaultStatusCodes
-import mobi.waterdog.rest.template.tests.core.httphandler.defaultRoutes
 import mobi.waterdog.rest.template.healthcheck.Health
 import mobi.waterdog.rest.template.log.SemiStructuredLogFormatter
+import mobi.waterdog.rest.template.tests.conf.EnvironmentConfigurator
+import mobi.waterdog.rest.template.tests.core.httphandler.defaultRoutes
 import mobi.waterdog.rest.template.tests.core.utils.healthcheck.liveness
 import mobi.waterdog.rest.template.tests.core.utils.healthcheck.readiness
 import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings

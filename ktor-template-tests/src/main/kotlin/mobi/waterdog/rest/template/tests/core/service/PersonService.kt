@@ -1,7 +1,7 @@
 package mobi.waterdog.rest.template.tests.core.service
 
-import mobi.waterdog.rest.template.tests.core.model.Person
 import mobi.waterdog.rest.template.pagination.PageRequest
+import mobi.waterdog.rest.template.tests.core.model.Person
 
 interface PersonService {
     suspend fun add(person: Person): Person

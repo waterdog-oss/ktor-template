@@ -10,15 +10,15 @@ import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
 import mobi.waterdog.rest.template.database.DatabaseConnection
+import mobi.waterdog.rest.template.pagination.PageRequest
+import mobi.waterdog.rest.template.pagination.PageResponse
+import mobi.waterdog.rest.template.pagination.PaginationUtils
 import mobi.waterdog.rest.template.tests.containers.PgSQLContainerFactory
 import mobi.waterdog.rest.template.tests.core.model.Car
 import mobi.waterdog.rest.template.tests.core.model.CarSaveCommand
 import mobi.waterdog.rest.template.tests.core.persistance.CarRepository
 import mobi.waterdog.rest.template.tests.core.testApp
 import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings
-import mobi.waterdog.rest.template.pagination.PageRequest
-import mobi.waterdog.rest.template.pagination.PageResponse
-import mobi.waterdog.rest.template.pagination.PaginationUtils
 import mobi.waterdog.rest.template.tests.core.utils.versioning.ApiVersion
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be greater than`

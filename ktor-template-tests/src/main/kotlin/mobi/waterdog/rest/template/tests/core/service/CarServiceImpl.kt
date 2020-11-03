@@ -3,19 +3,21 @@ package mobi.waterdog.rest.template.tests.core.service
 import mobi.waterdog.rest.template.database.DatabaseConnection
 import mobi.waterdog.rest.template.exception.AppException
 import mobi.waterdog.rest.template.exception.ErrorCode
+import mobi.waterdog.rest.template.pagination.PageRequest
 import mobi.waterdog.rest.template.tests.core.model.Car
 import mobi.waterdog.rest.template.tests.core.model.CarSaveCommand
 import mobi.waterdog.rest.template.tests.core.model.Part
 import mobi.waterdog.rest.template.tests.core.model.RegisterPartReplacementCommand
 import mobi.waterdog.rest.template.tests.core.persistance.CarRepository
 import mobi.waterdog.rest.template.tests.core.persistance.PartRepository
-import mobi.waterdog.rest.template.pagination.PageRequest
 import org.slf4j.LoggerFactory
 
-class CarServiceImpl(private val carRepository: CarRepository,
-                     private val partRepository: PartRepository,
-                     private val dbc: DatabaseConnection)
-    : CarService {
+class CarServiceImpl(
+    private val carRepository: CarRepository,
+    private val partRepository: PartRepository,
+    private val dbc: DatabaseConnection
+) :
+    CarService {
 
     companion object {
         private val log = LoggerFactory.getLogger(this::class.java)

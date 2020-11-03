@@ -23,7 +23,6 @@ import mobi.waterdog.rest.template.tests.core.model.Sum
 import mobi.waterdog.rest.template.tests.core.model.TestInstantLongSerialization
 import mobi.waterdog.rest.template.tests.core.model.TestInstantStringSerialization
 import mobi.waterdog.rest.template.tests.core.model.TestSealedClass
-import mobi.waterdog.rest.template.tests.core.httphandler.testSerializationRoutes
 import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings
 import org.amshove.kluent.`should be after`
 import org.amshove.kluent.`should be equal to`

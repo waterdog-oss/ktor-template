@@ -2,8 +2,8 @@ package mobi.waterdog.rest.template.tests.core.service
 
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
-import mobi.waterdog.rest.template.tests.conf.EnvironmentConfigurator
 import mobi.waterdog.rest.template.database.DatabaseConnection
+import mobi.waterdog.rest.template.tests.conf.EnvironmentConfigurator
 import mobi.waterdog.rest.template.tests.containers.PgSQLContainerFactory
 import mobi.waterdog.rest.template.tests.core.model.Car
 import mobi.waterdog.rest.template.tests.core.model.CarSaveCommand

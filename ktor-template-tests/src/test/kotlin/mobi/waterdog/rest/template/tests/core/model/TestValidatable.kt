@@ -8,9 +8,9 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
-import mobi.waterdog.rest.template.tests.containers.PgSQLContainerFactory
 import mobi.waterdog.rest.template.exception.AppException
 import mobi.waterdog.rest.template.exception.ErrorDTO
+import mobi.waterdog.rest.template.tests.containers.PgSQLContainerFactory
 import mobi.waterdog.rest.template.tests.core.testApp
 import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings
 import mobi.waterdog.rest.template.tests.core.utils.versioning.ApiVersion

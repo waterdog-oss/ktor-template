@@ -1,9 +1,9 @@
 package mobi.waterdog.rest.template.tests.core.service
 
+import mobi.waterdog.rest.template.pagination.PageRequest
 import mobi.waterdog.rest.template.tests.core.model.Car
 import mobi.waterdog.rest.template.tests.core.model.CarSaveCommand
 import mobi.waterdog.rest.template.tests.core.model.RegisterPartReplacementCommand
-import mobi.waterdog.rest.template.pagination.PageRequest
 
 interface CarService {
     suspend fun exists(carId: Long): Boolean

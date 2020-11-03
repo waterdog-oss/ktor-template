@@ -21,7 +21,6 @@ import java.time.Duration
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestHealthCheck : KoinTest {
-/*
     companion object {
         @Container
         private val dbContainer = PgSQLContainerFactory.newInstance()
@@ -89,7 +88,7 @@ class TestHealthCheck : KoinTest {
                     throw IllegalStateException("Exceeded the time limit for condition")
                 }
                 try {
-                    Thread.sleep(Math.min(100L, remaining))
+                    Thread.sleep(100L.coerceAtMost(remaining))
                 } catch (interrupt: InterruptedException) {
                     wasInterrupted = true
                 }
@@ -99,5 +98,5 @@ class TestHealthCheck : KoinTest {
                 Thread.currentThread().interrupt()
             }
         }
-    }*/
+    }
 }
