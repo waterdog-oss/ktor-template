@@ -1,5 +1,5 @@
-group 'mobi.waterdog'
-version '0.0.1'
+group 'mobi.waterdog.ktor-template'
+version '1.0.0'
 
 buildscript {
     apply from: "$rootDir/dependencies.gradle"
@@ -9,6 +9,7 @@ buildscript {
         maven { url = "https://plugins.gradle.org/m2/" }
         jcenter()
     }
+
     dependencies {
         classpath deps.plugins.kotlin
         classpath deps.plugins.ktlint
@@ -36,31 +37,3 @@ subprojects {
     compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11
     compileTestKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11
 }
-    /*
-publishing {
-    publications {
-        ArtifactPublication(MavenPublication) {
-            from components.java
-            groupId project.group
-            artifactId "ktor-template-core"
-            version project.version
-        }
-    }
-}
-
-bintray {
-    user = project.properties["bintrayUser"]?.toString() ?: System.getenv("BINTRAY_USER")
-    key = project.properties["bintrayApiKey"]?.toString() ?: System.getenv("BINTRAY_API_KEY")
-    publications = ["ArtifactPublication"]
-    publish = true
-    pkg {
-        repo = "ktor-template"
-        name = "ktor-template-core"
-        licenses = ["MIT"]
-        vcsUrl = "https://github.com/waterdog-oss/ktor-template"
-        userOrg = "waterdog"
-        version {
-            name = project.version
-            released = new Date()
-        }
-    }*/
