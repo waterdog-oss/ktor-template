@@ -1,6 +1,3 @@
-group 'mobi.waterdog.ktor-template'
-version '1.0.0'
-
 buildscript {
     apply from: "$rootDir/dependencies.gradle"
 
