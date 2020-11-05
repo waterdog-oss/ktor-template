@@ -51,8 +51,31 @@ dependencies {
 In order to showcase how to use the various features, we'll refer to the ktor-template-example module:
 
 #### Json support:
+Json support can be added via the usual [ContentNegotiation](https://ktor.io/docs/serialization-converter.html#configuration)
+feature of ktor. The template just offers a convenient json configuration via the `JsonSettings` object.
+
+In your ktor module definition (e.g: [mobi.waterdog.rest.template.tests.Application](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-example/src/main/kotlin/mobi/waterdog/rest/template/tests/Application.kt))
+```kotlin
+install(ContentNegotiation) {
+    json(
+        contentType = ContentType.Application.Json,
+        json = JsonSettings.mapper
+    )
+}
+```
 
 #### Error handling:
+The default error handling strategy leverages the [StatusPages](https://ktor.io/docs/guides-api.html#statuspages) feature of ktor, and offers some basic building blocks to
+deal with exceptions and convert them to a friendly JSON format that can be handled by a consumer.
+
+In your ktor module definition (e.g: [mobi.waterdog.rest.template.tests.Application](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-example/src/main/kotlin/mobi/waterdog/rest/template/tests/Application.kt))
+```kotlin
+install(StatusPages) {
+    appException()
+    defaultStatusCodes()
+}
+```
+
 
 #### Object validation:
 
