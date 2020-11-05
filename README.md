@@ -71,13 +71,18 @@ deal with exceptions and convert them to a friendly JSON format that can be hand
 In your ktor module definition (e.g: [mobi.waterdog.rest.template.tests.Application](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-example/src/main/kotlin/mobi/waterdog/rest/template/tests/Application.kt))
 ```kotlin
 install(StatusPages) {
-    appException()
+    defaultExceptionHandler()
     defaultStatusCodes()
 }
 ```
 
+The `defaultExceptionHandler` is responsible for the interception of exceptions and their conversion to a more palatable format.
+As part of the ktor-template-core an `AppException` class has been introduced, and can be used to surface things like validation errors to the consumer.
+
+The `defaultStatusCodes` configures the default response for a 404 Not found.
 
 #### Object validation:
+
 
 #### Pagination utilities:
 

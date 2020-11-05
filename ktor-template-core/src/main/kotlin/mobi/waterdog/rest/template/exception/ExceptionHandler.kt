@@ -6,7 +6,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import org.slf4j.LoggerFactory
 
-fun StatusPages.Configuration.appException() {
+fun StatusPages.Configuration.defaultExceptionHandler() {
     val log = LoggerFactory.getLogger(this::class.java)
 
     exception<AppException> {
