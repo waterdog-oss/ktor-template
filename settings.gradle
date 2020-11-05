@@ -1,2 +1,5 @@
 rootProject.name = 'ktor-template'
+include ":ktor-template-core"
+include ":ktor-template-database"
+include ":ktor-template-tests"
 

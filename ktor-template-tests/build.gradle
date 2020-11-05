@@ -1,0 +1,38 @@
+apply plugin: 'koin'
+apply plugin: 'kotlinx-serialization'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+dependencies {
+    implementation project(":ktor-template-core")
+    implementation project(":ktor-template-database")
+
+    implementation deps.koin.core
+    implementation deps.koin.coreExt
+    implementation deps.koin.ktor
+
+    implementation deps.postgresql
+    implementation deps.hikari
+    implementation deps.flyaway
+
+    testImplementation deps.ktor.test
+    testImplementation deps.koin.test
+    testImplementation deps.junit.api
+    testImplementation deps.junit.params
+    testRuntimeOnly deps.junit.engine
+    testImplementation deps.kluent
+    testImplementation deps.testContainers.core
+    testImplementation deps.testContainers.junit
+    testImplementation deps.testContainers.postgres
+}
+
+test {
+    useJUnitPlatform()
+    forkEvery = 1
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+    }
+}
