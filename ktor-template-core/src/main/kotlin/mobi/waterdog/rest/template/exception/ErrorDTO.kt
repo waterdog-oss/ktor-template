@@ -1,8 +1,8 @@
 package mobi.waterdog.rest.template.exception
 
-import java.util.UUID
 import kotlinx.serialization.Serializable
 import mobi.waterdog.rest.template.json.UUIDSerializer
+import java.util.UUID
 
 /**
  * Intended to be the result of an erroneous http call.
