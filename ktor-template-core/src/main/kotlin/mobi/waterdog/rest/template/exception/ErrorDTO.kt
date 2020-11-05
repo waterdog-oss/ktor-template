@@ -1,13 +1,8 @@
 package mobi.waterdog.rest.template.exception
 
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import java.util.UUID
+import kotlinx.serialization.Serializable
+import mobi.waterdog.rest.template.json.UUIDSerializer
 
 /**
  * Intended to be the result of an erroneous http call.
@@ -24,19 +19,6 @@ data class ErrorDTO(
 
     override fun toString(): String {
         return "ErrorDTO(id=$id, httpStatusCode=$httpStatusCode, messageCode=$messageCode, title=$title, errors=$errors)"
-    }
-}
-
-object UUIDSerializer : KSerializer<UUID> {
-    override val descriptor: SerialDescriptor
-        get() = PrimitiveSerialDescriptor("UUID", PrimitiveKind.STRING)
-
-    override fun serialize(encoder: Encoder, value: UUID) {
-        encoder.encodeString(value.toString())
-    }
-
-    override fun deserialize(decoder: Decoder): UUID {
-        return UUID.fromString(decoder.decodeString())
     }
 }
 
