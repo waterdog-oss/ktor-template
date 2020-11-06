@@ -14,7 +14,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
-javadoc.failOnError = false
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
@@ -29,8 +28,12 @@ publishing {
     publications {
         ArtifactPublication(MavenPublication) {
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
             groupId project.group
             artifactId "ktor-template-database"
             version project.version
