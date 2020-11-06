@@ -30,12 +30,14 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v2
       - name: Generate changelog
-        id: generate-changelog
-        uses: heinrichreimer/action-github-changelog-generator@v2.1.1
+        uses: charmixer/auto-changelog-action@v1.1
         with:
-          onlyLastTag: "true"
-          stripHeaders: "true"
-          stripGeneratorNotice: "true"
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read changelog
+        id: changelog
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: /github/workspace/CHANGELOG.md
       - name: Create GitHub release
         uses: actions/create-release@v1.1.4
         env:
@@ -43,5 +45,5 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.version }}
           release_name: Release ${{ github.event.inputs.version }}
-          body: ${{ steps.generate-changelog.outputs.changelog }}
+          body: ${{ steps.changelog.outputs.content }}
           draft: false
