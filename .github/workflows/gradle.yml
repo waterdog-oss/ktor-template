@@ -8,5 +8,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Update changelog
+    - name: Generate changelog
       uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+    - name: Commit updated changelog
+      uses: test-room-7/action-update-file@v1
+      with:
+        file-path: |
+          /github/workspace/CHANGELOG.md
+        commit-msg: Updated the changelog
