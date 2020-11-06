@@ -32,9 +32,7 @@ In your build.gradle, you'll need to:
 1 - Add the maven repository:
 ```groovy
 repositories {
-    mavenCentral()
     jcenter()
-    maven { url = "https://dl.bintray.com/waterdog/ktor-template" }
 }
 ```
 
@@ -100,10 +98,38 @@ install(CallId) {
 }
 ```
 
+Also you'll need to configure `logback.xml`.
+```xml
+
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+                <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampFormat>
+                <timestampFormatTimezoneId>Etc/UTC</timestampFormatTimezoneId>
+                <jsonFormatter class="mobi.waterdog.rest.template.log.SemiStructuredLogFormatter">
+                    <jsonPrefix>JSON:</jsonPrefix>
+                </jsonFormatter>
+            </layout>
+        </encoder>
+    </appender>
+
+    <logger name="Exposed" level="debug">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
+```
+Note the encoder setup on the appender and `<jsonFormatter>` and `<jsonPrefix>` in particular.
 You can then use your usual slf4j logging, and the output of the logs should be something like:
 ```
-2020-11-05T23:50:42.665Z INFO  de1126db-5314-49bd-ba2b-24c1e07d6f8e 200 OK: GET - /readiness                                 {"timestamp":"2020-11-05T23:50:42.665Z","level":"INFO","thread":"DefaultDispatcher-worker-3 @request#1","logger":"ktor.test","message":"200 OK: GET - /readiness","metadata":{"X-Request-Id":"de1126db-5314-49bd-ba2b-24c1e07d6f8e"}}
+2020-11-05T23:50:42.665Z INFO  de1126db-5314-49bd-ba2b-24c1e07d6f8e 200 OK: GET - /readiness                                 JSON:{"timestamp":"2020-11-05T23:50:42.665Z","level":"INFO","thread":"DefaultDispatcher-worker-3 @request#1","logger":"ktor.test","message":"200 OK: GET - /readiness","metadata":{"X-Request-Id":"de1126db-5314-49bd-ba2b-24c1e07d6f8e"}}
 ```
+
+In order to 
 
 #### Readiness and liveness checks:
 The health check feature uses concepts from: [https://github.com/zensum/ktor-health-check]
@@ -116,7 +142,7 @@ install(Health) {
 }
 ```
 
-The `liveness` and `readiness` functions are just plain kotlin extension functions, and you can find an example [here](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-tests/src/main/kotlin/mobi/waterdog/rest/template/tests/core/utils/healthcheck/HealthCheck.kt)
+The `liveness` and `readiness` functions are just plain kotlin extension functions, and you can find an example [here](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-example/src/main/kotlin/mobi/waterdog/rest/template/tests/core/utils/healthcheck/HealthCheck.kt)
 
 #### Object validation:
 The object validation uses [Valiktor](https://github.com/valiktor/valiktor). The utilities provide a `Validatable` class that
@@ -151,7 +177,7 @@ post("/$apiVersion/cars") {
 ```
 
 The call to `validate()` throws an `AppException` so it plays well with error handling.
-You can find an example [here](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-tests/src/main/kotlin/mobi/waterdog/rest/template/tests/core/httphandler/DefaultRoutes.kt)
+You can find an example [here](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-example/src/main/kotlin/mobi/waterdog/rest/template/tests/core/httphandler/DefaultRoutes.kt)
 
 #### Pagination utilities:
 The ktor-template-core provides utility functions to parse the request parameters and respond with a page in the format specified  by [https://jsonapi.org] for
@@ -173,7 +199,7 @@ get("/$apiVersion/cars") {
 }
 ```
 
-You can find an example [here](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-tests/src/main/kotlin/mobi/waterdog/rest/template/tests/core/httphandler/DefaultRoutes.kt)
+You can find an example [here](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-example/src/main/kotlin/mobi/waterdog/rest/template/tests/core/httphandler/DefaultRoutes.kt)
 
 #### Relational database support:
 Relational database support is optional and provided by ktor-template-database. It is a collection of utiliy methods over [Exposed](https://github.com/JetBrains/Exposed)
@@ -182,13 +208,13 @@ that make it simpler to use.
 1 - Setting up a database connection:
 
 In order to use these utilities, the first step is to setup the `DatabaseConnection` with a connection pool. An example of
-setup using [HikariCP](https://github.com/brettwooldridge/HikariCP) can be found [here](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-tests/src/main/kotlin/mobi/waterdog/rest/template/tests/conf/EnvironmentConfigurator.kt)
+setup using [HikariCP](https://github.com/brettwooldridge/HikariCP) can be found [here](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-example/src/main/kotlin/mobi/waterdog/rest/template/tests/conf/EnvironmentConfigurator.kt)
 in the `initDbCore` method.
 
 2 - Querying the database
 
 After setting up the `DatabaseConnection` you can use the various methods this class exposes to query the database.
-Examples can be found [here](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-tests/src/main/kotlin/mobi/waterdog/rest/template/tests/core/service/CarServiceImpl.kt)
+Examples can be found [here](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-example/src/main/kotlin/mobi/waterdog/rest/template/tests/core/service/CarServiceImpl.kt)
 
 ## I want to contribute!
 
