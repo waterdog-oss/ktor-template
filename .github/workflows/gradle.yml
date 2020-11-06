@@ -29,5 +29,3 @@ jobs:
           name: test-report
           path: /home/runner/work/ktor-template/ktor-template/build/reports/tests/
           retention-days: 1
-      - name: Build the latest Docker image
-        run: docker build .
