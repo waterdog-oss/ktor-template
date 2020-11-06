@@ -31,3 +31,5 @@ jobs:
         name: test-report
         path: /home/runner/work/ktor-template/ktor-template/build/reports/tests/
         retention-days: 1
+    - name: Update changelog
+      uses: heinrichreimer/github-changelog-generator-action@v2.1.1
