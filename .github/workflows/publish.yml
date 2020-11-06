@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Generate changelog
         id: generate-changelog
-        uses: heinrichreimer/action-github-changelog-generator@v2.1
+        uses: heinrichreimer/action-github-changelog-generator@v2.1.1
         with:
           onlyLastTag: "true"
           stripHeaders: "true"
@@ -44,4 +44,4 @@ jobs:
           tag_name: ${{ github.event.inputs.version }}
           release_name: Release ${{ github.event.inputs.version }}
           body: ${{ steps.generate-changelog.outputs.changelog }}
-          draft: true
+          draft: false
