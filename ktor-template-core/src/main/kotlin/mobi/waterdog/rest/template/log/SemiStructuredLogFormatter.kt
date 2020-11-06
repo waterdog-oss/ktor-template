@@ -14,6 +14,12 @@ class SemiStructuredLogFormatter : JsonFormatter {
         const val REQUEST_ID_HEADER = "X-Request-Id"
     }
 
+    // Configurable from logback.xml with <jsonSuffix>JSON:</jsonSuffix>
+    var prefix = ""
+    var suffix = ""
+    var jsonPrefix = ""
+    var jsonSuffix = ""
+
     @Serializable
     internal data class LogResponse(
         val timestamp: String,
@@ -44,13 +50,17 @@ class SemiStructuredLogFormatter : JsonFormatter {
 
         // Construct log message
         var str = ""
+        str += prefix
         str += "${json.timestamp} "
         str += "${json.level} ".padEnd(6)
         str += if (requestId != null && requestId.isNotEmpty()) "$requestId " else ""
         str += "${json.message} "
         str = str.padEnd(125) // add padding to the first fields for better readability
         str += if (json.exception != null && json.exception.isNotEmpty()) "${json.exception} " else ""
+        str += jsonPrefix
         str += encodeToString(LogResponse.serializer(), json)
+        str += jsonSuffix
+        str += suffix
         str += "\n"
 
         return str
