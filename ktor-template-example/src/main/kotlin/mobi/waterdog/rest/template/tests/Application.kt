@@ -20,7 +20,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.routing.Routing
 import io.ktor.serialization.json
 import io.ktor.util.KtorExperimentalAPI
-import mobi.waterdog.rest.template.exception.appException
+import mobi.waterdog.rest.template.exception.defaultExceptionHandler
 import mobi.waterdog.rest.template.exception.defaultStatusCodes
 import mobi.waterdog.rest.template.healthcheck.Health
 import mobi.waterdog.rest.template.log.SemiStructuredLogFormatter
@@ -86,7 +86,7 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
     }
 
     install(StatusPages) {
-        appException()
+        defaultExceptionHandler()
         defaultStatusCodes()
     }
 
