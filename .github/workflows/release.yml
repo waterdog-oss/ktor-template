@@ -37,7 +37,7 @@ jobs:
         id: changelog
         uses: juliangruber/read-file-action@v1
         with:
-          path: /github/workspace/CHANGELOG.md
+          path: ./CHANGELOG.md
       - name: Create GitHub release
         uses: actions/create-release@v1.1.4
         env:
