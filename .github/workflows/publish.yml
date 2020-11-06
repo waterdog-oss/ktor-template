@@ -37,7 +37,7 @@ jobs:
           stripHeaders: "true"
           stripGeneratorNotice: "true"
       - name: Create GitHub release
-        uses: actions/create-release@v1.1.14
+        uses: actions/create-release@v1.1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
