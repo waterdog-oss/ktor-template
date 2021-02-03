@@ -1,7 +1,7 @@
 package mobi.waterdog.rest.template.validation
 
 import mobi.waterdog.rest.template.exception.AppException
-import mobi.waterdog.rest.template.exception.ErrorCode
+import mobi.waterdog.rest.template.exception.ErrorCodes
 import mobi.waterdog.rest.template.exception.ErrorDefinition
 import org.valiktor.Constraint
 import org.valiktor.ConstraintViolationException
@@ -68,7 +68,7 @@ abstract class Validatable<T> {
 
     private fun valiktorException2AppException(valiktorEx: ConstraintViolationException): AppException {
         val validationException = AppException(
-            code = ErrorCode.InvalidUserInput,
+            code = ErrorCodes.InvalidUserInput,
             title = "Invalid content for class ${this::class.qualifiedName}, check invalid fields in errors"
         )
 

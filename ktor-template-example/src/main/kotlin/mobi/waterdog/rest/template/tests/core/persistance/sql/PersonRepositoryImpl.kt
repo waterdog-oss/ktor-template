@@ -1,7 +1,7 @@
 package mobi.waterdog.rest.template.tests.core.persistance.sql
 
 import mobi.waterdog.rest.template.exception.AppException
-import mobi.waterdog.rest.template.exception.ErrorCode
+import mobi.waterdog.rest.template.exception.ErrorCodes
 import mobi.waterdog.rest.template.pagination.PageRequest
 import mobi.waterdog.rest.template.pagination.SortField
 import mobi.waterdog.rest.template.tests.core.model.Person
@@ -57,7 +57,7 @@ class PersonRepositoryImpl : PersonRepository {
             "name" -> Persons.name
             "birthday" -> Persons.birthday
             else -> throw AppException(
-                ErrorCode.NotImplemented,
+                ErrorCodes.NotImplemented,
                 "Sort by column '${sort.field}' in Person table not " +
                     "implemented."
             )
