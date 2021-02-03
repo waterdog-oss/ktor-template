@@ -2,7 +2,7 @@ package mobi.waterdog.rest.template.tests.core.service
 
 import mobi.waterdog.rest.template.database.DatabaseConnection
 import mobi.waterdog.rest.template.exception.AppException
-import mobi.waterdog.rest.template.exception.ErrorCode
+import mobi.waterdog.rest.template.exception.ErrorCodes
 import mobi.waterdog.rest.template.pagination.PageRequest
 import mobi.waterdog.rest.template.tests.core.model.Car
 import mobi.waterdog.rest.template.tests.core.model.CarSaveCommand
@@ -43,7 +43,7 @@ class CarServiceImpl(
     override suspend fun updateCar(car: Car): Car {
         return dbc.suspendedQuery {
             if (!exists(car.id)) {
-                throw AppException(ErrorCode.NotFound, "Could not find car with id '${car.id}'.")
+                throw AppException(ErrorCodes.NotFound, "Could not find car with id '${car.id}'.")
             }
             carRepository.update(car)
         }
