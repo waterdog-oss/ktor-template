@@ -19,11 +19,20 @@ jobs:
           java-version: 11
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
+      - id: install-secret-key
+        name: Install gpg secret key
+        run: |
+          cat <(echo -e "${{ secrets.MAVEN_SIGNING_PRIVATE_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+          gpg --export-secret-keys ${{secrets.MAVEN_SIGNING_KEY_ID}} > /tmp/waterdog-oss.asc
       - name: Publish artifact
-        run: ./gradlew bintrayUpload
-        env:
-          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+        run: >-
+          ./gradlew publish -Psigning.keyId=${{secrets.MAVEN_SIGNING_KEY_ID}}
+          -Psigning.password=${{secrets.MAVEN_SIGNING_KEY_PASSWORD}}
+          -Psigning.secretKeyRingFile=/tmp/waterdog-oss.asc
+          -PossrhUsername=${{secrets.OSSRH_USERNAME}}
+          -PossrhPassword=${{secrets.OSSRH_PASSWORD}}
+ 
   create-release:
     runs-on: ubuntu-latest
     steps:
