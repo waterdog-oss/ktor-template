@@ -34,26 +34,26 @@ jobs:
           -PossrhUsername=${{secrets.OSSRH_USERNAME}}
           -PossrhPassword=${{secrets.OSSRH_PASSWORD}}
 
-  create-release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repo
-        uses: actions/checkout@v2
-      - name: Generate changelog
-        uses: charmixer/auto-changelog-action@v1.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Read changelog
-        id: changelog
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./CHANGELOG.md
-      - name: Create GitHub release
-        uses: actions/create-release@v1.1.4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.event.inputs.version }}
-          release_name: Release ${{ github.event.inputs.version }}
-          body: ${{ steps.changelog.outputs.content }}
-          draft: false
+#  create-release:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout the repo
+#        uses: actions/checkout@v2
+#      - name: Generate changelog
+#        uses: charmixer/auto-changelog-action@v1.1
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Read changelog
+#        id: changelog
+#        uses: juliangruber/read-file-action@v1
+#        with:
+#          path: ./CHANGELOG.md
+#      - name: Create GitHub release
+#        uses: actions/create-release@v1.1.4
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ github.event.inputs.version }}
+#          release_name: Release ${{ github.event.inputs.version }}
+#          body: ${{ steps.changelog.outputs.content }}
+#          draft: false
