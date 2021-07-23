@@ -37,7 +37,7 @@ class DatabaseConnection(private val dataSource: DataSource) {
         rawSql: String,
         transform: (ResultSet) -> T
     ): T? = newSuspendedTransaction(Dispatchers.IO, database) {
-        exec(rawSql, emptyList(), transform)
+        exec(rawSql, emptyList(), null, transform)
     }
 
     suspend fun ping(): Boolean =

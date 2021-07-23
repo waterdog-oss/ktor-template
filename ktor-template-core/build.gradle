@@ -1,5 +1,6 @@
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 dependencies {
     api deps.ktor.serialization
@@ -29,17 +30,62 @@ artifacts {
 
 publishing {
     publications {
-        ArtifactPublication(MavenPublication) {
-            from components.java
+        maven(MavenPublication) {
+            groupId project.group
+            artifactId "ktor-template-core"
+            version project.version
+
+            pom {
+                name = 'Waterdog Ktor service template'
+                description = 'Provides a basic template for a ktor based service that exposes a REST API'
+                url = 'https://github.com/waterdog-oss/ktor-template'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/waterdog-oss/ktor-template'
+                    }
+                }
+                developers {
+                    developer {
+                        id = "bruno.felix"
+                        name = "Bruno Felix"
+                        email = "bruno.felix@waterdog.mobi"
+                    }
+                    developer {
+                        id = "goncalo.ferreira"
+                        name = "Gonçalo Ferreira"
+                        email = "goncalo@waterdog.mobi"
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/aterdog-oss/ktor-template.git'
+                    developerConnection = 'scm:git:git://github.com:waterdog-oss/ktor-template.git'
+                    url = 'https://github.com/waterdog-oss/ktor-template'
+                }
+            }
+
             artifact sourcesJar {
                 classifier "sources"
             }
             artifact javadocJar {
                 classifier "javadoc"
             }
-            groupId project.group
-            artifactId "ktor-template-core"
-            version project.version
+            from components.java
         }
     }
+    repositories {
+        maven {
+            credentials {
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.maven
 }

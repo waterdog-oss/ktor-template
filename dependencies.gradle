@@ -9,10 +9,10 @@ ext.deps = [
         test: "io.ktor:ktor-server-test-host:${ktorVersion}"
     ],
     koin: [
-        core: "org.koin:koin-core:${koinVersion}",
-        coreExt: "org.koin:koin-core-ext:${koinVersion}",
-        ktor: "org.koin:koin-ktor:${koinVersion}",
-        test: "org.koin:koin-test:${koinVersion}"
+        core: "io.insert-koin:koin-core:${koinVersion}",
+        coreExt: "io.insert-koin:koin-core-ext:${koinVersion}",
+        ktor: "io.insert-koin:koin-ktor:${koinVersion}",
+        test: "io.insert-koin:koin-test:${koinVersion}"
     ],
     exposed: [
         core: "org.jetbrains.exposed:exposed-core:${exposedVersion}",
@@ -33,7 +33,7 @@ ext.deps = [
     postgresql: "org.postgresql:postgresql:42.2.17",
     hikari: "com.zaxxer:HikariCP:3.4.5",
     flyaway: "org.flywaydb:flyway-core:7.0.2",
-    kluent: "org.amshove.kluent:kluent:1.61",
+    kluent: "org.amshove.kluent:kluent:1.68",
     junit: [
         api: "org.junit.jupiter:junit-jupiter-api:${junitVersion}",
         params: "org.junit.jupiter:junit-jupiter-params:${junitVersion}",
