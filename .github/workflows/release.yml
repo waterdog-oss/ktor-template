@@ -24,7 +24,7 @@ jobs:
         run: |
           cat <(echo -e "${{ secrets.MAVEN_SIGNING_PRIVATE_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
-          echo "Exporting to ~/waterdog-oss.key"
+          echo "Exporting ${{secrets.MAVEN_SIGNING_KEY_ID}} to ~/waterdog-oss.key"
           gpg --export-secret-keys ${{secrets.MAVEN_SIGNING_KEY_ID}} > ~/waterdog-oss.key
       - name: Publish artifact
         run: >-
