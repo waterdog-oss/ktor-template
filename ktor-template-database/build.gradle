@@ -24,6 +24,7 @@ artifacts {
     archives javadocJar
 }
 
+println("AAAAAAAAAAAAAAAAAAAAAAAAA ${ossrhPassword}")
 publishing {
     publications {
         maven(MavenPublication) {
