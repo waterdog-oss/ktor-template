@@ -24,15 +24,16 @@ jobs:
         run: |
           cat <(echo -e "${{ secrets.MAVEN_SIGNING_PRIVATE_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
-          gpg --export-secret-keys ${{secrets.MAVEN_SIGNING_KEY_ID}} > /tmp/waterdog-oss.asc
+          echo "Exporting to ~/waterdog-oss.key"
+          gpg --export-secret-keys ${{secrets.MAVEN_SIGNING_KEY_ID}} > ~/waterdog-oss.key
       - name: Publish artifact
         run: >-
           ./gradlew publish -Psigning.keyId=${{secrets.MAVEN_SIGNING_KEY_ID}}
           -Psigning.password=${{secrets.MAVEN_SIGNING_KEY_PASSWORD}}
-          -Psigning.secretKeyRingFile=/tmp/waterdog-oss.asc
+          -Psigning.secretKeyRingFile=~/waterdog-oss.key
           -PossrhUsername=${{secrets.OSSRH_USERNAME}}
           -PossrhPassword=${{secrets.OSSRH_PASSWORD}}
- 
+
   create-release:
     runs-on: ubuntu-latest
     steps:
