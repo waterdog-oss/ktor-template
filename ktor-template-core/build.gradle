@@ -73,17 +73,6 @@ publishing {
             from components.java
         }
     }
-    repositories {
-        maven {
-            credentials {
-                username = ossrhUsername
-                password = ossrhPassword
-            }
-            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-        }
-    }
 }
 
 signing {

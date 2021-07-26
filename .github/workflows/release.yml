@@ -19,12 +19,18 @@ jobs:
           java-version: 11
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
-      - name: Publish artifact
-        run: >-
-          ./gradlew publish
-          -PossrhUsername=${{ secrets.OSSRH_USERNAME }}
-          -PossrhPassword=${{ secrets.OSSRH_PASSWORD }}
+      - name: Publish ktor-template-core
+        run: ./gradlew ktor-template-core:publishToSonatype closeSonatypeStagingRepository
         env:
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_SIGNING_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_SIGNING_KEY_PASSWORD }}
+      - name: Publish ktor-template-database
+        run: ./gradlew ktor-template-database:publishToSonatype closeSonatypeStagingRepository
+        env:
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.OSSRH_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.OSSRH_PASSWORD }}
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_SIGNING_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_SIGNING_KEY_PASSWORD }}
 
