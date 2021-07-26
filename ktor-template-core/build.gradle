@@ -1,6 +1,6 @@
 apply plugin: 'kotlinx-serialization'
-apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 dependencies {
     api deps.ktor.serialization
@@ -30,36 +30,54 @@ artifacts {
 
 publishing {
     publications {
-        ArtifactPublication(MavenPublication) {
-            from components.java
+        maven(MavenPublication) {
+            groupId project.group
+            artifactId "ktor-template-core"
+            version project.version
+
+            pom {
+                name = 'Waterdog Ktor service template'
+                description = 'Provides a basic template for a ktor based service that exposes a REST API'
+                url = 'https://github.com/waterdog-oss/ktor-template'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/waterdog-oss/ktor-template'
+                    }
+                }
+                developers {
+                    developer {
+                        id = "bruno.felix"
+                        name = "Bruno Felix"
+                        email = "bruno.felix@waterdog.mobi"
+                    }
+                    developer {
+                        id = "goncalo.ferreira"
+                        name = "Gonçalo Ferreira"
+                        email = "goncalo@waterdog.mobi"
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/aterdog-oss/ktor-template.git'
+                    developerConnection = 'scm:git:git://github.com:waterdog-oss/ktor-template.git'
+                    url = 'https://github.com/waterdog-oss/ktor-template'
+                }
+            }
+
             artifact sourcesJar {
                 classifier "sources"
             }
             artifact javadocJar {
                 classifier "javadoc"
             }
-            groupId project.group
-            artifactId "ktor-template-core"
-            version project.version
+            from components.java
         }
     }
 }
 
-bintray {
-    user = project.properties["bintrayUser"]?.toString() ?: System.getenv("BINTRAY_USER")
-    key = project.properties["bintrayApiKey"]?.toString() ?: System.getenv("BINTRAY_API_KEY")
-    publications = ["ArtifactPublication"]
-    publish = true
-
-    pkg {
-        repo = "ktor-template"
-        name = "ktor-template-core"
-        licenses = ["MIT"]
-        vcsUrl = "https://github.com/waterdog-oss/ktor-template.git"
-        userOrg = "waterdog"
-        version {
-            name = project.version
-            released = new Date()
-        }
-    }
+signing {
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.maven
 }

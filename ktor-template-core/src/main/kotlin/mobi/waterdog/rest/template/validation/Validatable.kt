@@ -76,7 +76,7 @@ abstract class Validatable<T> {
             valiktorEx.constraintViolations
                 .map {
                     ErrorDefinition(
-                        "errors.validation.${it.property}.${it.constraint.name}".toLowerCase(),
+                        "errors.validation.${it.property}.${it.constraint.name}".lowercase(),
                         it.property,
                         violatedConstraint2map(it.constraint)
                     )

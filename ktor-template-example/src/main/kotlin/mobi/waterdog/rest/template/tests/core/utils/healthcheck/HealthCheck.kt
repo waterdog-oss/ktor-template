@@ -3,8 +3,8 @@ package mobi.waterdog.rest.template.tests.core.utils.healthcheck
 import kotlinx.coroutines.withTimeout
 import mobi.waterdog.rest.template.database.DatabaseConnection
 import mobi.waterdog.rest.template.healthcheck.Health
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 internal class HealthCheckInjector : KoinComponent {
     val dbc: DatabaseConnection by inject()

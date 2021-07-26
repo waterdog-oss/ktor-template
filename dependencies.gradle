@@ -1,59 +1,42 @@
-ext.versions = [
-    kotlin: '1.4.10',
-    koin: '2.1.6',
-    ktor: '1.4.1',
-    exposed: '0.27.1',
-    testContainers: '1.15.0-rc2',
-    junit: '5.6.0'
-]
-
 ext.deps = [
-    plugins: [
-        kotlin: "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
-        koin: "org.koin:koin-gradle-plugin:${versions.koin}",
-        shadow: "com.github.jengelman.gradle.plugins:shadow:6.1.0",
-        ktlint: "org.jlleitschuh.gradle:ktlint-gradle:9.4.1",
-        serialization: "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}",
-        bintray: "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+"
-    ],
     kotlin: [
-        jdk: "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
+        jdk: "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}"
     ],
     ktor: [
-        serverNetty: "io.ktor:ktor-server-netty:${versions.ktor}",
-        serialization: "io.ktor:ktor-serialization:${versions.ktor}",
-        auth: "io.ktor:ktor-auth:${versions.ktor}",
-        test: "io.ktor:ktor-server-test-host:${versions.ktor}"
+        serverNetty: "io.ktor:ktor-server-netty:${ktorVersion}",
+        serialization: "io.ktor:ktor-serialization:${ktorVersion}",
+        auth: "io.ktor:ktor-auth:${ktorVersion}",
+        test: "io.ktor:ktor-server-test-host:${ktorVersion}"
     ],
     koin: [
-        core: "org.koin:koin-core:${versions.koin}",
-        coreExt: "org.koin:koin-core-ext:${versions.koin}",
-        ktor: "org.koin:koin-ktor:${versions.koin}",
-        test: "org.koin:koin-test:${versions.koin}"
+        core: "io.insert-koin:koin-core:${koinVersion}",
+        coreExt: "io.insert-koin:koin-core-ext:${koinVersion}",
+        ktor: "io.insert-koin:koin-ktor:${koinVersion}",
+        test: "io.insert-koin:koin-test:${koinVersion}"
     ],
     exposed: [
-        core: "org.jetbrains.exposed:exposed-core:${versions.exposed}",
-        dao: "org.jetbrains.exposed:exposed-dao:${versions.exposed}",
-        jdbc: "org.jetbrains.exposed:exposed-jdbc:${versions.exposed}",
+        core: "org.jetbrains.exposed:exposed-core:${exposedVersion}",
+        dao: "org.jetbrains.exposed:exposed-dao:${exposedVersion}",
+        jdbc: "org.jetbrains.exposed:exposed-jdbc:${exposedVersion}",
     ],
     testContainers: [
-        core: "org.testcontainers:testcontainers:${versions.testContainers}",
-        junit: "org.testcontainers:junit-jupiter:${versions.testContainers}",
-        postgres: "org.testcontainers:postgresql:${versions.testContainers}"
+        core: "org.testcontainers:testcontainers:${testContainersVersion}",
+        junit: "org.testcontainers:junit-jupiter:${testContainersVersion}",
+        postgres: "org.testcontainers:postgresql:${testContainersVersion}"
     ],
     valiktor: "org.valiktor:valiktor-core:0.12.0",
     logs: [
-        logback: "ch.qos.logback:logback-classic:1.2.3",
+        logback: "ch.qos.logback:logback-classic:1.2.4",
         logbackJson: "ch.qos.logback.contrib:logback-json-classic:0.1.5",
-        coroutinesSlf4j: "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.4.0"
+        coroutinesSlf4j: "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.5.1"
     ],
-    postgresql: "org.postgresql:postgresql:42.2.17",
+    postgresql: "org.postgresql:postgresql:42.2.23",
     hikari: "com.zaxxer:HikariCP:3.4.5",
-    flyaway: "org.flywaydb:flyway-core:7.0.2",
-    kluent: "org.amshove.kluent:kluent:1.61",
+    flyaway: "org.flywaydb:flyway-core:7.11.3",
+    kluent: "org.amshove.kluent:kluent:1.68",
     junit: [
-        api: "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
-        params: "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
-        engine: "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
+        api: "org.junit.jupiter:junit-jupiter-api:${junitVersion}",
+        params: "org.junit.jupiter:junit-jupiter-params:${junitVersion}",
+        engine: "org.junit.jupiter:junit-jupiter-engine:${junitVersion}",
     ]
 ]

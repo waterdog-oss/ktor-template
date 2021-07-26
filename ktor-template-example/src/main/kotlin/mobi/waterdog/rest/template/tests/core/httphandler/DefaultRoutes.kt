@@ -17,8 +17,8 @@ import mobi.waterdog.rest.template.tests.core.service.CarService
 import mobi.waterdog.rest.template.tests.core.service.PersonService
 import mobi.waterdog.rest.template.tests.core.utils.pagination.respondPaged
 import mobi.waterdog.rest.template.tests.core.utils.versioning.ApiVersion
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 internal class DefaultRoutesInjector : KoinComponent {
     val carService: CarService by inject()
