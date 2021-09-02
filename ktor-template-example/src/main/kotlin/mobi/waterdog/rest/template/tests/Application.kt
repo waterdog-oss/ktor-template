@@ -19,7 +19,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.routing.Routing
 import io.ktor.serialization.json
-import io.ktor.util.KtorExperimentalAPI
 import mobi.waterdog.rest.template.exception.defaultExceptionHandler
 import mobi.waterdog.rest.template.exception.defaultStatusCodes
 import mobi.waterdog.rest.template.healthcheck.Health
@@ -32,7 +31,6 @@ import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings
 import org.koin.ktor.ext.Koin
 import java.util.UUID
 
-@KtorExperimentalAPI
 fun Application.module(configOverrides: ApplicationConfig? = null) {
 
     val modules = EnvironmentConfigurator(environment.config, configOverrides).getDependencyInjectionModules()

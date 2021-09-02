@@ -1,6 +1,5 @@
 package mobi.waterdog.rest.template.tests.core.utils.pagination
 
-import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
 import mobi.waterdog.rest.template.database.DatabaseConnection
 import mobi.waterdog.rest.template.database.fromFilters
@@ -26,7 +25,6 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.UUID
 
-@KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
 class TestTableExtensionsFilters : KoinTest {

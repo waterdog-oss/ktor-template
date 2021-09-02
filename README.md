@@ -24,26 +24,27 @@ This is obviously somewhat opinionated, and that's why it falls outside the scop
 The ktor-template offers two distinct artifacts: ktor-template-core and ktor-template-database.
 
 The reason for this separation is due to the fact that not all projects use a relational database. 
-The ktor-template-database requires ktor-template-core however. 
+The ktor-template-database requires ktor-template-core. 
 
 ### Gradle dependencies
 In your build.gradle, you'll need to:
 
-1 - Add the maven repository:
-```groovy
-repositories {
-    jcenter()
+1 - Import the dependencies
+```kotlin
+dependencies {
+    implementation("mobi.waterdog.ktor-template:ktor-template-core:<version>")
+    // Optional, but useful if your projects uses a relational database 
+    implementation("mobi.waterdog.ktor-template:ktor-template-database:<version>") 
 }
 ```
 
-2 - Import the dependencies
-```groovy
-dependencies {
-    implementation 'mobi.waterdog.ktor-template:ktor-template-core:1.0.0'
-    // Optional, but useful if your projects uses a relational database 
-    implementation 'mobi.waterdog.ktor-template:ktor-template-database:1.0.0' 
+2 - Add the Kotlin serialization plugin
+```kotlin
+plugins {
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.5.30"
 }
 ```
+
 
 ### Features:
 In order to showcase how to use the various features, we'll refer to the ktor-template-example module:
@@ -81,7 +82,9 @@ The `defaultStatusCodes` configures the default response for a 404 Not found.
 
 #### Logging:
 The logging functionality uses the ktor [CallLogging](https://ktor.io/docs/call-logging.html) and [CallId](https://ktor.io/docs/call-id.html) features to install a logger that does two things:
+
 1 - it adds a unique request ID to each request (if none is present in the specified header);
+
 2 - outputs the log in a semi-structured format that can easily be parsed by log aggregation tools;
 
 In your ktor module definition (e.g: [mobi.waterdog.rest.template.tests.Application](https://github.com/waterdog-oss/ktor-template/blob/development/ktor-template-example/src/main/kotlin/mobi/waterdog/rest/template/tests/Application.kt))

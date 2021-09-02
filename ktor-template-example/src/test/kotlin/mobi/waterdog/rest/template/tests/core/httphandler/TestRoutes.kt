@@ -7,7 +7,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
-import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
 import mobi.waterdog.rest.template.database.DatabaseConnection
 import mobi.waterdog.rest.template.pagination.PageRequest
@@ -33,7 +32,6 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.UUID
 
-@KtorExperimentalAPI
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestRoutes : KoinTest {

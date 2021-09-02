@@ -4,7 +4,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
-import io.ktor.util.KtorExperimentalAPI
 import mobi.waterdog.rest.template.tests.containers.PgSQLContainerFactory
 import mobi.waterdog.rest.template.tests.core.testApp
 import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings
@@ -17,7 +16,6 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.Duration
 
-@KtorExperimentalAPI
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestHealthCheck : KoinTest {
