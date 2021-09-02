@@ -1,6 +1,5 @@
 package mobi.waterdog.rest.template.tests.core.service
 
-import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
 import mobi.waterdog.rest.template.database.DatabaseConnection
 import mobi.waterdog.rest.template.tests.conf.EnvironmentConfigurator
@@ -26,7 +25,6 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
-@KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TestCarService : KoinTest {
     companion object {

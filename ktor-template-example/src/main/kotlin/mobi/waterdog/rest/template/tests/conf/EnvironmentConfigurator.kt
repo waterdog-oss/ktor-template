@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.MapApplicationConfig
-import io.ktor.util.KtorExperimentalAPI
 import mobi.waterdog.rest.template.database.DatabaseConnection
 import mobi.waterdog.rest.template.tests.core.persistance.CarRepository
 import mobi.waterdog.rest.template.tests.core.persistance.PartRepository
@@ -21,7 +20,6 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import javax.sql.DataSource
 
-@KtorExperimentalAPI
 class EnvironmentConfigurator(baseConfig: ApplicationConfig, configOverrides: ApplicationConfig? = null) {
 
     private val mergedConfig: ApplicationConfig

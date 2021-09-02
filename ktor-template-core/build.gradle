@@ -4,6 +4,7 @@ apply plugin: 'signing'
 
 dependencies {
     api deps.ktor.serialization
+    api deps.ktor.serverNetty
     api deps.ktor.auth
 
     api deps.valiktor

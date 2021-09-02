@@ -62,6 +62,6 @@ class PersonRepositoryImpl : PersonRepository {
                     "implemented."
             )
         }
-        return field to SortOrder.valueOf(sort.order.name.toUpperCase())
+        return field to SortOrder.valueOf(sort.order.name.uppercase())
     }
 }

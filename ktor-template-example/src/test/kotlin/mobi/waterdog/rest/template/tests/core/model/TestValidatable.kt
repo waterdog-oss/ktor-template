@@ -7,7 +7,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
-import io.ktor.util.KtorExperimentalAPI
 import mobi.waterdog.rest.template.exception.AppException
 import mobi.waterdog.rest.template.exception.ErrorDTO
 import mobi.waterdog.rest.template.tests.containers.PgSQLContainerFactory
@@ -24,7 +23,6 @@ import org.koin.test.KoinTest
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
-@KtorExperimentalAPI
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
 class TestValidatable : KoinTest {

@@ -1,12 +1,14 @@
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "application"
+
+mainClassName = "io.ktor.server.netty.EngineMain"
 
 dependencies {
     implementation project(":ktor-template-core")
     implementation project(":ktor-template-database")
 
     implementation deps.koin.core
-    implementation deps.koin.coreExt
     implementation deps.koin.ktor
 
     implementation deps.postgresql
