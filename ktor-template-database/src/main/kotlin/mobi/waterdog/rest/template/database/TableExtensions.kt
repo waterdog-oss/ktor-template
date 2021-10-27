@@ -15,6 +15,7 @@ import org.jetbrains.exposed.sql.compoundOr
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.util.UUID
+import mobi.waterdog.rest.template.pagination.FilterJoinOperation
 
 /**
  * Method that forces cast from Column<*> to Column<T>
@@ -25,11 +26,20 @@ fun <T> Column<*>.asType(): Column<T> {
 }
 
 /**
- * Creates query from list of consumer filters.
+ * Creates query from list of consumer filters using AND as joining expression.
  */
-fun Table.fromFilters(filters: List<FilterField>): Query {
+fun Table.fromFilters(filters: List<FilterField>, joinOperation: FilterJoinOperation = FilterJoinOperation.AND): Query {
     val filtersOperations = this.createFilters(filters)
-    return if (filtersOperations.isEmpty()) this.selectAll() else this.select { filtersOperations.compoundAnd() }
+    return if (filtersOperations.isEmpty()) {
+        this.selectAll()
+    } else {
+        this.select {
+            when (joinOperation) {
+                FilterJoinOperation.AND -> filtersOperations.compoundAnd()
+                FilterJoinOperation.OR -> filtersOperations.compoundOr()
+            }
+        }
+    }
 }
 
 /**
