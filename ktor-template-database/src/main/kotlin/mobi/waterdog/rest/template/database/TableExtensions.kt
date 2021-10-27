@@ -1,6 +1,7 @@
 package mobi.waterdog.rest.template.database
 
 import mobi.waterdog.rest.template.pagination.FilterField
+import mobi.waterdog.rest.template.pagination.FilterJoinOperation
 import mobi.waterdog.rest.template.pagination.SortField
 import mobi.waterdog.rest.template.pagination.SortFieldOrder
 import org.jetbrains.exposed.dao.id.EntityID
@@ -15,7 +16,6 @@ import org.jetbrains.exposed.sql.compoundOr
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.util.UUID
-import mobi.waterdog.rest.template.pagination.FilterJoinOperation
 
 /**
  * Method that forces cast from Column<*> to Column<T>
