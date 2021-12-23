@@ -10,6 +10,11 @@ data class SortField(
     val order: SortFieldOrder
 )
 
+enum class FilterJoinOperation {
+    AND,
+    OR
+}
+
 /**
  * If multiple values are provided OR operator should be used for the field
  */
