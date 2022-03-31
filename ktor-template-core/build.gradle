@@ -57,6 +57,11 @@ publishing {
                         name = "Gonçalo Ferreira"
                         email = "goncalo@waterdog.mobi"
                     }
+                    developer {
+                        id = "pedro.henriques"
+                        name = "Pedro Henriques"
+                        email = "pedro.henriques@waterdog.mobi"
+                    }
                 }
                 scm {
                     connection = 'scm:git:git://github.com/aterdog-oss/ktor-template.git'
