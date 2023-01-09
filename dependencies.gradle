@@ -4,8 +4,15 @@ ext.deps = [
     ],
     ktor: [
         serverNetty: "io.ktor:ktor-server-netty:${ktorVersion}",
-        serialization: "io.ktor:ktor-serialization:${ktorVersion}",
-        auth: "io.ktor:ktor-auth:${ktorVersion}",
+        defaultHeaders: "io.ktor:ktor-server-default-headers:${ktorVersion}",
+        compression: "io.ktor:ktor-server-compression:${ktorVersion}",
+        callLogging: "io.ktor:ktor-server-call-logging:${ktorVersion}",
+        callId: "io.ktor:ktor-server-call-id:${ktorVersion}",
+        contentNegotiation: "io.ktor:ktor-server-content-negotiation:${ktorVersion}",
+        serialization: "io.ktor:ktor-serialization-kotlinx-json:${ktorVersion}",
+        cors: "io.ktor:ktor-server-cors:${ktorVersion}",
+        auth: "io.ktor:ktor-server-auth:${ktorVersion}",
+        statusPages: "io.ktor:ktor-server-status-pages:${ktorVersion}",
         test: "io.ktor:ktor-server-test-host:${ktorVersion}"
     ],
     koin: [
@@ -26,14 +33,14 @@ ext.deps = [
     ],
     valiktor: "org.valiktor:valiktor-core:0.12.0",
     logs: [
-        logback: "ch.qos.logback:logback-classic:1.2.4",
+        logback: "ch.qos.logback:logback-classic:1.2.11",
         logbackJson: "ch.qos.logback.contrib:logback-json-classic:0.1.5",
-        coroutinesSlf4j: "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.5.1"
+        coroutinesSlf4j: "org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.6.4"
     ],
-    postgresql: "org.postgresql:postgresql:42.2.23",
-    hikari: "com.zaxxer:HikariCP:3.4.5",
-    flyaway: "org.flywaydb:flyway-core:7.11.3",
-    kluent: "org.amshove.kluent:kluent:1.68",
+    postgresql: "org.postgresql:postgresql:42.5.1",
+    hikari: "com.zaxxer:HikariCP:5.0.1",
+    flyaway: "org.flywaydb:flyway-core:7.15.0",
+    kluent: "org.amshove.kluent:kluent:1.72",
     junit: [
         api: "org.junit.jupiter:junit-jupiter-api:${junitVersion}",
         params: "org.junit.jupiter:junit-jupiter-params:${junitVersion}",
