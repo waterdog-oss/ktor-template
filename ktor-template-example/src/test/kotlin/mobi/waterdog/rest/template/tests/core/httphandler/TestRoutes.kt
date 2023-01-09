@@ -1,24 +1,27 @@
 package mobi.waterdog.rest.template.tests.core.httphandler
 
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.TestApplicationEngine
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
-import kotlinx.coroutines.runBlocking
 import mobi.waterdog.rest.template.database.DatabaseConnection
 import mobi.waterdog.rest.template.pagination.PageRequest
 import mobi.waterdog.rest.template.pagination.PageResponse
 import mobi.waterdog.rest.template.pagination.PaginationUtils
 import mobi.waterdog.rest.template.tests.containers.PgSQLContainerFactory
+import mobi.waterdog.rest.template.tests.core.TestApplicationContext
 import mobi.waterdog.rest.template.tests.core.model.Car
 import mobi.waterdog.rest.template.tests.core.model.CarSaveCommand
 import mobi.waterdog.rest.template.tests.core.persistance.CarRepository
 import mobi.waterdog.rest.template.tests.core.testApp
 import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings
 import mobi.waterdog.rest.template.tests.core.utils.versioning.ApiVersion
+import mobi.waterdog.rest.template.tests.module
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be greater than`
 import org.junit.jupiter.api.AfterEach
@@ -58,8 +61,8 @@ class TestRoutes : KoinTest {
 
     @Test
     fun `Fetching a car that does not exists returns a 404 Not Found`() = testAppWithConfig {
-        with(handleRequest(HttpMethod.Get, "/$apiVersion/cars/12345")) {
-            response.status() `should be equal to` HttpStatusCode.NotFound
+        with(client.get("/$apiVersion/cars/12345")) {
+            status `should be equal to` HttpStatusCode.NotFound
         }
     }
 
@@ -67,9 +70,9 @@ class TestRoutes : KoinTest {
     fun `Fetching a car that exists returns correctly`() = testAppWithConfig {
         val newCar = insertCar()
 
-        with(handleRequest(HttpMethod.Get, "/$apiVersion/cars/${newCar.id}")) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.fromJson(response.content)
+        with(client.get("/$apiVersion/cars/${newCar.id}")) {
+            status `should be equal to` HttpStatusCode.OK
+            val car: Car = body()
             car.id `should be equal to` newCar.id
             car.brand `should be equal to` newCar.brand
             car.model `should be equal to` newCar.model
@@ -81,13 +84,13 @@ class TestRoutes : KoinTest {
         val cmd = CarSaveCommand("porsche", "spyder")
 
         with(
-            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            client.post("/$apiVersion/cars") {
+                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.toJson(cmd))
             }
         ) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.fromJson(response.content)
+            status `should be equal to` HttpStatusCode.OK
+            val car: Car = body()
             car.id `should be greater than` 0
             car.brand `should be equal to` cmd.brand
             car.model `should be equal to` cmd.model
@@ -100,13 +103,13 @@ class TestRoutes : KoinTest {
         val cmd = CarSaveCommand("porsche", "spyder")
 
         val newCar = with(
-            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            client.post("/$apiVersion/cars") {
+                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.toJson(cmd))
             }
         ) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.fromJson(response.content)
+            status `should be equal to` HttpStatusCode.OK
+            val car: Car = body()
             car.id `should be greater than` 0
             car.brand `should be equal to` cmd.brand
             car.model `should be equal to` cmd.model
@@ -116,13 +119,13 @@ class TestRoutes : KoinTest {
 
         val updatedCar = CarSaveCommand(newCar.brand, newCar.model + "_2")
         with(
-            handleRequest(HttpMethod.Put, "/$apiVersion/cars/${newCar.id}") {
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            client.put("/$apiVersion/cars/${newCar.id}") {
+                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.toJson(updatedCar))
             }
         ) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val car: Car = JsonSettings.fromJson(response.content)
+            status `should be equal to` HttpStatusCode.OK
+            val car: Car = body()
             car.id `should be equal to` newCar.id
             car.brand `should be equal to` updatedCar.brand
             car.model `should be equal to` updatedCar.model
@@ -137,9 +140,9 @@ class TestRoutes : KoinTest {
         @Test
         fun `The list endpoint works without any extra parameters`() = testAppWithConfig {
             val expectedCars = generateCars(5)
-            with(handleRequest(HttpMethod.Get, "/$apiVersion/cars")) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
+            with(client.get("/$apiVersion/cars")) {
+                status `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = body()
                 res.data.size `should be equal to` expectedCars.size
                 res.data `should be equal to` expectedCars
             }
@@ -149,13 +152,10 @@ class TestRoutes : KoinTest {
         fun `Test that the first page of the list has the appropriate parameters`() = testAppWithConfig {
             val expectedCars = generateCars(5)
             with(
-                handleRequest(
-                    HttpMethod.Get,
-                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3"
-                )
+                client.get("/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=3")
             ) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
+                status `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = body()
                 res.data.size `should be equal to` 3
                 res.data `should be equal to` expectedCars.subList(0, 3)
 
@@ -178,13 +178,10 @@ class TestRoutes : KoinTest {
         fun `Test that the second page of the list has the appropriate parameters`() = testAppWithConfig {
             val expectedCars = generateCars(5)
             with(
-                handleRequest(
-                    HttpMethod.Get,
-                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3"
-                )
+                client.get("/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=1&${PaginationUtils.PAGE_SIZE}=3")
             ) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
+                status `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = body()
                 res.data.size `should be equal to` 2
                 res.data `should be equal to` expectedCars.subList(3, 5)
 
@@ -207,13 +204,10 @@ class TestRoutes : KoinTest {
         fun `Requesting a non-existing page is handled gracefully`() = testAppWithConfig {
             generateCars(5)
             with(
-                handleRequest(
-                    HttpMethod.Get,
-                    "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5"
-                )
+                client.get("/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=2&${PaginationUtils.PAGE_SIZE}=5")
             ) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
+                status `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = body()
                 res.data.size `should be equal to` 0
 
                 // Verify pagination info
@@ -231,13 +225,12 @@ class TestRoutes : KoinTest {
         fun `Results are correctly sorted in ascending order`() = testAppWithConfig {
             val expectedCars = generateCars(5)
             with(
-                handleRequest(
-                    HttpMethod.Get,
+                client.get(
                     "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=asc"
                 )
             ) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
+                status `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = body()
                 res.data `should be equal to` expectedCars.sortedBy { it.id }
 
                 // Verify pagination info
@@ -249,13 +242,12 @@ class TestRoutes : KoinTest {
         fun `Results are correctly sorted in descending order`() = testAppWithConfig {
             val expectedCars = generateCars(5)
             with(
-                handleRequest(
-                    HttpMethod.Get,
+                client.get(
                     "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[id]=desc"
                 )
             ) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
+                status `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = body()
                 res.data `should be equal to` expectedCars.sortedByDescending { it.id }
 
                 // Verify pagination info
@@ -267,13 +259,12 @@ class TestRoutes : KoinTest {
         fun `Results are correctly sorted by multiple parameters`() = testAppWithConfig {
             val expectedCars = generateCars(5)
             with(
-                handleRequest(
-                    HttpMethod.Get,
+                client.get(
                     "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_SORT}[brand]=asc&${PaginationUtils.PAGE_SORT}[model]=desc"
                 )
             ) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
+                status `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = body()
                 res.data `should be equal to` expectedCars.sortedWith(compareBy<Car> { it.brand }.thenByDescending { it.model })
 
                 // Verify pagination info
@@ -286,13 +277,12 @@ class TestRoutes : KoinTest {
             val expectedCars = generateCars(5)
             val targetCar = expectedCars.random()
             with(
-                handleRequest(
-                    HttpMethod.Get,
+                client.get(
                     "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=${targetCar.brand}&${PaginationUtils.PAGE_FILTER}[model]=${targetCar.model}"
                 )
             ) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
+                status `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = body()
                 res.data `should be equal to` expectedCars.filter { it.brand == targetCar.brand && it.model == targetCar.model }
 
                 // Verify pagination info
@@ -306,13 +296,12 @@ class TestRoutes : KoinTest {
             val ids = listOf(expectedCars.first().id, expectedCars.last().id)
             val queryParams = ids.joinToString(",")
             with(
-                handleRequest(
-                    HttpMethod.Get,
+                client.get(
                     "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[id]=$queryParams"
                 )
             ) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
+                status `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = body()
                 res.data `should be equal to` expectedCars.filter { it.id in ids }
 
                 // Verify pagination info
@@ -324,13 +313,12 @@ class TestRoutes : KoinTest {
         fun `Results are empty when the filters do not match the data`() = testAppWithConfig {
             generateCars(5)
             with(
-                handleRequest(
-                    HttpMethod.Get,
+                client.get(
                     "/$apiVersion/cars?${PaginationUtils.PAGE_NUMBER}=0&${PaginationUtils.PAGE_SIZE}=10&${PaginationUtils.PAGE_FILTER}[brand]=brand000"
                 )
             ) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val res: PageResponse<Car> = JsonSettings.fromJson(response.content)
+                status `should be equal to` HttpStatusCode.OK
+                val res: PageResponse<Car> = body()
                 res.data `should be equal to` listOf()
             }
         }
@@ -359,9 +347,12 @@ class TestRoutes : KoinTest {
         return dbc.query { carRepository.count() }
     }
 
-    private fun <R> testAppWithConfig(test: suspend TestApplicationEngine.() -> R) {
-        testApp(dbContainer.configInfo()) {
-            runBlocking { test() }
-        }
+    private fun testAppWithConfig(test: suspend TestApplicationContext.() -> Unit) {
+        testApp(
+            {
+                module(dbContainer.configInfo())
+            },
+            test
+        )
     }
 }

@@ -1,18 +1,20 @@
 package mobi.waterdog.rest.template.tests.core.model
 
+import io.ktor.client.call.body
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.TestApplicationEngine
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
 import mobi.waterdog.rest.template.exception.AppException
 import mobi.waterdog.rest.template.exception.ErrorDTO
 import mobi.waterdog.rest.template.tests.containers.PgSQLContainerFactory
+import mobi.waterdog.rest.template.tests.core.TestApplicationContext
 import mobi.waterdog.rest.template.tests.core.testApp
 import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings
 import mobi.waterdog.rest.template.tests.core.utils.versioning.ApiVersion
+import mobi.waterdog.rest.template.tests.module
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should contain any`
 import org.amshove.kluent.shouldNotBeEqualTo
@@ -67,13 +69,13 @@ class TestValidatable : KoinTest {
         )
 
         with(
-            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            client.post("/$apiVersion/cars") {
+                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.toJson(car))
             }
         ) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val newCar: Car = JsonSettings.fromJson(response.content)
+            status `should be equal to` HttpStatusCode.OK
+            val newCar: Car = body()
             newCar.id shouldNotBeEqualTo 0
         }
     }
@@ -83,13 +85,13 @@ class TestValidatable : KoinTest {
         val car = CarSaveCommand("brand", "model", wheels = listOf(Wheel(0, 225)))
 
         with(
-            handleRequest(HttpMethod.Post, "/$apiVersion/cars") {
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            client.post("/$apiVersion/cars") {
+                header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 setBody(JsonSettings.toJson(car))
             }
         ) {
-            response.status() `should be equal to` HttpStatusCode.BadRequest
-            val error: ErrorDTO = JsonSettings.fromJson(response.content)
+            status `should be equal to` HttpStatusCode.BadRequest
+            val error: ErrorDTO = body()
             error.httpStatusCode `should be equal to` HttpStatusCode.BadRequest.value
             error.messageCode `should be equal to` "client_error.invalid_parameters"
             error.errors.`should contain any` { it.errorCode.contains("in") }
@@ -98,7 +100,12 @@ class TestValidatable : KoinTest {
         }
     }
 
-    private fun <R> testAppWithConfig(test: TestApplicationEngine.() -> R) {
-        testApp(dbContainer.configInfo(), test)
+    private fun testAppWithConfig(test: suspend TestApplicationContext.() -> Unit) {
+        testApp(
+            {
+                module(dbContainer.configInfo())
+            },
+            test
+        )
     }
 }
