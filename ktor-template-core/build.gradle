@@ -4,15 +4,15 @@ apply plugin: 'signing'
 
 dependencies {
     api deps.ktor.serverNetty
-    api deps.ktor.defaultHeaders
-    api deps.ktor.compression
-    api deps.ktor.callLogging
-    api deps.ktor.callId
-    api deps.ktor.contentNegotiation
-    api deps.ktor.serialization
-    api deps.ktor.cors
-    api deps.ktor.auth
-    api deps.ktor.statusPages
+    api deps.ktor.serverDefaultHeaders
+    api deps.ktor.serverCompression
+    api deps.ktor.serverCallLogging
+    api deps.ktor.serverCallId
+    api deps.ktor.serverContentNegotiation
+    api deps.ktor.serverSerialization
+    api deps.ktor.serverCors
+    api deps.ktor.serverAuth
+    api deps.ktor.serverStatusPages
 
     api deps.valiktor
 

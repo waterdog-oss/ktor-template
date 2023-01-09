@@ -4,16 +4,17 @@ ext.deps = [
     ],
     ktor: [
         serverNetty: "io.ktor:ktor-server-netty:${ktorVersion}",
-        defaultHeaders: "io.ktor:ktor-server-default-headers:${ktorVersion}",
-        compression: "io.ktor:ktor-server-compression:${ktorVersion}",
-        callLogging: "io.ktor:ktor-server-call-logging:${ktorVersion}",
-        callId: "io.ktor:ktor-server-call-id:${ktorVersion}",
-        contentNegotiation: "io.ktor:ktor-server-content-negotiation:${ktorVersion}",
-        serialization: "io.ktor:ktor-serialization-kotlinx-json:${ktorVersion}",
-        cors: "io.ktor:ktor-server-cors:${ktorVersion}",
-        auth: "io.ktor:ktor-server-auth:${ktorVersion}",
-        statusPages: "io.ktor:ktor-server-status-pages:${ktorVersion}",
-        test: "io.ktor:ktor-server-test-host:${ktorVersion}"
+        serverDefaultHeaders: "io.ktor:ktor-server-default-headers:${ktorVersion}",
+        serverCompression: "io.ktor:ktor-server-compression:${ktorVersion}",
+        serverCallLogging: "io.ktor:ktor-server-call-logging:${ktorVersion}",
+        serverCallId: "io.ktor:ktor-server-call-id:${ktorVersion}",
+        serverContentNegotiation: "io.ktor:ktor-server-content-negotiation:${ktorVersion}",
+        serverSerialization: "io.ktor:ktor-serialization-kotlinx-json:${ktorVersion}",
+        serverCors: "io.ktor:ktor-server-cors:${ktorVersion}",
+        serverAuth: "io.ktor:ktor-server-auth:${ktorVersion}",
+        serverStatusPages: "io.ktor:ktor-server-status-pages:${ktorVersion}",
+        test: "io.ktor:ktor-server-test-host:${ktorVersion}",
+        clientContentNegotiation: "io.ktor:ktor-client-content-negotiation:${ktorVersion}"
     ],
     koin: [
         core: "io.insert-koin:koin-core:${koinVersion}",
