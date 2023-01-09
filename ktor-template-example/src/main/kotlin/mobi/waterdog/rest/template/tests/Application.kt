@@ -1,24 +1,24 @@
 package mobi.waterdog.rest.template.tests
 
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.application.log
-import io.ktor.config.ApplicationConfig
-import io.ktor.features.CORS
-import io.ktor.features.CallId
-import io.ktor.features.CallLogging
-import io.ktor.features.Compression
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.StatusPages
-import io.ktor.features.callIdMdc
-import io.ktor.features.deflate
-import io.ktor.features.gzip
-import io.ktor.features.identity
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
-import io.ktor.routing.Routing
-import io.ktor.serialization.json
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.application.log
+import io.ktor.server.config.ApplicationConfig
+import io.ktor.server.plugins.callid.CallId
+import io.ktor.server.plugins.callid.callIdMdc
+import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.plugins.compression.Compression
+import io.ktor.server.plugins.compression.deflate
+import io.ktor.server.plugins.compression.gzip
+import io.ktor.server.plugins.compression.identity
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.defaultheaders.DefaultHeaders
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.routing.Routing
 import mobi.waterdog.rest.template.exception.defaultExceptionHandler
 import mobi.waterdog.rest.template.exception.defaultStatusCodes
 import mobi.waterdog.rest.template.healthcheck.Health
@@ -28,7 +28,7 @@ import mobi.waterdog.rest.template.tests.core.httphandler.defaultRoutes
 import mobi.waterdog.rest.template.tests.core.utils.healthcheck.liveness
 import mobi.waterdog.rest.template.tests.core.utils.healthcheck.readiness
 import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings
-import org.koin.ktor.ext.Koin
+import org.koin.ktor.plugin.Koin
 import java.util.UUID
 
 fun Application.module(configOverrides: ApplicationConfig? = null) {
@@ -67,11 +67,11 @@ fun Application.module(configOverrides: ApplicationConfig? = null) {
     }
 
     install(CORS) {
-        method(HttpMethod.Options)
-        method(HttpMethod.Get)
-        method(HttpMethod.Post)
-        method(HttpMethod.Put)
-        method(HttpMethod.Delete)
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
         anyHost()
     }
 

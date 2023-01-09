@@ -3,9 +3,16 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 dependencies {
-    api deps.ktor.serialization
     api deps.ktor.serverNetty
+    api deps.ktor.defaultHeaders
+    api deps.ktor.compression
+    api deps.ktor.callLogging
+    api deps.ktor.callId
+    api deps.ktor.contentNegotiation
+    api deps.ktor.serialization
+    api deps.ktor.cors
     api deps.ktor.auth
+    api deps.ktor.statusPages
 
     api deps.valiktor
 

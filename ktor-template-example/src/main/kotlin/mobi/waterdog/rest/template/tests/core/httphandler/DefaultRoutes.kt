@@ -1,14 +1,14 @@
 package mobi.waterdog.rest.template.tests.core.httphandler
 
-import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
-import io.ktor.request.path
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.put
+import io.ktor.server.application.call
+import io.ktor.server.request.path
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.put
 import mobi.waterdog.rest.template.pagination.PageResponse
 import mobi.waterdog.rest.template.pagination.parsePageRequest
 import mobi.waterdog.rest.template.tests.core.model.Car
