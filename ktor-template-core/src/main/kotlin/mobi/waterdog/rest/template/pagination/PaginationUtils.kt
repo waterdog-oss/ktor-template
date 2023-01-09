@@ -1,6 +1,6 @@
 package mobi.waterdog.rest.template.pagination
 
-import io.ktor.application.ApplicationCall
+import io.ktor.server.application.ApplicationCall
 
 object PaginationUtils {
     const val PAGE_NUMBER = "page[number]"

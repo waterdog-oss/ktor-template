@@ -1,9 +1,9 @@
 package mobi.waterdog.rest.template.tests.core.httphandler
 
-import io.ktor.application.call
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.get
+import io.ktor.server.application.call
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
 import mobi.waterdog.rest.template.tests.core.model.Const
 import mobi.waterdog.rest.template.tests.core.model.Expr
 import mobi.waterdog.rest.template.tests.core.model.NotANumber

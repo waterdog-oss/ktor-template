@@ -1,12 +1,12 @@
 package mobi.waterdog.rest.template.tests.core.utils.healthcheck
 
-import io.ktor.http.HttpMethod
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.TestApplicationEngine
-import io.ktor.server.testing.handleRequest
 import mobi.waterdog.rest.template.tests.containers.PgSQLContainerFactory
+import mobi.waterdog.rest.template.tests.core.TestApplicationContext
 import mobi.waterdog.rest.template.tests.core.testApp
-import mobi.waterdog.rest.template.tests.core.utils.json.JsonSettings
+import mobi.waterdog.rest.template.tests.module
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -27,18 +27,18 @@ class TestHealthCheck : KoinTest {
 
     @Test
     fun `Checking liveness with 200 OK`() = testAppWithConfig {
-        with(handleRequest(HttpMethod.Get, "/liveness")) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val result: Map<String, Boolean> = JsonSettings.fromJson(response.content)
+        with(client.get("/liveness")) {
+            status `should be equal to` HttpStatusCode.OK
+            val result: Map<String, Boolean> = body()
             result["alive"] `should be equal to` true
         }
     }
 
     @Test
     fun `Checking database readiness with 200 OK`() = testAppWithConfig {
-        with(handleRequest(HttpMethod.Get, "/readiness")) {
-            response.status() `should be equal to` HttpStatusCode.OK
-            val result: Map<String, Boolean> = JsonSettings.fromJson(response.content)
+        with(client.get("/readiness")) {
+            status `should be equal to` HttpStatusCode.OK
+            val result: Map<String, Boolean> = body()
             result["database"] `should be equal to` true
         }
     }
@@ -50,10 +50,10 @@ class TestHealthCheck : KoinTest {
         waitFor(Duration.ofSeconds(3)) {
             dbContainer.isRunning
         }
-        testApp(dbContainer.configInfo()) {
-            with(handleRequest(HttpMethod.Get, "/readiness")) {
-                response.status() `should be equal to` HttpStatusCode.OK
-                val result: Map<String, Boolean> = JsonSettings.fromJson(response.content)
+        testApp({ module(dbContainer.configInfo()) }) {
+            with(client.get("/readiness")) {
+                status `should be equal to` HttpStatusCode.OK
+                val result: Map<String, Boolean> = body()
                 result["database"] `should be equal to` true
             }
 
@@ -64,16 +64,21 @@ class TestHealthCheck : KoinTest {
                 !dbContainer.isRunning
             }
             log.info("Testing readiness. It should fail...")
-            with(handleRequest(HttpMethod.Get, "/readiness")) {
-                response.status() `should be equal to` HttpStatusCode.InternalServerError
-                val result: Map<String, Boolean> = JsonSettings.fromJson(response.content)
+            with(client.get("/readiness")) {
+                status `should be equal to` HttpStatusCode.InternalServerError
+                val result: Map<String, Boolean> = body()
                 result["database"] `should be equal to` false
             }
         }
     }
 
-    private fun <R> testAppWithConfig(test: TestApplicationEngine.() -> R) {
-        testApp(dbContainer.configInfo(), test)
+    private fun testAppWithConfig(test: suspend TestApplicationContext.() -> Unit) {
+        testApp(
+            {
+                module(dbContainer.configInfo())
+            },
+            test
+        )
     }
 
     private fun waitFor(duration: Duration, block: () -> Boolean) {

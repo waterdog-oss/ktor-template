@@ -1,7 +1,7 @@
 package mobi.waterdog.rest.template.tests.containers
 
-import io.ktor.config.ApplicationConfig
-import io.ktor.config.MapApplicationConfig
+import io.ktor.server.config.ApplicationConfig
+import io.ktor.server.config.MapApplicationConfig
 import org.testcontainers.containers.PostgreSQLContainer
 
 class KPostgreSQLContainer(image: String) : PostgreSQLContainer<KPostgreSQLContainer>(image) {

@@ -3,12 +3,12 @@
  */
 package mobi.waterdog.rest.template.healthcheck
 
-import io.ktor.application.ApplicationCallPipeline
-import io.ktor.application.ApplicationFeature
-import io.ktor.application.call
 import io.ktor.http.ContentType
-import io.ktor.request.path
-import io.ktor.response.respondText
+import io.ktor.server.application.ApplicationCallPipeline
+import io.ktor.server.application.BaseApplicationPlugin
+import io.ktor.server.application.call
+import io.ktor.server.request.path
+import io.ktor.server.response.respondText
 import io.ktor.util.AttributeKey
 
 // A check is a nullary function returning
@@ -121,7 +121,7 @@ class Health private constructor(private val cfg: Configuration) {
         }
     }
 
-    companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, Health> {
+    companion object Feature : BaseApplicationPlugin<ApplicationCallPipeline, Configuration, Health> {
         override val key = AttributeKey<Health>("Health")
         override fun install(
             pipeline: ApplicationCallPipeline,

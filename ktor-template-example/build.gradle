@@ -16,6 +16,7 @@ dependencies {
     implementation deps.flyaway
 
     testImplementation deps.ktor.test
+    testImplementation deps.ktor.clientContentNegotiation
     testImplementation deps.koin.test
     testImplementation deps.junit.api
     testImplementation deps.junit.params

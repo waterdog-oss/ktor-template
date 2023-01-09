@@ -3,6 +3,7 @@ package mobi.waterdog.rest.template.tests.core.persistance.sql
 import mobi.waterdog.rest.template.tests.core.model.Part
 import mobi.waterdog.rest.template.tests.core.persistance.PartRepository
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select

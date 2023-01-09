@@ -2,8 +2,8 @@ package mobi.waterdog.rest.template.tests.conf
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.config.ApplicationConfig
-import io.ktor.config.MapApplicationConfig
+import io.ktor.server.config.ApplicationConfig
+import io.ktor.server.config.MapApplicationConfig
 import mobi.waterdog.rest.template.database.DatabaseConnection
 import mobi.waterdog.rest.template.tests.core.persistance.CarRepository
 import mobi.waterdog.rest.template.tests.core.persistance.PartRepository
