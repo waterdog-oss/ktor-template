@@ -8,23 +8,23 @@ dependencies {
     implementation project(":ktor-template-core")
     implementation project(":ktor-template-database")
 
-    implementation deps.koin.core
-    implementation deps.koin.ktor
+    implementation libs.koin.core
+    implementation libs.koin.ktor
 
-    implementation deps.postgresql
-    implementation deps.hikari
-    implementation deps.flyaway
+    implementation libs.postgresql
+    implementation libs.hikariCP
+    implementation libs.flyway.core
 
-    testImplementation deps.ktor.test
-    testImplementation deps.ktor.clientContentNegotiation
-    testImplementation deps.koin.test
-    testImplementation deps.junit.api
-    testImplementation deps.junit.params
-    testRuntimeOnly deps.junit.engine
-    testImplementation deps.kluent
-    testImplementation deps.testContainers.core
-    testImplementation deps.testContainers.junit
-    testImplementation deps.testContainers.postgres
+    testImplementation libs.ktor.server.test.host
+    testImplementation libs.ktor.client.content.negotiation
+    testImplementation libs.koin.test
+    testImplementation libs.junit.jupiter.api
+    testImplementation libs.junit.jupiter.params
+    testRuntimeOnly libs.junit.jupiter.engine
+    testImplementation libs.kluent
+    testImplementation libs.testcontainers
+    testImplementation libs.testcontainers.junit
+    testImplementation libs.testcontainers.postgresql
 }
 
 test {
