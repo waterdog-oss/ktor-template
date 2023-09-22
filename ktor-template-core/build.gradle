@@ -3,22 +3,22 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 dependencies {
-    api deps.ktor.serverNetty
-    api deps.ktor.serverDefaultHeaders
-    api deps.ktor.serverCompression
-    api deps.ktor.serverCallLogging
-    api deps.ktor.serverCallId
-    api deps.ktor.serverContentNegotiation
-    api deps.ktor.serverSerialization
-    api deps.ktor.serverCors
-    api deps.ktor.serverAuth
-    api deps.ktor.serverStatusPages
+    api libs.ktor.server.netty
+    api libs.ktor.server.default.headers
+    api libs.ktor.server.compression
+    api libs.ktor.server.call.logging
+    api libs.ktor.server.call.id
+    api libs.ktor.server.content.negotiation
+    api libs.ktor.serialization.kotlinx.json
+    api libs.ktor.server.cors
+    api libs.ktor.server.auth
+    api libs.ktor.server.status.pages
 
-    api deps.valiktor
+    api libs.valiktor.core
 
-    api deps.logs.logback
-    api deps.logs.logbackJson
-    api deps.logs.coroutinesSlf4j
+    api libs.logback.classic
+    api libs.logback.json.classic
+    api libs.kotlinx.coroutines.slf4j
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

@@ -5,31 +5,25 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:${kotlinVersion}"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:1.7.20"
         classpath "org.jlleitschuh.gradle:ktlint-gradle:10.1.0"
         classpath "com.github.jengelman.gradle.plugins:shadow:6.1.0"
     }
 }
 
 plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.7.20"
     id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
     id "org.owasp.dependencycheck" version "6.2.2"
 }
 
 subprojects {
-
-    apply from: "$rootDir/dependencies.gradle"
     apply plugin: 'kotlin'
     apply plugin: 'org.jlleitschuh.gradle.ktlint'
     apply plugin: 'org.owasp.dependencycheck'
 
     repositories {
         mavenCentral()
-    }
-
-    dependencies {
-        api "org.jetbrains.kotlin:kotlin-bom:${kotlinVersion}"
     }
 
     compileKotlin.kotlinOptions.jvmTarget = JavaVersion.VERSION_11

@@ -4,9 +4,9 @@ apply plugin: 'signing'
 dependencies {
     api project(":ktor-template-core")
 
-    api deps.exposed.core
-    api deps.exposed.dao
-    api deps.exposed.jdbc
+    api libs.exposed.core
+    api libs.exposed.dao
+    api libs.exposed.jdbc
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
